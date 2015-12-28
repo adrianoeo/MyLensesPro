@@ -22,7 +22,7 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
 
-        <com.aeo.mylenses.slidetab.SlidingTabLayout
+        <com.aeo.mylensespro.slidetab.SlidingTabLayout
             android:id="@+id/sliding_tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

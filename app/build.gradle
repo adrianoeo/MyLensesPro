@@ -3,13 +3,12 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.0"
-
     defaultConfig {
-        applicationId "com.aeo.mylenses.mylenses"
+        applicationId 'com.aeo.mylensespro'
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 14
+        versionName '4.0'
     }
     buildTypes {
         release {
@@ -20,6 +19,8 @@ android {
     repositories {
         maven { url 'http://repo1.maven.org/maven2' }
     }
+    productFlavors {
+    }
 }
 
 dependencies {
@@ -27,4 +28,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.google.android.gms:play-services-ads:8.3.0'
+    compile 'com.google.android.gms:play-services-analytics:8.3.0'
 }
