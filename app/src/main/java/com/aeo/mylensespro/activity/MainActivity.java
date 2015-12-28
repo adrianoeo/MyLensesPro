@@ -23,6 +23,7 @@ import com.aeo.mylensespro.fragment.StatusFragment;
 import com.aeo.mylensespro.util.AnalyticsApplication;
 import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.DataLensesVO;
+import com.firebase.client.Firebase;
 import com.google.android.gms.analytics.Tracker;
 
 public class MainActivity extends AppCompatActivity
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity
 
         mBackupManager = new BackupManager(this);
 
-//        Firebase.setAndroidContext(this);
+        Firebase.setAndroidContext(this);
     }
 
     @Override
