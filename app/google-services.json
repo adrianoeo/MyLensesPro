@@ -1,17 +1,17 @@
 {
   "project_info": {
-    "project_id": "mylenses-864fb",
-    "project_number": "56079187961",
-    "name": "MyLenses"
+    "project_id": "mylensespro",
+    "project_number": "284674428679",
+    "name": "MyLensesPro"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:56079187961:android:302d10f1dfb73927",
-        "client_id": "android:com.aeo.mylenses",
+        "mobilesdk_app_id": "1:284674428679:android:57ef5f2ea03744b9",
+        "client_id": "android:com.aeo.mylensespro",
         "client_type": 1,
         "android_client_info": {
-          "package_name": "com.aeo.mylenses"
+          "package_name": "com.aeo.mylensespro"
         }
       },
       "oauth_client": [],
@@ -20,7 +20,7 @@
         "analytics_service": {
           "status": 2,
           "analytics_property": {
-            "tracking_id": "UA-50709936-1"
+            "tracking_id": "UA-50709936-3"
           }
         },
         "cloud_messaging_service": {

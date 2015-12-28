@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity
         }
 
         mBackupManager = new BackupManager(this);
+
+//        Firebase.setAndroidContext(this);
     }
 
     @Override

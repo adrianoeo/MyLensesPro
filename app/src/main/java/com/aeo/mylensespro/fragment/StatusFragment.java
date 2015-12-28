@@ -27,8 +27,6 @@ import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
 import com.aeo.mylensespro.util.AnalyticsApplication;
 import com.aeo.mylensespro.vo.TimeLensesVO;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdView;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
@@ -59,7 +57,6 @@ public class StatusFragment extends Fragment {
 
     private Animation animation;
     private Tracker mTracker;
-    private AdView mAdView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -126,10 +123,6 @@ public class StatusFragment extends Fragment {
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.hide();
-
-        mAdView = (AdView) view.findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
 
         // Obtain the shared Tracker instance.
         AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
@@ -340,7 +333,7 @@ public class StatusFragment extends Fragment {
 
             boolean isRightVisible = timeLensesVO != null
                     && timeLensesVO.getInUseRight() == 1
-			/* && lensesDataVO.getNumber_units_right() > 0 */;
+            /* && lensesDataVO.getNumber_units_right() > 0 */;
 
             setVisibleUnitRight(isRightVisible ? View.VISIBLE : View.INVISIBLE);
 
