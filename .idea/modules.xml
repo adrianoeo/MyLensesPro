@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/MyLensesPro.iml" filepath="$PROJECT_DIR$/MyLensesPro.iml" />
+      <module fileurl="file://$PROJECT_DIR$/MyLensesStudioPro.iml" filepath="$PROJECT_DIR$/MyLensesStudioPro.iml" />
     </modules>
   </component>
 </project>
