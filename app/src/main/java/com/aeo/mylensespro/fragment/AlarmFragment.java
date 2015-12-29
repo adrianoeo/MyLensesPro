@@ -22,7 +22,7 @@ import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
-import com.aeo.mylensespro.util.AnalyticsApplication;
+import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.vo.AlarmVO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -86,7 +86,7 @@ public class AlarmFragment extends Fragment {
         setTimeAlarm();
 
         // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
+        MyLensesApplication application = (MyLensesApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
 
         return view;
@@ -101,7 +101,7 @@ public class AlarmFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        save();
+//        save();
 
         mTracker.setScreenName("AlarmFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -120,7 +120,7 @@ public class AlarmFragment extends Fragment {
 //            timePicker.setCurrentHour(vo.getHour());
 //            timePicker.setCurrentMinute(vo.getMinute());
             btnTimePickerAlarm.setText(String.format("%02d:%02d", vo.getHour(), vo.getMinute()));
-            numberDaysBefore.setValue(vo.getDaysBefore());
+            numberDaysBefore.setValue((int) vo.getDaysBefore());
             cbRemindEveryDay.setChecked(vo.getRemindEveryDay() == 1 ? true : false);
         }
     }
@@ -138,10 +138,10 @@ public class AlarmFragment extends Fragment {
 
         String[] time = btnTimePickerAlarm.getText().toString().split(":");
 
-        vo.setHour(Integer.valueOf(time[0]));
-        vo.setMinute(Integer.valueOf(time[1]));
-        vo.setDaysBefore(numberDaysBefore.getValue());
-        vo.setRemindEveryDay(cbRemindEveryDay.isChecked() ? 1 : 0);
+        vo.setHour(Long.valueOf(time[0]));
+        vo.setMinute(Long.valueOf(time[1]));
+        vo.setDaysBefore(Long.valueOf(numberDaysBefore.getValue()));
+        vo.setRemindEveryDay(cbRemindEveryDay.isChecked() ? 1L : 0L);
 
         AlarmDAO dao = AlarmDAO.getInstance(getContext());
         if (dao.getAlarm() == null) {

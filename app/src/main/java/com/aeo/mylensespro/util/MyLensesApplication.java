@@ -21,13 +21,20 @@ import android.app.Application;
 import com.aeo.mylensespro.R;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
+import com.parse.Parse;
 
 /**
  * This is a subclass of {@link Application} used to provide shared objects for this app, such as
  * the {@link Tracker}.
  */
-public class AnalyticsApplication extends Application {
+public class MyLensesApplication extends Application {
     private Tracker mTracker;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Parse.initialize(this, "phOG3w5biqDoVi0p3W8koRcCoRP4izKWoQ02RDXd", "wqKH5GqKyn7e0e6SVgvl4SYjyB3aua2JGBuC3Thw");
+    }
 
     /**
      * Gets the default {@link Tracker} for this {@link Application}.

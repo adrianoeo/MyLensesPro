@@ -8,6 +8,31 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <!-- Novos -->
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="email_hint">Email</string>
+    <string name="login_button_label">Login</string>
+    <string name="sign_up_text">No account yet? Create one</string>
+    <string name="forget_password">Forgot your password? Reset here</string>
+    <string name="signup_error_message">Please make sure you enter a username, password, and email address</string>
+    <string name="signup_error_title">Error</string>
+    <string name="reset_error_msg">Please make sure you enter a email address</string>
+    <string name="login_error_message">Please make sure you enter a username and password</string>
+    <string name="login_error_title">Error</string>
+    <string name="reset_error_title">Error</string>
+    <string name="logout_label">Logout</string>
+    <!--<string name="title_activity_sign_up">SignUpActivity</string>-->
+    <!--<string name="title_activity_login">LoginActivity</string>-->
+    <!--<string name="title_activity_reset">ResetActivity</string>-->
+    <string name="sign_up_button_label">Sign Up</string>
+    <string name="alrealdy_member">Already a member? Login</string>
+    <string name="reset_pswd">An email was successfully sent with reset instructions</string>
+    <string name="title_reset_pswd">Reset Password</string>
+    <string name="error_reset_pswd">Sorry, a problem occurred to send you a email</string>
+    <string name="title_error_reset_pswd">Problem to Reset Password</string>
+
+    <!---->
+
     <string name="nav_status">Status of lenses</string>
     <string name="nav_periodo">Time of lenses</string>
     <string name="nav_dados">Lenses data</string>
@@ -22,7 +47,6 @@
     <string name="lbl_bc">BC</string>
     <string name="lbl_dia">DIA</string>
     <string name="btn_horario">12:00</string>
-    <!---->
 
     <string name="menuSave">Save</string>
     <string name="menuEdit">Edit</string>

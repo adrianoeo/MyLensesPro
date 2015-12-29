@@ -29,7 +29,7 @@ public class BootBroadcastReceiver extends BroadcastReceiver {
 				Long[] daysToExpire = timeLensesDAO.getDaysToExpire(idLenses);
 
 				if (daysToExpire[0] > 0 || daysToExpire[1] > 0) {
-					alarmDAO.setAlarmManagerDaily(alarmVO.getHour(), alarmVO.getMinute());
+					alarmDAO.setAlarmManagerDaily((int) alarmVO.getHour(), (int) alarmVO.getMinute());
 				}
 			}
 		}

@@ -25,7 +25,7 @@ import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
-import com.aeo.mylensespro.util.AnalyticsApplication;
+import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.vo.TimeLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -125,7 +125,7 @@ public class StatusFragment extends Fragment {
         fab.hide();
 
         // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
+        MyLensesApplication application = (MyLensesApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
 
         return view;

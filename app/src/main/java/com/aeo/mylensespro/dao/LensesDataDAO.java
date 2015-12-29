@@ -1,7 +1,6 @@
 package com.aeo.mylensespro.dao;
 
 import android.annotation.SuppressLint;
-import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -25,7 +24,6 @@ public class LensesDataDAO {
 	private SQLiteDatabase db;
 	private static LensesDataDAO instance;
 	private Context context;
-	BackupManager mBackupManager;
 
 	public static LensesDataDAO getInstance(Context context) {
 		if (instance == null) {
@@ -37,14 +35,12 @@ public class LensesDataDAO {
 	public LensesDataDAO(Context context) {
 		this.context = context;
 		db = new DB(context).getWritableDatabase();
-		mBackupManager = new BackupManager(context);
 	}
 
 	public boolean insert(DataLensesVO vo) {
 		synchronized (MainActivity.sDataLock) {
 			ContentValues content = getContentValues(vo);
 
-			mBackupManager.dataChanged();
 			return db.insert(tableName, null, content) > 0;
 		}
 	}
@@ -53,7 +49,6 @@ public class LensesDataDAO {
 		synchronized (MainActivity.sDataLock) {
 			ContentValues content = getContentValues(vo);
 
-			mBackupManager.dataChanged();
 			return db.update(tableName, content, "id=?", new String[] { vo
 					.getId().toString() }) > 0;
 		}
@@ -185,7 +180,6 @@ public class LensesDataDAO {
 			ContentValues content = new ContentValues();
 			content.put(column, date);
 
-			mBackupManager.dataChanged();
 			return db.update(tableName, content, "id=?",
 					new String[] { String.valueOf(idLensesData) }) > 0;
 		}

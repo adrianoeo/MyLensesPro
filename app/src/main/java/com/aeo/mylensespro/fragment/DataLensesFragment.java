@@ -22,7 +22,7 @@ import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.adapter.DataLensesCollectionPagerAdapter;
 import com.aeo.mylensespro.dao.LensesDataDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
-import com.aeo.mylensespro.util.AnalyticsApplication;
+import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.vo.DataLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -117,7 +117,7 @@ public class DataLensesFragment extends Fragment {
         isSaveVisible = false;
 
         // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getActivity().getApplication();
+        MyLensesApplication application = (MyLensesApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
 
         return view;

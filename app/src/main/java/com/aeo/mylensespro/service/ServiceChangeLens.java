@@ -52,7 +52,7 @@ public class ServiceChangeLens extends Service implements Runnable {
 		// Get notification of days before.
 		AlarmDAO alarmDAO = AlarmDAO.getInstance(this);
 		AlarmVO alarmVO = alarmDAO.getAlarm();
-		int daysBefore = alarmVO.getDaysBefore();
+		long daysBefore = alarmVO.getDaysBefore();
 
 		long dayLeftEye = days[0] - daysBefore;
 		long dayRightEye = days[1] - daysBefore;

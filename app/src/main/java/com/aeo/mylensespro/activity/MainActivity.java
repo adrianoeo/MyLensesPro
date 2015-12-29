@@ -1,7 +1,6 @@
 package com.aeo.mylensespro.activity;
 
 import android.app.AlertDialog;
-import android.app.backup.BackupManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -20,11 +19,11 @@ import android.widget.Toast;
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.dao.LensesDataDAO;
 import com.aeo.mylensespro.fragment.StatusFragment;
-import com.aeo.mylensespro.util.AnalyticsApplication;
+import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.DataLensesVO;
-import com.firebase.client.Firebase;
 import com.google.android.gms.analytics.Tracker;
+import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -34,7 +33,6 @@ public class MainActivity extends AppCompatActivity
     public Toolbar toolbar;
     private boolean doubleBackToExitPressedOnce;
 
-    BackupManager mBackupManager;
     private Tracker mTracker;
 
     @Override
@@ -54,17 +52,22 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
 
         // Obtain the shared Tracker instance.
-        AnalyticsApplication application = (AnalyticsApplication) getApplication();
+        MyLensesApplication application = (MyLensesApplication) getApplication();
         mTracker = application.getDefaultTracker();
+
+
+        //authentication
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser == null) {
+            loadLoginView();
+        }
+
 
         if (savedInstanceState == null) {
             Utility.replaceFragment(new StatusFragment(),
                     getSupportFragmentManager());
         }
 
-        mBackupManager = new BackupManager(this);
-
-        Firebase.setAndroidContext(this);
     }
 
     @Override
@@ -132,6 +135,9 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_compra) {
             shop();
             toolbar.setTitle(R.string.nav_compra);
+        } else if (id == R.id.nav_logout) {
+            ParseUser.logOut();
+            loadLoginView();
         } else {
             Utility.setScreen(id, toolbar, getSupportFragmentManager());
         }
@@ -203,4 +209,13 @@ public class MainActivity extends AppCompatActivity
         dialog.show();
     }
 
+    private void loadLoginView() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        /*So ‘back’ is pressed, the app navigates to the previous activity.
+          We need to clear the stack history and set the LoginActivity as the start of
+          the history stack. Modify loadLoginView() as shown.*/
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
 }

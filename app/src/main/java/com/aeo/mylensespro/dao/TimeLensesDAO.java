@@ -1,7 +1,6 @@
 package com.aeo.mylensespro.dao;
 
 import android.annotation.SuppressLint;
-import android.app.backup.BackupManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -32,10 +31,6 @@ public class TimeLensesDAO {
     public static final String LEFT = "LEFT";
     public static final String RIGHT = "RIGHT";
 
-    /**
-     * Also cache a reference to the Backup Manager
-     */
-    BackupManager mBackupManager;
     private Context context;
 
     public static TimeLensesDAO getInstance(Context context) {
@@ -47,14 +42,11 @@ public class TimeLensesDAO {
 
     public TimeLensesDAO(Context context) {
         db = new DB(context).getWritableDatabase();
-        /** It is handy to keep a BackupManager cached */
-        mBackupManager = new BackupManager(context);
         this.context = context;
     }
 
     public boolean insert(TimeLensesVO lensVO) {
         synchronized (MainActivity.sDataLock) {
-            mBackupManager.dataChanged();
             return db.insert(tableName, null, getContentValues(lensVO)) > 0;
         }
     }
@@ -76,7 +68,6 @@ public class TimeLensesDAO {
             content.put("count_unit_right", lensVO.getCountUnitRight());
             content.put("qtd_left", lensVO.getQtdLeft());
             content.put("qtd_right", lensVO.getQtdRight());
-            mBackupManager.dataChanged();
             return db.update(tableName, content, "id=?", new String[]{lensVO
                     .getId().toString()}) > 0;
         }
@@ -94,7 +85,6 @@ public class TimeLensesDAO {
                 content.put("num_days_not_used_right",
                         lensVO.getNumDaysNotUsedRight() + 1);
             }
-            mBackupManager.dataChanged();
             return db.update(tableName, content, "id=?", new String[]{lensVO
                     .getId().toString()}) > 0;
         }
@@ -109,7 +99,6 @@ public class TimeLensesDAO {
                 content.put("num_days_not_used_right", days);
             }
 
-            mBackupManager.dataChanged();
             return db.update(tableName, content, "id=?",
                     new String[]{String.valueOf(idLens)}) > 0;
         }
@@ -117,7 +106,6 @@ public class TimeLensesDAO {
 
     public boolean delete(Integer id) {
         synchronized (MainActivity.sDataLock) {
-            mBackupManager.dataChanged();
             return db.delete(tableName, "id=?", new String[]{id.toString()}) > 0;
         }
     }
