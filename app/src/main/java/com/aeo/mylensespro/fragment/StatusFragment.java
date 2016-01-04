@@ -64,7 +64,7 @@ public class StatusFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_status, container, false);
         setHasOptionsMenu(true);
 
-        context = getActivity();
+        context = getContext();
 
         tvLeftEye = (TextView) view.findViewById(R.id.tvLeftEye);
         tvRightEye = (TextView) view.findViewById(R.id.tvRightEye);
@@ -154,30 +154,35 @@ public class StatusFragment extends Fragment {
 
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//
-//        switch (item.getItemId()) {
-//            case R.id.menuHelp:
-//                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-//                builder.setMessage(R.string.msg_units);
-//                builder.setCancelable(true);
-//                builder.setPositiveButton(R.string.btn_ok, null);
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+
+        getActivity().setProgressBarIndeterminateVisibility(true);
+
+        TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
+
+        getActivity().setProgressBarIndeterminateVisibility(false);
+
+        setDays(timeLensesVO);
+        setNumUnitsLenses(timeLensesVO);
+        setDaysNotUsed(timeLensesVO);
+
+        mTracker.setScreenName("StatusFragment");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+
+    }
 
     @SuppressLint("ResourceAsColor")
     public void setDays(TimeLensesVO timeLensesVO) {
         TimeLensesDAO dao = TimeLensesDAO.getInstance(getContext());
 
-        int idLenses = dao.getLastIdLens();
+//        String idLenses = dao.getLastIdLens();
+//        String idLenses = timeLensesVO.getId();
 
-        Long[] days = dao.getDaysToExpire(idLenses);
+        Long[] days = dao.getDaysToExpire(timeLensesVO);
 
         // Left eye
         tvDaysRemainingLeftEye.setVisibility(View.VISIBLE);
@@ -284,7 +289,7 @@ public class StatusFragment extends Fragment {
 
     public void setNumUnitsLenses(TimeLensesVO timeLensesVO) {
         if (timeLensesVO != null) {
-            int[] unitsRemaining = TimeLensesDAO.getInstance(getContext()).getUnitsRemaining();
+            int[] unitsRemaining = TimeLensesDAO.getInstance(getContext()).getUnitsRemaining(timeLensesVO);
 
             int unitsLeft = unitsRemaining[0] < 0 ? 0 : unitsRemaining[0];
             int unitsRight = unitsRemaining[1] < 0 ? 0 : unitsRemaining[1];
@@ -406,40 +411,6 @@ public class StatusFragment extends Fragment {
         tvStrUnitsRemainingRight.setVisibility(visibility);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-        TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
-
-        setDays(timeLensesVO);
-        setNumUnitsLenses(timeLensesVO);
-        setDaysNotUsed(timeLensesVO);
-
-        mTracker.setScreenName("StatusFragment");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-
-//		if (mAdView != null) {
-//            mAdView.resume();
-//		}
-    }
-
-    @Override
-    public void onPause() {
-//		if (mAdView != null) {
-//            mAdView.pause();
-//		}
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-//		if (mAdView != null) {
-//            mAdView.destroy();
-//		}
-        super.onDestroy();
-    }
-
     public void openDialogNumber(View view) {
         final View v = view;
         final RelativeLayout layout = new RelativeLayout(context);
@@ -500,8 +471,7 @@ public class StatusFragment extends Fragment {
                                         timeLensesVO.getId());
 
                                 setDays(timeLensesVO);
-                                AlarmDAO.getInstance(context).setAlarm(
-                                        timeLensesVO.getId());
+                                AlarmDAO.getInstance(context).setAlarm(timeLensesVO);
                             }
                         })
                 .setNegativeButton(R.string.btn_cancel,

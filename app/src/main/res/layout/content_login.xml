@@ -16,8 +16,18 @@
             android:layout_width="wrap_content"
             android:layout_height="72dp"
             android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="0dp"
             android:src="@drawable/ic_launcher" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            android:gravity="center"
+            android:text="@string/app_name"
+            android:textSize="20dip"
+            android:typeface="serif"
+            android:textColor="@color/white"/>
 
         <!-- Email Label -->
         <android.support.design.widget.TextInputLayout
@@ -72,8 +82,7 @@
             android:id="@+id/resetButton"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="0dp"
             android:gravity="center"
             android:text="@string/forget_password"
             android:textSize="16dip" />

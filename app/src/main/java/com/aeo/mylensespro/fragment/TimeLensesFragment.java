@@ -38,7 +38,7 @@ import com.google.android.gms.analytics.Tracker;
  */
 public class TimeLensesFragment extends Fragment {
     // TODO: Rename and change types of parameters
-    private int idLenses;
+    private String idLenses;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -79,10 +79,10 @@ public class TimeLensesFragment extends Fragment {
      * @return A new instance of fragment TimeLensesFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TimeLensesFragment newInstance(int idLenses) {
+    public static TimeLensesFragment newInstance(String idLenses) {
         TimeLensesFragment fragment = new TimeLensesFragment();
         Bundle args = new Bundle();
-        args.putInt(KEY_ID_LENS, idLenses);
+        args.putString(KEY_ID_LENS, idLenses);
         fragment.setArguments(args);
         return fragment;
     }
@@ -90,13 +90,13 @@ public class TimeLensesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        idLenses = getArguments() != null ? getArguments().getInt(KEY_ID_LENS) : 0;
+        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        idLenses = getArguments() != null ? getArguments().getInt(KEY_ID_LENS) : 0;
+        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
 
         mTracker.setScreenName("TimeLensesFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -163,12 +163,12 @@ public class TimeLensesFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (idLenses == 0) {
+        if (idLenses == null) {
             enableMenuEdit(false);
             enableMenuSaveCancel(true);
         } else {
             enableMenuSaveCancel(isSaveVisible);
-            enableMenuEdit(TimeLensesDAO.getInstance(getContext()).getLastIdLens() == idLenses
+            enableMenuEdit(TimeLensesDAO.getInstance(getContext()).getLastIdLens().equals(idLenses)
                     && !isSaveVisible);
         }
     }
@@ -247,14 +247,14 @@ public class TimeLensesFragment extends Fragment {
         }
     }
 
-    private void deleteLens(final int id) {
+    private void deleteLens(final String id) {
         Context context = getContext();
 
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
         timeLensesDAO.delete(id);
 
         AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
-        alarmDAO.setAlarm(timeLensesDAO.getLastIdLens());
+        alarmDAO.setAlarm(timeLensesDAO.getLastLens());
     }
 
     private boolean getViewsFragmentLenses() {
@@ -305,7 +305,7 @@ public class TimeLensesFragment extends Fragment {
         timeLensesVO.setQtdLeft(qtdLeft.getValue());
         timeLensesVO.setQtdRight(qtdRight.getValue());
 
-        if (idLenses != 0) {
+        if (idLenses != null) {
             timeLensesVO.setId(idLenses);
         }
         return timeLensesVO;

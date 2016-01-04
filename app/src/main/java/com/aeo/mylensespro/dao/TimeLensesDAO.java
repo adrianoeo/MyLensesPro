@@ -1,16 +1,16 @@
 package com.aeo.mylensespro.dao;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
-import com.aeo.mylensespro.activity.MainActivity;
-import com.aeo.mylensespro.db.DB;
-import com.aeo.mylensespro.fragment.ListReplaceLensFragment;
 import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.TimeLensesVO;
+import com.parse.GetCallback;
+import com.parse.ParseACL;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -22,16 +22,14 @@ import java.util.List;
 public class TimeLensesDAO {
 
     private static String tableName = "lens";
-    private static String[] columns = {"id", "date_left", "date_right",
-            "expiration_left", "expiration_right", "type_left", "type_right",
-            "num_days_not_used_left", "num_days_not_used_right", "in_use_left",
-            "in_use_right", "count_unit_left", "count_unit_right", "qtd_left", "qtd_right"};
-    private SQLiteDatabase db;
     private static TimeLensesDAO instance;
     public static final String LEFT = "LEFT";
     public static final String RIGHT = "RIGHT";
 
     private Context context;
+
+    public static TimeLensesVO timeLensesVO;
+    public static List<TimeLensesVO> listTimeLensesVO;
 
     public static TimeLensesDAO getInstance(Context context) {
         if (instance == null) {
@@ -41,81 +39,96 @@ public class TimeLensesDAO {
     }
 
     public TimeLensesDAO(Context context) {
-        db = new DB(context).getWritableDatabase();
         this.context = context;
     }
 
-    public boolean insert(TimeLensesVO lensVO) {
-        synchronized (MainActivity.sDataLock) {
-            return db.insert(tableName, null, getContentValues(lensVO)) > 0;
-        }
+    public void insert(TimeLensesVO lensVO) {
+        ParseObject post = getParseObjectLens(lensVO);
+        post.setACL(new ParseACL(ParseUser.getCurrentUser()));
+        post.pinInBackground();
+        post.saveEventually();
+
+        post.saveInBackground();
     }
 
-    public boolean update(TimeLensesVO lensVO) {
-        synchronized (MainActivity.sDataLock) {
-            ContentValues content = new ContentValues();
-            content.put("date_left",
-                    Utility.formatDateToSqlite(lensVO.getDateLeft()));
-            content.put("date_right",
-                    Utility.formatDateToSqlite(lensVO.getDateRight()));
-            content.put("expiration_left", lensVO.getExpirationLeft());
-            content.put("expiration_right", lensVO.getExpirationRight());
-            content.put("type_left", lensVO.getTypeLeft());
-            content.put("type_right", lensVO.getTypeRight());
-            content.put("in_use_left", lensVO.getInUseLeft());
-            content.put("in_use_right", lensVO.getInUseRight());
-            content.put("count_unit_left", lensVO.getCountUnitLeft());
-            content.put("count_unit_right", lensVO.getCountUnitRight());
-            content.put("qtd_left", lensVO.getQtdLeft());
-            content.put("qtd_right", lensVO.getQtdRight());
-            return db.update(tableName, content, "id=?", new String[]{lensVO
-                    .getId().toString()}) > 0;
-        }
-    }
+     public void update(TimeLensesVO lensVO) {
 
-    public boolean incrementDaysNotUsed(TimeLensesVO lensVO) {
-        synchronized (MainActivity.sDataLock) {
-            // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            ContentValues content = new ContentValues();
-            if (lensVO.getInUseLeft() == 1) {
-                content.put("num_days_not_used_left",
-                        lensVO.getNumDaysNotUsedLeft() + 1);
+        final String date_left = Utility.formatDateToSqlite(lensVO.getDateLeft());
+        final String date_right = Utility.formatDateToSqlite(lensVO.getDateRight());
+        final int expiration_left = lensVO.getExpirationLeft();
+        final int expiration_right = lensVO.getExpirationRight();
+        final int type_left = lensVO.getTypeLeft();
+        final int type_right = lensVO.getTypeRight();
+        final int in_use_left = lensVO.getInUseLeft();
+        final int in_use_right = lensVO.getInUseRight();
+        final int qtd_left = lensVO.getQtdLeft();
+        final int qtd_right = lensVO.getQtdRight();
+        final int num_days_not_used_left = lensVO.getNumDaysNotUsedLeft();
+        final int num_days_not_used_right = lensVO.getNumDaysNotUsedRight();
+
+        ParseQuery<ParseObject> query = getParseQuery(lensVO.getId());
+
+        // Retrieve the object by id
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject content, com.parse.ParseException e) {
+                if (e == null) {
+                    content.put("date_left", date_left);
+                    content.put("date_right", date_right);
+                    content.put("expiration_left", expiration_left);
+                    content.put("expiration_right", expiration_right);
+                    content.put("type_left", type_left);
+                    content.put("type_right", type_right);
+                    content.put("num_days_not_used_left", num_days_not_used_left);
+                    content.put("num_days_not_used_right", num_days_not_used_right);
+                    content.put("in_use_left", in_use_left);
+                    content.put("in_use_right", in_use_right);
+                    content.put("qtd_left", qtd_left);
+                    content.put("qtd_right", qtd_right);
+
+                    content.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                    content.pinInBackground();
+                    content.saveEventually();
+
+                    content.saveInBackground();
+                }
             }
-            if (lensVO.getInUseRight() == 1) {
-                content.put("num_days_not_used_right",
-                        lensVO.getNumDaysNotUsedRight() + 1);
-            }
-            return db.update(tableName, content, "id=?", new String[]{lensVO
-                    .getId().toString()}) > 0;
-        }
+        });
     }
 
-    public boolean updateDaysNotUsed(int days, String side, int idLens) {
-        synchronized (MainActivity.sDataLock) {
-            ContentValues content = new ContentValues();
-            if (LEFT.equals(side)) {
-                content.put("num_days_not_used_left", days);
-            } else {
-                content.put("num_days_not_used_right", days);
-            }
+    private ParseQuery getParseQuery(String idLens) {
 
-            return db.update(tableName, content, "id=?",
-                    new String[]{String.valueOf(idLens)}) > 0;
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+
+        //se não estiver online, utiliza base local
+        if (!Utility.isNetworkAvailable(context)) {
+            query.fromLocalDatastore();
         }
+
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+        query.whereEqualTo("objectId", idLens);
+
+        return query;
     }
 
-    public boolean delete(Integer id) {
-        synchronized (MainActivity.sDataLock) {
-            return db.delete(tableName, "id=?", new String[]{id.toString()}) > 0;
+    private ParseQuery getParseQuery() {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.orderByDescending("createdAt");
+
+        //se não estiver online, utiliza base local
+        if (!Utility.isNetworkAvailable(context)) {
+            query.fromLocalDatastore();
         }
+
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+
+        return query;
     }
 
-    private ContentValues getContentValues(TimeLensesVO lensVO) {
-        ContentValues content = new ContentValues();
-        content.put("date_left",
-                Utility.formatDateToSqlite(lensVO.getDateLeft()));
-        content.put("date_right",
-                Utility.formatDateToSqlite(lensVO.getDateRight()));
+    private ParseObject getParseObjectLens(TimeLensesVO lensVO) {
+        ParseObject content = new ParseObject(tableName);
+        content.put("user_id", ParseUser.getCurrentUser());
+        content.put("date_left", Utility.formatDateToSqlite(lensVO.getDateLeft()));
+        content.put("date_right", Utility.formatDateToSqlite(lensVO.getDateRight()));
         content.put("expiration_left", lensVO.getExpirationLeft());
         content.put("expiration_right", lensVO.getExpirationRight());
         content.put("type_left", lensVO.getTypeLeft());
@@ -124,88 +137,247 @@ public class TimeLensesDAO {
         content.put("num_days_not_used_right", lensVO.getNumDaysNotUsedRight());
         content.put("in_use_left", lensVO.getInUseLeft());
         content.put("in_use_right", lensVO.getInUseRight());
-        content.put("count_unit_left", lensVO.getCountUnitLeft());
-        content.put("count_unit_right", lensVO.getCountUnitRight());
         content.put("qtd_left", lensVO.getQtdLeft());
         content.put("qtd_right", lensVO.getQtdRight());
 
         return content;
     }
 
-    public TimeLensesVO getById(Integer id) {
-        Cursor cursor = db.query(tableName, columns, "id=?",
-                new String[]{id.toString()}, null, null, null);
+    public void incrementDaysNotUsed(TimeLensesVO lensVO) {
 
-        TimeLensesVO vo = null;
-        if (cursor.moveToFirst()) {
-            vo = setLensStatusVO(cursor);
+        if (lensVO.getInUseLeft() == 1 || lensVO.getInUseRight() == 1) {
+            final int num_days_not_used_left = lensVO.getInUseLeft() == 1
+                    ? lensVO.getNumDaysNotUsedLeft() + 1 : lensVO.getNumDaysNotUsedLeft();
+            final int num_days_not_used_right = lensVO.getInUseRight() == 1
+                    ? lensVO.getNumDaysNotUsedRight() + 1 : lensVO.getNumDaysNotUsedRight();
+
+            ParseQuery<ParseObject> query = getParseQuery(lensVO.getId());
+
+            // Retrieve the object by id
+            query.getFirstInBackground(new GetCallback<ParseObject>() {
+                public void done(ParseObject content, com.parse.ParseException e) {
+                    if (e == null) {
+                        content.put("num_days_not_used_left", num_days_not_used_left);
+                        content.put("num_days_not_used_right", num_days_not_used_right);
+
+                        content.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                        content.pinInBackground();
+                        content.saveEventually();
+
+                        content.saveInBackground();
+                    }
+                }
+            });
         }
-        return vo;
+
+        // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        ContentValues content = new ContentValues();
+//        if (lensVO.getInUseLeft() == 1) {
+//            content.put("num_days_not_used_left",
+//                    lensVO.getNumDaysNotUsedLeft() + 1);
+//        }
+//        if (lensVO.getInUseRight() == 1) {
+//            content.put("num_days_not_used_right",
+//                    lensVO.getNumDaysNotUsedRight() + 1);
+//        }
+//        return db.update(tableName, content, "id=?", new String[]{lensVO
+//                .getId().toString()}) > 0;
+    }
+
+    public void updateDaysNotUsed(final int days, final String side, String idLens) {
+        ParseQuery<ParseObject> query = getParseQuery(idLens);
+
+        // Retrieve the object by id
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject content, com.parse.ParseException e) {
+                if (e == null) {
+
+                    if (LEFT.equals(side)) {
+                        content.put("num_days_not_used_left", days);
+                    } else {
+                        content.put("num_days_not_used_right", days);
+                    }
+
+                    content.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                    content.pinInBackground();
+                    content.saveEventually();
+
+                    content.saveInBackground();
+                }
+            }
+        });
+
+//        synchronized (MainActivity.sDataLock) {
+//            ContentValues content = new ContentValues();
+//            if (LEFT.equals(side)) {
+//                content.put("num_days_not_used_left", days);
+//            } else {
+//                content.put("num_days_not_used_right", days);
+//            }
+//
+//            return db.update(tableName, content, "id=?",
+//                    new String[]{String.valueOf(idLens)}) > 0;
+//        }
+    }
+
+    public void delete(String id) {
+        ParseQuery<ParseObject> query = getParseQuery(id);
+
+        // Retrieve the object by id
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject content, com.parse.ParseException e) {
+                if (e == null) {
+                    content.deleteInBackground();
+                }
+            }
+        });
+
+
+    }
+
+    public TimeLensesVO getById(String id) {
+        ParseQuery<ParseObject> query = getParseQuery(id);
+        TimeLensesVO timeLensesVO = null;
+
+        try {
+            List<ParseObject> list = query.find();
+            for (ParseObject parseObj : list) {
+                timeLensesVO = setTimeLensesVO(parseObj);
+                parseObj.saveEventually();
+            }
+            ParseObject.pinAllInBackground(list);
+
+        } catch (com.parse.ParseException e) {
+            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+        }
+
+
+//        final TimeLensesVO[] timeLensesVO = {null};
+//        query.findInBackground(new FindCallback<ParseObject>() {
+//            @Override
+//            public void done(List<ParseObject> postList, com.parse.ParseException e) {
+//                if (e == null) {
+//                    for (ParseObject parseObj : postList) {
+//                        timeLensesVO[0] = setTimeLensesVO(parseObj);
+//
+//                        parseObj.saveEventually();
+//                    }
+//                    ParseObject.pinAllInBackground(postList);
+//                } else {
+//                    Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+//                }
+//            }
+//        });
+
+        return timeLensesVO;
     }
 
     public List<TimeLensesVO> getListLens() {
-        Cursor cursor = db.query(tableName, columns, null, null, null, null,
-                "id desc");
+//        List<TimeLensesVO> listVO = new ArrayList<>();
+        ParseQuery query = getParseQuery();
 
-        List<TimeLensesVO> listVO = new ArrayList<TimeLensesVO>();
+        listTimeLensesVO = new ArrayList<>();
+        try {
+            List<ParseObject> list = query.find();
+            for (ParseObject parseObj : list) {
+                listTimeLensesVO.add(setTimeLensesVO(parseObj));
+                parseObj.saveEventually();
+            }
+            ParseObject.pinAllInBackground(list);
 
-        while (cursor.moveToNext()) {
-            listVO.add(setLensStatusVO(cursor));
-        }
-        return listVO;
-    }
-
-    private TimeLensesVO setLensStatusVO(Cursor cursor) {
-        TimeLensesVO vo = new TimeLensesVO();
-        vo.setId(cursor.getInt(cursor.getColumnIndex("id")));
-        vo.setDateLeft(Utility.formatDateDefault(cursor.getString(cursor
-                .getColumnIndex("date_left"))));
-        vo.setDateRight(Utility.formatDateDefault(cursor.getString(cursor
-                .getColumnIndex("date_right"))));
-        vo.setExpirationLeft(cursor.getInt(cursor
-                .getColumnIndex("expiration_left")));
-        vo.setExpirationRight(cursor.getInt(cursor
-                .getColumnIndex("expiration_right")));
-        vo.setTypeLeft(cursor.getInt(cursor.getColumnIndex("type_left")));
-        vo.setTypeRight(cursor.getInt(cursor.getColumnIndex("type_right")));
-        vo.setInUseLeft(cursor.getInt(cursor.getColumnIndex("in_use_left")));
-        vo.setInUseRight(cursor.getInt(cursor.getColumnIndex("in_use_right")));
-        vo.setCountUnitLeft(cursor.getInt(cursor
-                .getColumnIndex("count_unit_left")));
-        vo.setCountUnitRight(cursor.getInt(cursor
-                .getColumnIndex("count_unit_right")));
-        vo.setNumDaysNotUsedLeft(cursor.getInt(cursor
-                .getColumnIndex("num_days_not_used_left")));
-        vo.setNumDaysNotUsedRight(cursor.getInt(cursor
-                .getColumnIndex("num_days_not_used_right")));
-        vo.setQtdLeft(cursor.getInt(cursor.getColumnIndex("qtd_left")));
-        vo.setQtdRight(cursor.getInt(cursor.getColumnIndex("qtd_right")));
-
-        return vo;
-    }
-
-    public int getLastIdLens() {
-        Cursor cursor = db.rawQuery("select max(id) from " + tableName, null);
-
-        if (cursor.moveToFirst()) {
-            return cursor.getInt(0);
-        }
-        return 0;
-    }
-
-    public TimeLensesVO getLastLens() {
-        Cursor cursor = db.rawQuery("select * from " + tableName
-                + " order by id desc limit 1", null);
-
-        if (cursor.moveToFirst()) {
-            return setLensStatusVO(cursor);
+        } catch (com.parse.ParseException e) {
+            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
         }
 
+//        query.findInBackground(new FindCallback<ParseObject>() {
+//            @Override
+//            public void done(List<ParseObject> postList, com.parse.ParseException e) {
+//                if (e == null) {
+//                    for (ParseObject parseObj : postList) {
+//                        listVO.add(setTimeLensesVO(parseObj));
+//
+//                        parseObj.saveEventually();
+//                    }
+//                    ParseObject.pinAllInBackground(postList);
+//                } else {
+//                    Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+//                }
+//            }
+//        });
+
+
+//        Cursor cursor = db.query(tableName, columns, null, null, null, null,
+//                "id desc");
+//
+//        List<TimeLensesVO> listVO = new ArrayList<TimeLensesVO>();
+//
+//        while (cursor.moveToNext()) {
+//            listVO.add(setTimeLensesVO(cursor));
+//        }
+        return listTimeLensesVO;
+    }
+
+    private TimeLensesVO setTimeLensesVO(ParseObject obj) {
+        timeLensesVO = new TimeLensesVO();
+        timeLensesVO.setId(obj.getObjectId());
+        timeLensesVO.setDateLeft(Utility.formatDateDefault(obj.getString("date_left")));
+        timeLensesVO.setDateRight(Utility.formatDateDefault(obj.getString("date_right")));
+        timeLensesVO.setExpirationLeft(obj.getInt("expiration_left"));
+        timeLensesVO.setExpirationRight(obj.getInt("expiration_right"));
+        timeLensesVO.setTypeLeft(obj.getInt("type_left"));
+        timeLensesVO.setTypeRight(obj.getInt("type_right"));
+        timeLensesVO.setInUseLeft(obj.getInt("in_use_left"));
+        timeLensesVO.setInUseRight(obj.getInt("in_use_right"));
+        timeLensesVO.setNumDaysNotUsedLeft(obj.getInt("num_days_not_used_left"));
+        timeLensesVO.setNumDaysNotUsedRight(obj.getInt("num_days_not_used_right"));
+        timeLensesVO.setQtdLeft(obj.getInt("qtd_left"));
+        timeLensesVO.setQtdRight(obj.getInt("qtd_right"));
+
+        return timeLensesVO;
+    }
+
+    public String getLastIdLens() {
+        ParseQuery<ParseObject> query = getParseQuery();
+
+        try {
+            ParseObject parseObj = query.getFirst();
+            return parseObj.getObjectId();
+
+        } catch (com.parse.ParseException e) {
+            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+        }
+
+//        Cursor cursor = db.rawQuery("select max(id) from " + tableName, null);
+//
+//        if (cursor.moveToFirst()) {
+//            return cursor.getInt(0);
+//        }
         return null;
     }
 
+    public TimeLensesVO getLastLens() {
+        ParseQuery<ParseObject> query = getParseQuery();
+
+        try {
+            ParseObject parseObj = query.getFirst();
+            return setTimeLensesVO(parseObj);
+
+        } catch (com.parse.ParseException e) {
+            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+        }
+//        Cursor cursor = db.rawQuery("select * from " + tableName
+//                + " order by id desc limit 1", null);
+//
+//        if (cursor.moveToFirst()) {
+//            return setTimeLensesVO(cursor);
+//        }
+//
+        return null;
+    }
+
+/*
     @SuppressLint("SimpleDateFormat")
-    public Long[] getDaysToExpire(int idLenses) {
+    public Long[] getDaysToExpire(String idLenses) {
         long daysExpLeft = 0;
         long daysExpRight = 0;
 
@@ -254,9 +426,61 @@ public class TimeLensesDAO {
 
         return new Long[]{daysExpLeft, daysExpRight};
     }
+*/
 
     @SuppressLint("SimpleDateFormat")
-    public Calendar[] getDateAlarm(int id) {
+    public Long[] getDaysToExpire(TimeLensesVO timeLensesVO) {
+        long daysExpLeft = 0;
+        long daysExpRight = 0;
+
+        Calendar[] calendars = getDateAlarm(timeLensesVO);
+
+        Calendar dateExpLeft = Calendar.getInstance();
+        Calendar dateExpRight = Calendar.getInstance();
+
+        dateExpLeft.setTime(calendars[0].getTime());
+        dateExpRight.setTime(calendars[1].getTime());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        Date dateReplaceLeft = null;
+        Date dateReplaceRight = null;
+        Date dateToday = null;
+
+        try {
+            dateReplaceLeft = dateFormat.parse(new StringBuilder()
+                    .append(dateExpLeft.get(Calendar.DAY_OF_MONTH))
+                    .append("/")
+                    .append(String.format("%02d",
+                            (dateExpLeft.get(Calendar.MONTH) + 1))).append("/")
+                    .append(dateExpLeft.get(Calendar.YEAR)).toString());
+
+            dateReplaceRight = dateFormat.parse(new StringBuilder()
+                    .append(dateExpRight.get(Calendar.DAY_OF_MONTH))
+                    .append("/")
+                    .append(String.format("%02d",
+                            (dateExpRight.get(Calendar.MONTH) + 1)))
+                    .append("/").append(dateExpRight.get(Calendar.YEAR))
+                    .toString());
+
+            dateToday = dateFormat.parse(dateFormat.format(new Date()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        long dayLeft = dateReplaceLeft.getTime();
+        long dayRight = dateReplaceRight.getTime();
+        long dayToday = dateToday.getTime();
+        long index = (24 * 60 * 60 * 1000);
+
+        daysExpLeft = (dayLeft - dayToday) / index;
+        daysExpRight = (dayRight - dayToday) / index;
+
+        return new Long[]{daysExpLeft, daysExpRight};
+    }
+
+ /*   @SuppressLint("SimpleDateFormat")
+    public Calendar[] getDateAlarm(String id) {
         Calendar dateExpLeft = Calendar.getInstance();
         Calendar dateExpRight = Calendar.getInstance();
 
@@ -305,9 +529,61 @@ public class TimeLensesDAO {
         }
 
         return new Calendar[]{dateExpLeft, dateExpRight};
+    }*/
+
+   @SuppressLint("SimpleDateFormat")
+    public Calendar[] getDateAlarm(TimeLensesVO lensVO) {
+        Calendar dateExpLeft = Calendar.getInstance();
+        Calendar dateExpRight = Calendar.getInstance();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        int totalDaysLeft = 0;
+        int totalDaysRight = 0;
+
+//        TimeLensesVO lensVO = getById(id);
+        if (lensVO != null) {
+            int expirationLeft = lensVO.getExpirationLeft();
+            int expirationRight = lensVO.getExpirationRight();
+            int dayNotUsedLeft = lensVO.getNumDaysNotUsedLeft();
+            int dayNotUsedRight = lensVO.getNumDaysNotUsedRight();
+
+            try {
+                if (lensVO.getDateLeft() != null) {
+                    if (lensVO.getTypeLeft() == 0) {
+                        totalDaysLeft = expirationLeft;
+                    } else if (lensVO.getTypeLeft() == 1) {
+                        totalDaysLeft = expirationLeft * 30;
+                    } else if (lensVO.getTypeLeft() == 2) {
+                        totalDaysLeft = expirationLeft * 365;
+                    }
+                    dateExpLeft.setTime(dateFormat.parse(lensVO.getDateLeft()));
+                    int totalLeft = totalDaysLeft + dayNotUsedLeft;
+                    dateExpLeft.add(Calendar.DATE, totalLeft);
+                }
+                if (lensVO.getDateRight() != null) {
+                    if (lensVO.getTypeRight() == 0) {
+                        totalDaysRight = expirationRight;
+                    } else if (lensVO.getTypeRight() == 1) {
+                        totalDaysRight = expirationRight * 30;
+                    } else if (lensVO.getTypeRight() == 2) {
+                        totalDaysRight = expirationRight * 365;
+                    }
+
+                    dateExpRight
+                            .setTime(dateFormat.parse(lensVO.getDateRight()));
+                    int totalRight = totalDaysRight + dayNotUsedRight;
+                    dateExpRight.add(Calendar.DATE, totalRight);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return new Calendar[]{dateExpLeft, dateExpRight};
     }
 
-    public int[] getUnitsRemaining() {
+    /*public int[] getUnitsRemaining() {
         int unitsLeft = ListReplaceLensFragment.listLenses == null ? TimeLensesDAO.getInstance(
                 context).getLastLens().getQtdLeft() : ListReplaceLensFragment.listLenses
                 .get(0).getQtdLeft();
@@ -318,92 +594,29 @@ public class TimeLensesDAO {
 
         return new int[]{unitsLeft, unitsRight};
     }
+    */
+    public int[] getUnitsRemaining(TimeLensesVO timeLensesVO) {
+        int unitsLeft = timeLensesVO.getQtdLeft();
 
+        int unitsRight = timeLensesVO.getQtdRight();
 
-    public int getSaldoLensLeft() {
-        int totalUnitsLeft = 0;
-//		DataLensesVO lensesVO = LensesDataDAO.getInstance(context).getLastLenses();
-//
-//		if (lensesVO != null) {
-//			totalUnitsLeft = Integer.valueOf(context.getResources()
-//					.getStringArray(R.array.array_num_units)[LensesDataDAO
-//					.getInstance(context).getLastLenses()
-//					.getNumber_units_left()]);
-//
-//			StringBuilder sql = new StringBuilder();
-//			sql.append("select count(id) ").append("from ").append(tableName)
-//					.append(" where Datetime(date_left) >= Datetime('")
-//					.append(HistoryDAO.getInstance(context).getDateIniLeft())
-//					.append("')")
-//					.append(" and in_use_left = 1 and count_unit_left = 1");
-//			Cursor rs = db.rawQuery(sql.toString(), null);
-//
-//			if (rs.moveToFirst()) {
-//				return totalUnitsLeft - rs.getInt(0);
-//			}
-//		}
-
-        return totalUnitsLeft;
-    }
-
-    public int getSaldoLensRight() {
-        int totalUnitsRight = 0;
-//		DataLensesVO lensesVO = LensesDataDAO.getInstance(context).getLastLenses();
-//
-//		if (lensesVO != null) {
-//			totalUnitsRight = Integer.valueOf(context.getResources()
-//					.getStringArray(R.array.array_num_units)[LensesDataDAO
-//					.getInstance(context).getLastLenses()
-//					.getNumber_units_right()]);
-//
-//			StringBuilder sql = new StringBuilder();
-//			sql.append("select count(id) ").append("from ").append(tableName)
-//					.append(" where Datetime(date_left) >= Datetime('")
-//					.append(HistoryDAO.getInstance(context).getDateIniRight())
-//					.append("')")
-//					.append(" and in_use_right = 1 and count_unit_right = 1");
-//			Cursor rs = db.rawQuery(sql.toString(), null);
-//
-//			if (rs.moveToFirst()) {
-//				return totalUnitsRight - rs.getInt(0);
-//			}
-//		}
-
-        return totalUnitsRight;
+        return new int[]{unitsLeft, unitsRight};
     }
 
     @SuppressLint("SimpleDateFormat")
     public void save(TimeLensesVO timeLensesVO) {
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-//		AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
-//		LensesDataDAO lensesDataDAO = LensesDataDAO.getInstance(context);
-//
-//		// When units == 0, set currency date to lenses data
-//		if (timeLensesDAO.getSaldoLensLeft() == 0) {
-//			lensesDataDAO.updateDate("date_ini_left", lensesDataDAO
-//					.getLastIdLens(), new SimpleDateFormat("yyyy-MM-dd")
-//					.format(new Date()));
-//		}
-//		if (timeLensesDAO.getSaldoLensRight() == 0) {
-//			lensesDataDAO.updateDate("date_ini_right", lensesDataDAO
-//					.getLastIdLens(), new SimpleDateFormat("yyyy-MM-dd")
-//					.format(new Date()));
-//		}
-//
-        int idLens = timeLensesVO.getId() == null ? 0 : timeLensesVO.getId();
-        if (idLens != 0) {
-            // timeLensesVO.setId(idLens);
+		AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
+
+        String idLens = timeLensesVO.getId();
+        if (idLens != null) {
             if (!timeLensesVO.equals(timeLensesDAO.getById(idLens))) {
-                if (timeLensesDAO.update(timeLensesVO)) {
-//					HistoryDAO.getInstance(context).insert();
-//					alarmDAO.setAlarm(idLens);
-                }
+                timeLensesDAO.update(timeLensesVO);
+                alarmDAO.setAlarm(timeLensesVO);
             }
         } else {
-            if (timeLensesDAO.insert(timeLensesVO)) {
-//				alarmDAO.setAlarm(idLens);
-//				HistoryDAO.getInstance(context).insert();
-            }
+            timeLensesDAO.insert(timeLensesVO);
+            alarmDAO.setAlarm(timeLensesVO);
         }
     }
 }

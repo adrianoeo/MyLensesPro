@@ -8,6 +8,27 @@
     <string name="action_settings">Configurações</string>
 
     <!-- Novos -->
+    <string name="username_hint">Usuário</string>
+    <string name="password_hint">Senha</string>
+    <string name="email_hint">Email</string>
+    <string name="login_button_label">Entrar</string>
+    <string name="sign_up_text">Não possui conta? Crie aqui</string>
+    <string name="forget_password">Esqueceu a senha? Clique aqui</string>
+    <string name="signup_error_message">Por favor, verifique o preenchimento do usuário, senha e email</string>
+    <string name="signup_error_title">Erro</string>
+    <string name="reset_error_msg">Por favor, verifique se inseriu o email</string>
+    <string name="login_error_message">Por favor, verifique o preenchimento do usuário e senha</string>
+    <string name="login_error_title">Erro</string>
+    <string name="reset_error_title">Erro</string>
+    <string name="logout_label">Logout</string>
+    <string name="sign_up_button_label">Cadastrar</string>
+    <string name="alrealdy_member">Já é usuário? Faça o login</string>
+    <string name="reset_pswd">Um email foi enviado com as instruções para a nova senha</string>
+    <string name="title_reset_pswd">Alterar senha</string>
+    <string name="error_reset_pswd">Desculpe, um problema ocorreu ao enviar o email</string>
+    <string name="title_error_reset_pswd">Problema ao alterar a senha</string>
+    <!---->
+
     <string name="nav_status">Status das lentes</string>
     <string name="nav_periodo">Período das lentes</string>
     <string name="nav_dados">Dados das lentes</string>
@@ -22,7 +43,7 @@
     <string name="lbl_bc">BC</string>
     <string name="lbl_dia">DIA</string>
     <string name="btn_horario">12:00</string>
-    <!---->
+
 
     <string name="menuSave">Salvar</string>
     <string name="menuEdit">Editar</string>

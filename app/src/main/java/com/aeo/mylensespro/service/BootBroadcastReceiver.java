@@ -6,30 +6,32 @@ import android.content.Intent;
 
 import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
-import com.aeo.mylensespro.fragment.ListReplaceLensFragment;
 import com.aeo.mylensespro.vo.AlarmVO;
+import com.aeo.mylensespro.vo.TimeLensesVO;
 
 public class BootBroadcastReceiver extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+//			String idLenses = ListReplaceLensFragment.listLenses == null ? TimeLensesDAO.getInstance(
+//					context).getLastIdLens() : ListReplaceLensFragment.listLenses
+//					.get(0).getId();
 
-			int idLenses = ListReplaceLensFragment.listLenses == null ? TimeLensesDAO.getInstance(
-					context).getLastIdLens() : ListReplaceLensFragment.listLenses
-					.get(0).getId();
+			TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+			TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
 
 			AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
-			alarmDAO.setAlarm(idLenses);
+			alarmDAO.setAlarm(timeLensesVO);
 			
 			//Daily notification
-			AlarmVO alarmVO = alarmDAO.getAlarm();
-			TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+			AlarmVO alarmVO = alarmDAO.getAlarmNow();
+
 			if (alarmVO.getRemindEveryDay() == 1) {
-				Long[] daysToExpire = timeLensesDAO.getDaysToExpire(idLenses);
+				Long[] daysToExpire = timeLensesDAO.getDaysToExpire(timeLensesVO);
 
 				if (daysToExpire[0] > 0 || daysToExpire[1] > 0) {
-					alarmDAO.setAlarmManagerDaily((int) alarmVO.getHour(), (int) alarmVO.getMinute());
+					alarmDAO.setAlarmManagerDaily(alarmVO.getHour(), alarmVO.getMinute());
 				}
 			}
 		}

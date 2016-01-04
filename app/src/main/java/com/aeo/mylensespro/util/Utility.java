@@ -1,6 +1,9 @@
 package com.aeo.mylensespro.util;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -45,7 +48,7 @@ public abstract class Utility {
         return date;
     }
 
-    public static void setScreen(int id, Toolbar toolbar, FragmentManager fm) {
+    public static void setScreen(int id, Toolbar toolbar, FragmentManager fm, Bundle bundle) {
         if (id == R.id.nav_status) {
             replaceFragment(new StatusFragment(), fm);
             toolbar.setTitle(R.string.title_status);
@@ -56,11 +59,12 @@ public abstract class Utility {
             replaceFragment(new DataLensesFragment(), fm);
             toolbar.setTitle(R.string.title_dados);
         } else if (id == R.id.nav_notificacao) {
-            replaceFragment(new AlarmFragment(), fm);
+            AlarmFragment alarmFragment = new AlarmFragment();
+            alarmFragment.setArguments(bundle);
+
+            replaceFragment(alarmFragment, fm);
             toolbar.setTitle(R.string.nav_notificacao);
-        }/* else if (id == R.id.nav_compra) {
-            toolbar.setTitle(R.string.nav_compra);
-        }*/
+        }
     }
 
     public static void replaceFragment(Fragment fragment, FragmentManager fm) {
@@ -98,4 +102,10 @@ public abstract class Utility {
         trans.commit();
     }
 
+    public static boolean isNetworkAvailable(final Context context) {
+        final ConnectivityManager connectivityManager
+                = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+        return connectivityManager.getActiveNetworkInfo() != null
+                && connectivityManager.getActiveNetworkInfo().isConnected();
+    }
 }

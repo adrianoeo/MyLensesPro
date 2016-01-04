@@ -14,9 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.Toast;
 
 import com.aeo.mylensespro.R;
+import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.LensesDataDAO;
 import com.aeo.mylensespro.fragment.StatusFragment;
 import com.aeo.mylensespro.util.MyLensesApplication;
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -62,7 +66,6 @@ public class MainActivity extends AppCompatActivity
             loadLoginView();
         }
 
-
         if (savedInstanceState == null) {
             Utility.replaceFragment(new StatusFragment(),
                     getSupportFragmentManager());
@@ -71,14 +74,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onBackPressed() {
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        if (drawer.isDrawerOpen(GravityCompat.START)) {
-//            drawer.closeDrawer(GravityCompat.START);
-//        } else {
-//            super.onBackPressed();
-//        }
+    protected void onStart() {
+        super.onStart();
+        AlarmDAO.getInstance(getApplicationContext()).getAlarm();
+    }
 
+    @Override
+    public void onBackPressed() {
         if (doubleBackToExitPressedOnce) {
             DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
             if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -107,7 +109,16 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-//    @Override
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (AlarmDAO.alarmVO == null) {
+            AlarmDAO.getInstance(getApplicationContext()).getAlarm();
+        }
+    }
+
+    //    @Override
 //    public boolean onOptionsItemSelected(MenuItem item) {
 //        // Handle action bar item clicks here. The action bar will
 //        // automatically handle clicks on the Home/Up button, so long
@@ -139,7 +150,16 @@ public class MainActivity extends AppCompatActivity
             ParseUser.logOut();
             loadLoginView();
         } else {
-            Utility.setScreen(id, toolbar, getSupportFragmentManager());
+            Bundle bundle = null;
+//            if (alarmVO != null) {
+//                bundle = new Bundle();
+//                bundle.putInt("hour", alarmVO.getHour());
+//                bundle.putInt("minute", alarmVO.getMinute());
+//                bundle.putInt("days_before", alarmVO.getDaysBefore());
+//                bundle.putInt("remind_every_day", alarmVO.getRemindEveryDay());
+//            }
+
+            Utility.setScreen(id, toolbar, getSupportFragmentManager(), bundle);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -218,4 +238,5 @@ public class MainActivity extends AppCompatActivity
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
+
 }

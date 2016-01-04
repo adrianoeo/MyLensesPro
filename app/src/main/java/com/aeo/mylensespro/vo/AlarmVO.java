@@ -2,42 +2,42 @@ package com.aeo.mylensespro.vo;
 
 public class AlarmVO {
 
-	private long hour;
-	private long minute;
-	private long daysBefore;
-	private long remindEveryDay;
+	private int hour;
+	private int minute;
+	private int daysBefore;
+	private int remindEveryDay;
 
 	public AlarmVO() {}
 
-	public long getHour() {
+	public int getHour() {
 		return hour;
 	}
 
-	public void setHour(long hour) {
+	public void setHour(int hour) {
 		this.hour = hour;
 	}
 
-	public long getMinute() {
+	public int getMinute() {
 		return minute;
 	}
 
-	public void setMinute(long minute) {
+	public void setMinute(int minute) {
 		this.minute = minute;
 	}
 
-	public long getDaysBefore() {
+	public int getDaysBefore() {
 		return daysBefore;
 	}
 
-	public void setDaysBefore(long daysBefore) {
+	public void setDaysBefore(int daysBefore) {
 		this.daysBefore = daysBefore;
 	}
 
-	public long getRemindEveryDay() {
+	public int getRemindEveryDay() {
 		return remindEveryDay;
 	}
 
-	public void setRemindEveryDay(long remindEveryDay) {
+	public void setRemindEveryDay(int remindEveryDay) {
 		this.remindEveryDay = remindEveryDay;
 	}
 

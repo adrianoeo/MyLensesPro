@@ -45,16 +45,16 @@ public class RightTimeFragment extends DialogFragment {
     private MenuItem menuItemSave;
     private MenuItem menuItemCancel;
     private MenuItem menuItemDelete;
-    public static int idLenses;
+    public static String idLenses;
 
     private Context context;
 
     public static TimeLensesVO lensVO;
 
-    public static RightTimeFragment newInstance(int idLens) {
+    public static RightTimeFragment newInstance(String idLens) {
         RightTimeFragment lensFragment = new RightTimeFragment();
         Bundle args = new Bundle();
-        args.putInt(KEY_ID_LENS, idLens);
+        args.putString(KEY_ID_LENS, idLens);
         lensFragment.setArguments(args);
         return lensFragment;
     }
@@ -62,15 +62,13 @@ public class RightTimeFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        idLenses = getArguments() != null ? getArguments().getInt(KEY_ID_LENS)
-                : 0;
+        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        idLenses = getArguments() != null ? getArguments().getInt(KEY_ID_LENS)
-                : 0;
+        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
@@ -192,9 +190,7 @@ public class RightTimeFragment extends DialogFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (idLenses == 0) {
-            enableControls(true);
-        }
+        enableControls(idLenses == null);
     }
 
     @Override

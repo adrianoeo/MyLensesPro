@@ -15,8 +15,8 @@ import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.activity.MainActivity;
 import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
-import com.aeo.mylensespro.fragment.ListReplaceLensFragment;
 import com.aeo.mylensespro.vo.AlarmVO;
+import com.aeo.mylensespro.vo.TimeLensesVO;
 
 public class ServiceChangeLens extends Service implements Runnable {
 
@@ -43,31 +43,34 @@ public class ServiceChangeLens extends Service implements Runnable {
 
 		TimeLensesDAO dao = TimeLensesDAO.getInstance(this);
 
-		int idLenses = ListReplaceLensFragment.listLenses == null ? dao
-				.getLastIdLens() : ListReplaceLensFragment.listLenses.get(0)
-				.getId();
+//		String idLenses = ListReplaceLensFragment.listLenses == null ? dao
+//				.getLastIdLens() : ListReplaceLensFragment.listLenses.get(0)
+//				.getId();
 
-		Long[] days = dao.getDaysToExpire(idLenses);
+//		Long[] days = dao.getDaysToExpire(idLenses);
+
+        TimeLensesVO timeLensesVO = dao.getLastLens();
+		Long[] days = dao.getDaysToExpire(timeLensesVO);
 
 		// Get notification of days before.
 		AlarmDAO alarmDAO = AlarmDAO.getInstance(this);
-		AlarmVO alarmVO = alarmDAO.getAlarm();
+		AlarmVO alarmVO = alarmDAO.getAlarmNow();
 		long daysBefore = alarmVO.getDaysBefore();
 
 		long dayLeftEye = days[0] - daysBefore;
 		long dayRightEye = days[1] - daysBefore;
 
 		if (dayLeftEye <= 0 && dayRightEye <= 0) {
-			notifyUser("B", idLenses);
+			notifyUser("B", timeLensesVO);
 		} else if (dayLeftEye <= 0) {
-			notifyUser("L", idLenses);
+			notifyUser("L", timeLensesVO);
 		} else if (dayRightEye <= 0) {
-			notifyUser("R", idLenses);
+			notifyUser("R", timeLensesVO);
 		}
 	}
 
 	@SuppressLint("NewApi")
-	private void notifyUser(String eye, int idLens) {
+	private void notifyUser(String eye, TimeLensesVO timeLensesVO) {
 		String msgEye = null;
 		if (eye.equals("L")) {
 			msgEye = getString(R.string.msgNotificationLeftEye);
@@ -77,7 +80,7 @@ public class ServiceChangeLens extends Service implements Runnable {
 			msgEye = getString(R.string.msgNotificationBothEyes);
 		}
 
-		int[] units = TimeLensesDAO.getInstance(this).getUnitsRemaining();
+		int[] units = TimeLensesDAO.getInstance(this).getUnitsRemaining(timeLensesVO);
 		int unitsLeft = units[0];
 		int unitsRight = units[1];
 
@@ -91,7 +94,7 @@ public class ServiceChangeLens extends Service implements Runnable {
 		setNotification(msgEye, sbMsg.toString());
 		stopSelf();
 
-		AlarmDAO.getInstance(this).setAlarmNextDay(idLens);
+		AlarmDAO.getInstance(this).setAlarmNextDay(timeLensesVO);
 	}
 
 	private void setNotification(String contentText, String subText) {

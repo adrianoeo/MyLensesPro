@@ -7,28 +7,37 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.util.Log;
 
 import com.aeo.mylensespro.service.AlarmBroadcastReceiver;
 import com.aeo.mylensespro.service.BootBroadcastReceiver;
 import com.aeo.mylensespro.service.DailyAlarmBroadcastReceiver;
+import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.AlarmVO;
+import com.aeo.mylensespro.vo.TimeLensesVO;
+import com.parse.FindCallback;
+import com.parse.GetCallback;
+import com.parse.ParseACL;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
-
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.List;
 
 public class AlarmDAO {
 
     private static String tableName = "alarm";
     private static Context context;
-    private static String[] columns = {"hour", "minute", "days_before",
-            "remind_every_day"};
-    //	private SQLiteDatabase db;
+
     private static final int ID_ALARM_LEFT = 1;
     private static final int ID_ALARM_RIGHT = 2;
     private static final int ID_ALARM_NEXT_DAY = 3;
     private static final int ID_ALARM_DAILY = 4;
     private static AlarmDAO instance;
+
+    public static AlarmVO alarmVO;
 
     public static AlarmDAO getInstance(Context context) {
         if (instance == null) {
@@ -39,26 +48,76 @@ public class AlarmDAO {
 
     public AlarmDAO(Context context) {
         AlarmDAO.context = context;
-//		db = new DB(context).getWritableDatabase();
     }
 
-    public boolean insert(AlarmVO vo) {
-//		synchronized (MainActivity.sDataLock) {
-//			mBackupManager.dataChanged();
-//
-//			return db.insert(tableName, null, getContentValues(vo)) > 0;
-//		}
+    public void insert(AlarmVO vo) {
+        ParseObject post = getParseObjectAlarm(vo);
+        post.setACL(new ParseACL(ParseUser.getCurrentUser()));
+        post.pinInBackground();
+        post.saveEventually();
 
-        return true;
+        post.saveInBackground();
+
     }
 
-    public boolean update(AlarmVO vo) {
-//		synchronized (MainActivity.sDataLock) {
-//			mBackupManager.dataChanged();
-//			return db.update(tableName, getContentValues(vo), null, null) > 0;
-//		}
+    public void update(AlarmVO vo) {
+        final int hour = vo.getHour();
+        final int minute = vo.getMinute();
+        final int remind_every_day = vo.getRemindEveryDay();
+        final int days_before = vo.getDaysBefore();
 
-        return true;
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+
+        //se não estiver online, utiliza base local
+        if (!Utility.isNetworkAvailable(context)) {
+            query.fromLocalDatastore();
+        }
+
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+
+        // Retrieve the object by id
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            public void done(ParseObject post, ParseException e) {
+                if (e == null) {
+                    // Now let's update it with some new data.
+                    post.put("hour", hour);
+                    post.put("minute", minute);
+                    post.put("remind_every_day", remind_every_day);
+                    post.put("days_before", days_before);
+
+                    post.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                    post.pinInBackground();
+                    post.saveEventually();
+
+                    post.saveInBackground();
+
+//                    post.saveInBackground(new SaveCallback() {
+//                        public void done(ParseException e) {
+//                            if (e == null) {
+//                                // Saved successfully.
+////                                Toast.makeText(getApplicationContext(), "Saved", Toast.LENGTH_SHORT).show();
+//                            } else {
+//                                // The save failed.
+////                                Toast.makeText(getApplicationContext(), "Failed to Save", Toast.LENGTH_SHORT).show();
+//                                Log.d(getClass().getSimpleName(), "alarm update error: " + e);
+//                            }
+//                        }
+//                    });
+                }
+            }
+        });
+
+    }
+
+    private ParseObject getParseObjectAlarm(AlarmVO vo) {
+        ParseObject post = new ParseObject(tableName);
+        post.put("user_id", ParseUser.getCurrentUser());
+        post.put("hour", vo.getHour());
+        post.put("minute", vo.getMinute());
+        post.put("remind_every_day", vo.getRemindEveryDay());
+        post.put("days_before", vo.getDaysBefore());
+
+        return post;
     }
 
     private ContentValues getContentValues(AlarmVO vo) {
@@ -72,36 +131,80 @@ public class AlarmDAO {
     }
 
     public AlarmVO getAlarm() {
-//		Cursor rs = db.query(tableName, columns, null, null, null, null, null);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.orderByDescending("createdAt");
 
-        final AlarmVO[] vo = {new AlarmVO()};
-//		if (rs.moveToFirst()) {
-//			vo = new AlarmVO();
-//			vo.setHour(rs.getInt(rs.getColumnIndex("hour")));
-//			vo.setMinute(rs.getInt(rs.getColumnIndex("minute")));
-//			vo.setDaysBefore(rs.getInt(rs.getColumnIndex("days_before")));
-//			vo.setRemindEveryDay(rs.getInt(rs
-//					.getColumnIndex("remind_every_day")));
-//		}
+        //se não estiver online, utiliza base local
+        if (!Utility.isNetworkAvailable(context)) {
+            query.fromLocalDatastore();
+        }
 
-        return vo[0].getHour() == 0 ? null : vo[0];
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> postList, ParseException e) {
+                if (e == null) {
+                    for (ParseObject post : postList) {
+                        alarmVO = new AlarmVO();
+                        alarmVO.setHour(post.getInt("hour"));
+                        alarmVO.setMinute(post.getInt("minute"));
+                        alarmVO.setDaysBefore(post.getInt("days_before"));
+                        alarmVO.setRemindEveryDay(post.getInt("remind_every_day"));
+                        post.saveEventually();
+                    }
+                    ParseObject.pinAllInBackground(postList);
+                } else {
+                    Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+                }
+            }
+        });
+
+        return alarmVO;
     }
 
-    public void setAlarm(int idLens) {
+    public AlarmVO getAlarmNow() {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.orderByDescending("createdAt");
+
+        //se não estiver online, utiliza base local
+        if (!Utility.isNetworkAvailable(context)) {
+            query.fromLocalDatastore();
+        }
+
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+
+        try {
+            List<ParseObject> postList = query.find();
+            for (ParseObject post : postList) {
+                alarmVO = new AlarmVO();
+                alarmVO.setHour(post.getInt("hour"));
+                alarmVO.setMinute(post.getInt("minute"));
+                alarmVO.setDaysBefore(post.getInt("days_before"));
+                alarmVO.setRemindEveryDay(post.getInt("remind_every_day"));
+                post.saveEventually();
+            }
+            ParseObject.pinAllInBackground(postList);
+
+        } catch (ParseException e) {
+            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+        }
+        return alarmVO;
+    }
+
+    public void setAlarm(TimeLensesVO timeLensesVO) {
         cancelAlarm();
         cancelAlarmDaily();
 
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-        Calendar[] calendars = timeLensesDAO.getDateAlarm(idLens);
-
-        AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
-        AlarmVO alarmVO = alarmDAO.getAlarm();
+        Calendar[] calendars = timeLensesDAO.getDateAlarm(timeLensesVO);
 
         if (alarmVO == null) {
             alarmVO = new AlarmVO();
-            alarmVO.setHour(0L);
-            alarmVO.setMinute(0L);
-            alarmVO.setDaysBefore(0L);
+            alarmVO.setHour(0);
+            alarmVO.setMinute(0);
+            alarmVO.setDaysBefore(0);
         }
 
         Calendar calendarLeft = Calendar.getInstance();
@@ -111,8 +214,8 @@ public class AlarmDAO {
                 calendars[0].get(Calendar.DAY_OF_MONTH));
         calendarLeft.set(Calendar.MONTH, calendars[0].get(Calendar.MONTH));
         calendarLeft.set(Calendar.YEAR, calendars[0].get(Calendar.YEAR));
-        calendarLeft.set(Calendar.HOUR_OF_DAY, (int) alarmVO.getHour());
-        calendarLeft.set(Calendar.MINUTE, (int) alarmVO.getMinute());
+        calendarLeft.set(Calendar.HOUR_OF_DAY, alarmVO.getHour());
+        calendarLeft.set(Calendar.MINUTE, alarmVO.getMinute());
         calendarLeft.set(Calendar.SECOND, 0);
         calendarLeft.set(Calendar.MILLISECOND, 0);
 
@@ -120,13 +223,83 @@ public class AlarmDAO {
                 calendars[1].get(Calendar.DAY_OF_MONTH));
         calendarRight.set(Calendar.MONTH, calendars[1].get(Calendar.MONTH));
         calendarRight.set(Calendar.YEAR, calendars[1].get(Calendar.YEAR));
-        calendarRight.set(Calendar.HOUR_OF_DAY, (int) alarmVO.getHour());
-        calendarRight.set(Calendar.MINUTE, (int) alarmVO.getMinute());
+        calendarRight.set(Calendar.HOUR_OF_DAY, alarmVO.getHour());
+        calendarRight.set(Calendar.MINUTE, alarmVO.getMinute());
         calendarRight.set(Calendar.SECOND, 0);
         calendarRight.set(Calendar.MILLISECOND, 0);
 
         // Seta as datas para dia(s) antes para a notificacao.
-        int daysBefore = (int) alarmVO.getDaysBefore() * (-1);
+        int daysBefore = alarmVO.getDaysBefore() * (-1);
+        calendarLeft.add(Calendar.DATE, daysBefore);
+        calendarRight.add(Calendar.DATE, daysBefore);
+
+        // Se as datas das lentes esquerda e direita forem iguais seta apenas um
+        // alarme, senao seta um para cada lente.
+        if (calendarLeft.get(Calendar.DAY_OF_MONTH) == calendarRight
+                .get(Calendar.DAY_OF_MONTH)
+                && calendarLeft.get(Calendar.MONTH) == calendarRight
+                .get(Calendar.MONTH)
+                && calendarLeft.get(Calendar.YEAR) == calendarRight
+                .get(Calendar.YEAR)) {
+
+            setAlarmManager(ID_ALARM_LEFT, calendarLeft.getTimeInMillis());
+        } else {
+            setAlarmManager(ID_ALARM_LEFT, calendarLeft.getTimeInMillis());
+            setAlarmManager(ID_ALARM_RIGHT, calendarRight.getTimeInMillis());
+        }
+
+        // Start daily notification if is checked and not expired
+        if (alarmVO.getRemindEveryDay() == 1) {
+            Long[] daysToExpire = timeLensesDAO.getDaysToExpire(timeLensesVO);
+
+            if (daysToExpire[0] > 0 || daysToExpire[1] > 0) {
+                setAlarmManagerDaily(alarmVO.getHour(), alarmVO.getMinute());
+            }
+        }
+
+        enableReceiverWhenBoot();
+    }
+/*
+   public void setAlarm(String idLens) {
+        cancelAlarm();
+        cancelAlarmDaily();
+
+        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+        Calendar[] calendars = timeLensesDAO.getDateAlarm(idLens);
+
+//        AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
+//        AlarmVO alarmVO = alarmDAO.getAlarm();
+
+        if (alarmVO == null) {
+            alarmVO = new AlarmVO();
+            alarmVO.setHour(0);
+            alarmVO.setMinute(0);
+            alarmVO.setDaysBefore(0);
+        }
+
+        Calendar calendarLeft = Calendar.getInstance();
+        Calendar calendarRight = Calendar.getInstance();
+
+        calendarLeft.set(Calendar.DAY_OF_MONTH,
+                calendars[0].get(Calendar.DAY_OF_MONTH));
+        calendarLeft.set(Calendar.MONTH, calendars[0].get(Calendar.MONTH));
+        calendarLeft.set(Calendar.YEAR, calendars[0].get(Calendar.YEAR));
+        calendarLeft.set(Calendar.HOUR_OF_DAY, alarmVO.getHour());
+        calendarLeft.set(Calendar.MINUTE, alarmVO.getMinute());
+        calendarLeft.set(Calendar.SECOND, 0);
+        calendarLeft.set(Calendar.MILLISECOND, 0);
+
+        calendarRight.set(Calendar.DAY_OF_MONTH,
+                calendars[1].get(Calendar.DAY_OF_MONTH));
+        calendarRight.set(Calendar.MONTH, calendars[1].get(Calendar.MONTH));
+        calendarRight.set(Calendar.YEAR, calendars[1].get(Calendar.YEAR));
+        calendarRight.set(Calendar.HOUR_OF_DAY, alarmVO.getHour());
+        calendarRight.set(Calendar.MINUTE, alarmVO.getMinute());
+        calendarRight.set(Calendar.SECOND, 0);
+        calendarRight.set(Calendar.MILLISECOND, 0);
+
+        // Seta as datas para dia(s) antes para a notificacao.
+        int daysBefore = alarmVO.getDaysBefore() * (-1);
         calendarLeft.add(Calendar.DATE, daysBefore);
         calendarRight.add(Calendar.DATE, daysBefore);
 
@@ -151,12 +324,13 @@ public class AlarmDAO {
                     .getLastIdLens());
 
             if (daysToExpire[0] > 0 || daysToExpire[1] > 0) {
-                setAlarmManagerDaily((int) alarmVO.getHour(), (int) alarmVO.getMinute());
+                setAlarmManagerDaily(alarmVO.getHour(), alarmVO.getMinute());
             }
         }
 
         enableReceiverWhenBoot();
     }
+*/
 
     private void setAlarmManager(int idAlarm, long timeAlarm) {
         Intent intent = new Intent(context, AlarmBroadcastReceiver.class);
@@ -177,7 +351,7 @@ public class AlarmDAO {
         calendar.set(Calendar.SECOND, 0);
 //		calendar.add(Calendar.DATE, 1);
 
-        String date = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(calendar.getTime());
+//        String date = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(calendar.getTime());
 
         Intent intent = new Intent(context, DailyAlarmBroadcastReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,
@@ -228,24 +402,27 @@ public class AlarmDAO {
         alarmManager.cancel(pendingIntentLeft);
     }
 
-    public void setAlarmNextDay(int idLens) {
+    public void setAlarmNextDay(TimeLensesVO timeLensesVO) {
+        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+
+//        TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
+
         // Days to expire
-        Long[] daysToExpire = TimeLensesDAO.getInstance(context).getDaysToExpire(
-                idLens);
+        Long[] daysToExpire = timeLensesDAO.getDaysToExpire(timeLensesVO);
 
         Long daysToExpireLeft = daysToExpire[0];
         Long daysToExpireRight = daysToExpire[1];
 
         // Days before for notification
-        AlarmVO alarmVO = AlarmDAO.getInstance(context).getAlarm();
-        long daysBefore = alarmVO.getDaysBefore();
-        long hour = alarmVO.getHour();
-        long minute = alarmVO.getMinute();
+//        AlarmVO alarmVO = AlarmDAO.getInstance(context).getAlarm();
+        int daysBefore = alarmVO.getDaysBefore();
+        int hour = alarmVO.getHour();
+        int minute = alarmVO.getMinute();
 
         // Next day
         Calendar today = Calendar.getInstance();
-        today.set(Calendar.HOUR_OF_DAY, (int) hour);
-        today.set(Calendar.MINUTE, (int) minute);
+        today.set(Calendar.HOUR_OF_DAY, hour);
+        today.set(Calendar.MINUTE, minute);
         today.set(Calendar.SECOND, 0);
         today.set(Calendar.MILLISECOND, 0);
         today.add(Calendar.DATE, 1);
@@ -268,4 +445,6 @@ public class AlarmDAO {
                 PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                 PackageManager.DONT_KILL_APP);
     }
+
+
 }

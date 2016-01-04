@@ -21,9 +21,6 @@
     <string name="login_error_title">Error</string>
     <string name="reset_error_title">Error</string>
     <string name="logout_label">Logout</string>
-    <!--<string name="title_activity_sign_up">SignUpActivity</string>-->
-    <!--<string name="title_activity_login">LoginActivity</string>-->
-    <!--<string name="title_activity_reset">ResetActivity</string>-->
     <string name="sign_up_button_label">Sign Up</string>
     <string name="alrealdy_member">Already a member? Login</string>
     <string name="reset_pswd">An email was successfully sent with reset instructions</string>

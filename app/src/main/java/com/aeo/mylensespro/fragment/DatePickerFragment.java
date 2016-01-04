@@ -1,6 +1,5 @@
 package com.aeo.mylensespro.fragment;
 
-import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -12,12 +11,6 @@ import android.widget.DatePicker;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.adapter.TimeLensesCollectionPagerAdapter;
-import com.aeo.mylensespro.dao.TimeLensesDAO;
-import com.aeo.mylensespro.vo.TimeLensesVO;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class DatePickerFragment extends DialogFragment implements
         DatePickerDialog.OnDateSetListener {
@@ -124,30 +117,6 @@ public class DatePickerFragment extends DialogFragment implements
 					R.id.btnDateIniRight);
 			btnDateIniRight.setText(strDate);
 		}*/
-    }
-
-    @SuppressLint("SimpleDateFormat")
-    private Date getDate() {
-        TimeLensesDAO dao = TimeLensesDAO.getInstance(getActivity());
-        TimeLensesVO timeLensesVO = dao.getById(LeftTimeFragment.idLenses);
-        if (timeLensesVO != null) {
-            if (tag.equals(LeftTimeFragment.DATE_LEFT_EYE)) {
-                try {
-                    return new SimpleDateFormat("dd/MM/yyyy").parse(timeLensesVO
-                            .getDateLeft());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            } else if (tag.equals(RightTimeFragment.DATE_RIGHT_EYE)) {
-                try {
-                    return new SimpleDateFormat("dd/MM/yyyy").parse(timeLensesVO
-                            .getDateRight());
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        return null;
     }
 
     public int getDay() {

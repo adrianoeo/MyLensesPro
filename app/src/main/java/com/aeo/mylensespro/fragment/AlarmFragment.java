@@ -38,10 +38,15 @@ public class AlarmFragment extends Fragment {
     public static int idAlarm;
     private Tracker mTracker;
 
+    private AlarmVO alarmVO;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         context = getActivity();
+
+        Bundle bundle = this.getArguments();
+
 
         View view = inflater.inflate(R.layout.fragment_alarm, container, false);
         idAlarm = view.getId();
@@ -83,7 +88,7 @@ public class AlarmFragment extends Fragment {
         setHasOptionsMenu(true);
 
         setNumberPicker();
-        setTimeAlarm();
+        setTime();
 
         // Obtain the shared Tracker instance.
         MyLensesApplication application = (MyLensesApplication) getActivity().getApplication();
@@ -107,53 +112,56 @@ public class AlarmFragment extends Fragment {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    private void setTimeAlarm() {
-        AlarmDAO dao = AlarmDAO.getInstance(getContext());
-        AlarmVO vo = dao.getAlarm();
-        if (vo == null) {
-//            timePicker.setCurrentHour(0);
-//            timePicker.setCurrentMinute(0);
+    private void setTime() {
+        alarmVO = AlarmDAO.alarmVO;
+        if (alarmVO != null) {
+            btnTimePickerAlarm.setText(String.format("%02d:%02d", alarmVO.getHour(), alarmVO.getMinute()));
+            numberDaysBefore.setValue((int) alarmVO.getDaysBefore());
+            cbRemindEveryDay.setChecked(alarmVO.getRemindEveryDay() == 1 ? true : false);
+        } else {
             btnTimePickerAlarm.setText("12:00");
             numberDaysBefore.setValue(0);
             cbRemindEveryDay.setChecked(true);
-        } else {
-//            timePicker.setCurrentHour(vo.getHour());
-//            timePicker.setCurrentMinute(vo.getMinute());
-            btnTimePickerAlarm.setText(String.format("%02d:%02d", vo.getHour(), vo.getMinute()));
-            numberDaysBefore.setValue((int) vo.getDaysBefore());
-            cbRemindEveryDay.setChecked(vo.getRemindEveryDay() == 1 ? true : false);
         }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         save();
     }
 
     private void save() {
         AlarmVO vo = new AlarmVO();
-//        vo.setHour(timePicker.getCurrentHour());
-//        vo.setMinute(timePicker.getCurrentMinute());
 
         String[] time = btnTimePickerAlarm.getText().toString().split(":");
 
-        vo.setHour(Long.valueOf(time[0]));
-        vo.setMinute(Long.valueOf(time[1]));
-        vo.setDaysBefore(Long.valueOf(numberDaysBefore.getValue()));
-        vo.setRemindEveryDay(cbRemindEveryDay.isChecked() ? 1L : 0L);
+        vo.setHour(Integer.valueOf(time[0]));
+        vo.setMinute(Integer.valueOf(time[1]));
+        vo.setDaysBefore(Integer.valueOf(numberDaysBefore.getValue()));
+        vo.setRemindEveryDay(cbRemindEveryDay.isChecked() ? 1 : 0);
 
         AlarmDAO dao = AlarmDAO.getInstance(getContext());
-        if (dao.getAlarm() == null) {
+//        if (dao.getAlarm() == null) {
+//            dao.insert(vo);
+//        } else {
+//            dao.update(vo);
+//        }
+
+        AlarmDAO.alarmVO = vo;
+
+        if (alarmVO == null) {
             dao.insert(vo);
         } else {
             dao.update(vo);
         }
 
-        int idLenses = TimeLensesDAO.getInstance(context).getLastIdLens();
-        if (idLenses != 0) {
-            dao.setAlarm(idLenses);
-        }
+//        String idLenses = TimeLensesDAO.getInstance(context).getLastIdLens();
+//        if (idLenses != null) {
+//            dao.setAlarm(idLenses);
+//        }
+
+        dao.setAlarm(TimeLensesDAO.getInstance(context).getLastLens());
     }
 
     @Override

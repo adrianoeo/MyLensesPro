@@ -40,7 +40,9 @@ public class ListReplaceLensFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        List<TimeLensesVO> listLens = TimeLensesDAO.getInstance(getContext()).getListLens();
+//        List<TimeLensesVO> listLens = TimeLensesDAO.getInstance(getContext()).getListLens();
+
+        List<TimeLensesVO> listLens = TimeLensesDAO.listTimeLensesVO;
 
         if (listLens != null && listLens.size() == 0) {
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(
@@ -88,7 +90,7 @@ public class ListReplaceLensFragment extends ListFragment {
         if (idLens != null) {
 //            startActivity(Integer.valueOf(idLens.getText().toString()));
             TimeLensesFragment fragment
-                    = TimeLensesFragment.newInstance(Integer.parseInt(idLens.getText().toString()));
+                    = TimeLensesFragment.newInstance(idLens.getText().toString());
             Utility.replaceFragmentWithBackStack(fragment, getFragmentManager());
         }
     }
@@ -155,8 +157,4 @@ public class ListReplaceLensFragment extends ListFragment {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-    }
 }

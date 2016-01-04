@@ -21,9 +21,9 @@ public class TimeLensesCollectionPagerAdapter extends FragmentStatePagerAdapter 
 	private Map<Integer, Fragment> mPageReferenceMap = new HashMap<Integer, Fragment>();
 
     private Context context;
-	private int idLenses;
+	private String idLenses;
 
-	public TimeLensesCollectionPagerAdapter(FragmentManager fm, Context context, int idLenses) {
+	public TimeLensesCollectionPagerAdapter(FragmentManager fm, Context context, String idLenses) {
         super(fm);
         this.context = context;
 		this.idLenses = idLenses;
