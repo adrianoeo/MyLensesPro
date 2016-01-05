@@ -18,6 +18,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.NumberPicker;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -57,6 +58,7 @@ public class StatusFragment extends Fragment {
 
     private Animation animation;
     private Tracker mTracker;
+    private ProgressBar progressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,6 +130,8 @@ public class StatusFragment extends Fragment {
         MyLensesApplication application = (MyLensesApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
 
+        progressBar = (ProgressBar) getActivity().findViewById(R.id.progress_spinner);
+
         return view;
     }
 
@@ -159,16 +163,15 @@ public class StatusFragment extends Fragment {
     public void onResume() {
         super.onResume();
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-
-        getActivity().setProgressBarIndeterminateVisibility(true);
+        progressBar.setVisibility(View.VISIBLE);
 
         TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
-
-        getActivity().setProgressBarIndeterminateVisibility(false);
 
         setDays(timeLensesVO);
         setNumUnitsLenses(timeLensesVO);
         setDaysNotUsed(timeLensesVO);
+
+        progressBar.setVisibility(View.INVISIBLE);
 
         mTracker.setScreenName("StatusFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());

@@ -3,6 +3,7 @@ package com.aeo.mylensespro.vo;
 public class TimeLensesVO {
 
     private String id;
+    private String objectId;
     private String dateLeft;
     private String dateRight;
     private int expirationLeft;
@@ -25,6 +26,14 @@ public class TimeLensesVO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getObjectId() {
+        return objectId;
+    }
+
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
     public String getDateLeft() {

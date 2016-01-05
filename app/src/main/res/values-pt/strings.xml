@@ -27,6 +27,8 @@
     <string name="title_reset_pswd">Alterar senha</string>
     <string name="error_reset_pswd">Desculpe, um problema ocorreu ao enviar o email</string>
     <string name="title_error_reset_pswd">Problema ao alterar a senha</string>
+    <string name="saving">Salvando</string>
+    <string name="sync">Sincronizando</string>
     <!---->
 
     <string name="nav_status">Status das lentes</string>

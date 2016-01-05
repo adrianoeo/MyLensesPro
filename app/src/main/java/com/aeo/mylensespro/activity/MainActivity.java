@@ -14,7 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.aeo.mylensespro.R;
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+//        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -66,9 +66,13 @@ public class MainActivity extends AppCompatActivity
             loadLoginView();
         }
 
+        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_spinner);
+
         if (savedInstanceState == null) {
+//            progressBar.setVisibility(View.VISIBLE);
             Utility.replaceFragment(new StatusFragment(),
                     getSupportFragmentManager());
+//            progressBar.setVisibility(View.INVISIBLE);
         }
 
     }

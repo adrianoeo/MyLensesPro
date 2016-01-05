@@ -70,6 +70,8 @@ public abstract class Utility {
     public static void replaceFragment(Fragment fragment, FragmentManager fm) {
         FragmentTransaction trans = fm.beginTransaction();
 
+        trans.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+
         trans.replace(R.id.fragment_container, fragment);
 
 		/*
@@ -89,6 +91,8 @@ public abstract class Utility {
 
     public static void replaceFragmentWithBackStack(Fragment fragment, FragmentManager fm) {
         FragmentTransaction trans = fm.beginTransaction();
+
+        trans.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
 
         trans.replace(R.id.fragment_container, fragment);
 

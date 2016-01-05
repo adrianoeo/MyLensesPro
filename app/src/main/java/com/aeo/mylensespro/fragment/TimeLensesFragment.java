@@ -1,6 +1,8 @@
 package com.aeo.mylensespro.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -24,9 +26,12 @@ import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
 import com.aeo.mylensespro.util.MyLensesApplication;
+import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.TimeLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+
+import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,6 +72,8 @@ public class TimeLensesFragment extends Fragment {
 
     private static boolean isSaveVisible;
     private Tracker mTracker;
+
+    private ProgressDialog progressDlg;
 
     public TimeLensesFragment() {
     }
@@ -201,7 +208,7 @@ public class TimeLensesFragment extends Fragment {
                 return true;
             case R.id.menuSaveLenses:
                 saveLens();
-                returnToPreviousFragment();
+//                returnToPreviousFragment();
                 return true;
             case R.id.menuEditLenses:
                 enableControls(true);
@@ -238,13 +245,17 @@ public class TimeLensesFragment extends Fragment {
     }
 
     private void saveLens() {
-        if (getViewsFragmentLenses()) {
-            TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(getContext());
 
-            timeLensesDAO.save(setTimeLensesVO());
+        TimeLensesTask task = new TimeLensesTask();
+        task.execute();
 
-            Toast.makeText(getContext(), R.string.msgSaved, Toast.LENGTH_SHORT).show();
-        }
+//        if (getViewsFragmentLenses()) {
+//            TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(getContext());
+//
+//            timeLensesDAO.save(setTimeLensesVO());
+//
+//            Toast.makeText(getContext(), R.string.msgSaved, Toast.LENGTH_SHORT).show();
+//        }
     }
 
     private void deleteLens(final String id) {
@@ -307,7 +318,14 @@ public class TimeLensesFragment extends Fragment {
 
         if (idLenses != null) {
             timeLensesVO.setId(idLenses);
+        } else {
+            if (!Utility.isNetworkAvailable(getContext())) {
+                timeLensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
+            } else {
+                timeLensesVO.setId(UUID.randomUUID().toString());
+            }
         }
+
         return timeLensesVO;
     }
 
@@ -318,4 +336,38 @@ public class TimeLensesFragment extends Fragment {
         }
     }
 
+    private class TimeLensesTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            if (getViewsFragmentLenses()) {
+                TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(getContext());
+
+                timeLensesDAO.save(setTimeLensesVO());
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDlg = new ProgressDialog(getContext());
+            progressDlg.setMessage(getResources().getString(R.string.saving));
+            progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDlg.setIndeterminate(true);
+            progressDlg.show();
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
+
+            Toast.makeText(getContext(), R.string.msgSaved, Toast.LENGTH_SHORT).show();
+            returnToPreviousFragment();
+        }
+    }
 }

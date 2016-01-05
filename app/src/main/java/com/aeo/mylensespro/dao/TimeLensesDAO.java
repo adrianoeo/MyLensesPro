@@ -45,13 +45,18 @@ public class TimeLensesDAO {
     public void insert(TimeLensesVO lensVO) {
         ParseObject post = getParseObjectLens(lensVO);
         post.setACL(new ParseACL(ParseUser.getCurrentUser()));
-        post.pinInBackground();
         post.saveEventually();
+        post.pinInBackground(tableName);
 
-        post.saveInBackground();
+//        post.saveInBackground();
+        try {
+            post.save();
+        } catch (com.parse.ParseException e) {
+            e.printStackTrace();
+        }
     }
 
-     public void update(TimeLensesVO lensVO) {
+    public void update(TimeLensesVO lensVO) {
 
         final String date_left = Utility.formatDateToSqlite(lensVO.getDateLeft());
         final String date_right = Utility.formatDateToSqlite(lensVO.getDateRight());
@@ -69,30 +74,55 @@ public class TimeLensesDAO {
         ParseQuery<ParseObject> query = getParseQuery(lensVO.getId());
 
         // Retrieve the object by id
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject content, com.parse.ParseException e) {
-                if (e == null) {
-                    content.put("date_left", date_left);
-                    content.put("date_right", date_right);
-                    content.put("expiration_left", expiration_left);
-                    content.put("expiration_right", expiration_right);
-                    content.put("type_left", type_left);
-                    content.put("type_right", type_right);
-                    content.put("num_days_not_used_left", num_days_not_used_left);
-                    content.put("num_days_not_used_right", num_days_not_used_right);
-                    content.put("in_use_left", in_use_left);
-                    content.put("in_use_right", in_use_right);
-                    content.put("qtd_left", qtd_left);
-                    content.put("qtd_right", qtd_right);
+        try {
+            ParseObject content = query.getFirst();
+            content.put("date_left", date_left);
+            content.put("date_right", date_right);
+            content.put("expiration_left", expiration_left);
+            content.put("expiration_right", expiration_right);
+            content.put("type_left", type_left);
+            content.put("type_right", type_right);
+            content.put("num_days_not_used_left", num_days_not_used_left);
+            content.put("num_days_not_used_right", num_days_not_used_right);
+            content.put("in_use_left", in_use_left);
+            content.put("in_use_right", in_use_right);
+            content.put("qtd_left", qtd_left);
+            content.put("qtd_right", qtd_right);
 
-                    content.setACL(new ParseACL(ParseUser.getCurrentUser()));
-                    content.pinInBackground();
-                    content.saveEventually();
+            content.setACL(new ParseACL(ParseUser.getCurrentUser()));
+            content.saveEventually();
+            content.pinInBackground(tableName);
 
-                    content.saveInBackground();
-                }
-            }
-        });
+            content.save();
+
+        } catch (com.parse.ParseException e) {
+            e.printStackTrace();
+        }
+
+//        query.getFirstInBackground(new GetCallback<ParseObject>() {
+//            public void done(ParseObject content, com.parse.ParseException e) {
+//                if (e == null) {
+//                    content.put("date_left", date_left);
+//                    content.put("date_right", date_right);
+//                    content.put("expiration_left", expiration_left);
+//                    content.put("expiration_right", expiration_right);
+//                    content.put("type_left", type_left);
+//                    content.put("type_right", type_right);
+//                    content.put("num_days_not_used_left", num_days_not_used_left);
+//                    content.put("num_days_not_used_right", num_days_not_used_right);
+//                    content.put("in_use_left", in_use_left);
+//                    content.put("in_use_right", in_use_right);
+//                    content.put("qtd_left", qtd_left);
+//                    content.put("qtd_right", qtd_right);
+//
+//                    content.setACL(new ParseACL(ParseUser.getCurrentUser()));
+////                    content.pinInBackground();
+//                    content.saveEventually();
+//
+//                    content.saveInBackground();
+//                }
+//            }
+//        });
     }
 
     private ParseQuery getParseQuery(String idLens) {
@@ -101,11 +131,15 @@ public class TimeLensesDAO {
 
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
-            query.fromLocalDatastore();
-        }
+//            query.fromLocalDatastore();
+            query.fromPin(tableName);
+        }/* else {
+            //Tira da lista offline
+            ParseObject.unpinAllInBackground();
+        }*/
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
-        query.whereEqualTo("objectId", idLens);
+        query.whereEqualTo("lens_id", idLens);
 
         return query;
     }
@@ -116,8 +150,12 @@ public class TimeLensesDAO {
 
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
-            query.fromLocalDatastore();
-        }
+//            query.fromLocalDatastore();
+            query.fromPin(tableName);
+        } /*else {
+            //Tira da lista offline
+            ParseObject.unpinAllInBackground();
+        }*/
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
 
@@ -126,6 +164,13 @@ public class TimeLensesDAO {
 
     private ParseObject getParseObjectLens(TimeLensesVO lensVO) {
         ParseObject content = new ParseObject(tableName);
+
+        if (!Utility.isNetworkAvailable(context)) {
+            content.put("lens_id", lensVO.getId());
+        } /*else {
+            content.put("lens_id", UUID.randomUUID().toString());
+        }
+*/
         content.put("user_id", ParseUser.getCurrentUser());
         content.put("date_left", Utility.formatDateToSqlite(lensVO.getDateLeft()));
         content.put("date_right", Utility.formatDateToSqlite(lensVO.getDateRight()));
@@ -161,8 +206,8 @@ public class TimeLensesDAO {
                         content.put("num_days_not_used_right", num_days_not_used_right);
 
                         content.setACL(new ParseACL(ParseUser.getCurrentUser()));
-                        content.pinInBackground();
                         content.saveEventually();
+                        content.pinInBackground(tableName);
 
                         content.saveInBackground();
                     }
@@ -199,8 +244,8 @@ public class TimeLensesDAO {
                     }
 
                     content.setACL(new ParseACL(ParseUser.getCurrentUser()));
-                    content.pinInBackground();
                     content.saveEventually();
+                    content.pinInBackground(tableName);
 
                     content.saveInBackground();
                 }
@@ -227,6 +272,7 @@ public class TimeLensesDAO {
         query.getFirstInBackground(new GetCallback<ParseObject>() {
             public void done(ParseObject content, com.parse.ParseException e) {
                 if (e == null) {
+                    content.unpinInBackground(tableName);
                     content.deleteInBackground();
                 }
             }
@@ -243,9 +289,9 @@ public class TimeLensesDAO {
             List<ParseObject> list = query.find();
             for (ParseObject parseObj : list) {
                 timeLensesVO = setTimeLensesVO(parseObj);
-                parseObj.saveEventually();
+//                parseObj.saveEventually();
             }
-            ParseObject.pinAllInBackground(list);
+//            ParseObject.pinAllInBackground(list);
 
         } catch (com.parse.ParseException e) {
             Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
@@ -272,7 +318,7 @@ public class TimeLensesDAO {
         return timeLensesVO;
     }
 
-    public List<TimeLensesVO> getListLens() {
+    public List<TimeLensesVO> getListLenses() {
 //        List<TimeLensesVO> listVO = new ArrayList<>();
         ParseQuery query = getParseQuery();
 
@@ -283,7 +329,8 @@ public class TimeLensesDAO {
                 listTimeLensesVO.add(setTimeLensesVO(parseObj));
                 parseObj.saveEventually();
             }
-            ParseObject.pinAllInBackground(list);
+            ParseObject.unpinAllInBackground(tableName);
+            ParseObject.pinAllInBackground(tableName, list);
 
         } catch (com.parse.ParseException e) {
             Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
@@ -305,21 +352,31 @@ public class TimeLensesDAO {
 //            }
 //        });
 
-
-//        Cursor cursor = db.query(tableName, columns, null, null, null, null,
-//                "id desc");
-//
-//        List<TimeLensesVO> listVO = new ArrayList<TimeLensesVO>();
-//
-//        while (cursor.moveToNext()) {
-//            listVO.add(setTimeLensesVO(cursor));
-//        }
         return listTimeLensesVO;
+    }
+
+    public void syncTimeLenses() {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.fromPin(tableName);
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+        query.whereContains("lens_id", "OFFLINE");
+
+        try {
+            List<ParseObject> list = query.find();
+            for (ParseObject obj : list) {
+                obj.put("lens_id", obj.getString("lens_id").substring(7));
+                obj.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                obj.save();
+            }
+        } catch (com.parse.ParseException e) {
+            e.printStackTrace();
+        }
     }
 
     private TimeLensesVO setTimeLensesVO(ParseObject obj) {
         timeLensesVO = new TimeLensesVO();
-        timeLensesVO.setId(obj.getObjectId());
+        timeLensesVO.setObjectId(obj.getObjectId());
+        timeLensesVO.setId(obj.getString("lens_id"));
         timeLensesVO.setDateLeft(Utility.formatDateDefault(obj.getString("date_left")));
         timeLensesVO.setDateRight(Utility.formatDateDefault(obj.getString("date_right")));
         timeLensesVO.setExpirationLeft(obj.getInt("expiration_left"));
@@ -341,7 +398,7 @@ public class TimeLensesDAO {
 
         try {
             ParseObject parseObj = query.getFirst();
-            return parseObj.getObjectId();
+            return parseObj.getString("lens_id");
 
         } catch (com.parse.ParseException e) {
             Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
@@ -531,7 +588,7 @@ public class TimeLensesDAO {
         return new Calendar[]{dateExpLeft, dateExpRight};
     }*/
 
-   @SuppressLint("SimpleDateFormat")
+    @SuppressLint("SimpleDateFormat")
     public Calendar[] getDateAlarm(TimeLensesVO lensVO) {
         Calendar dateExpLeft = Calendar.getInstance();
         Calendar dateExpRight = Calendar.getInstance();
@@ -606,10 +663,10 @@ public class TimeLensesDAO {
     @SuppressLint("SimpleDateFormat")
     public void save(TimeLensesVO timeLensesVO) {
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-		AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
+        AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
 
         String idLens = timeLensesVO.getId();
-        if (idLens != null) {
+        if (idLens != null && !idLens.contains("OFFLINE")) {
             if (!timeLensesVO.equals(timeLensesDAO.getById(idLens))) {
                 timeLensesDAO.update(timeLensesVO);
                 alarmDAO.setAlarm(timeLensesVO);

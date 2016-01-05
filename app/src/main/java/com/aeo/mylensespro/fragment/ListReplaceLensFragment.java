@@ -1,6 +1,8 @@
 package com.aeo.mylensespro.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
@@ -36,11 +38,15 @@ public class ListReplaceLensFragment extends ListFragment {
     public static final String TAG_LENS = "TAG_LENS";
     private Tracker mTracker;
 
+    private ProgressDialog progressDlg;
+
+    private static Boolean isNetworkAvailable;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-//        List<TimeLensesVO> listLens = TimeLensesDAO.getInstance(getContext()).getListLens();
+//        List<TimeLensesVO> listLens = TimeLensesDAO.getInstance(getContext()).getListLenses();
 
         List<TimeLensesVO> listLens = TimeLensesDAO.listTimeLensesVO;
 
@@ -127,7 +133,17 @@ public class ListReplaceLensFragment extends ListFragment {
     public void onResume() {
         super.onResume();
 
-        List<TimeLensesVO> listLens = TimeLensesDAO.getInstance(getContext()).getListLens();
+        if (isNetworkAvailable == null) {
+            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+        } else {
+            if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(getContext())) {
+                ListLensesTask task = new ListLensesTask();
+                task.execute();
+            }
+            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+        }
+
+        List<TimeLensesVO> listLens = TimeLensesDAO.getInstance(getContext()).getListLenses();
 
         if (listLens != null && listLens.size() > 0) {
             mListAdapter = new ListReplaceLensBaseAdapter(getContext(), listLens, getFragmentManager());
@@ -157,4 +173,29 @@ public class ListReplaceLensFragment extends ListFragment {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
+    private class ListLensesTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            TimeLensesDAO.getInstance(getContext()).syncTimeLenses();
+            return true;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDlg = new ProgressDialog(getContext());
+            progressDlg.setMessage(getResources().getString(R.string.sync));
+            progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDlg.setIndeterminate(true);
+            progressDlg.show();
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
+        }
+    }
 }

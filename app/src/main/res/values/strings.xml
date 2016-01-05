@@ -27,6 +27,8 @@
     <string name="title_reset_pswd">Reset Password</string>
     <string name="error_reset_pswd">Sorry, a problem occurred to send you a email</string>
     <string name="title_error_reset_pswd">Problem to Reset Password</string>
+    <string name="saving">Saving</string>
+    <string name="sync">Synchronizing</string>
 
     <!---->
 

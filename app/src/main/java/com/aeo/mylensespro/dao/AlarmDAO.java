@@ -3,7 +3,6 @@ package com.aeo.mylensespro.dao;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -71,6 +70,9 @@ public class AlarmDAO {
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
             query.fromLocalDatastore();
+        } else {
+            //Tira da lista offline
+            ParseObject.unpinAllInBackground();
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
@@ -120,16 +122,6 @@ public class AlarmDAO {
         return post;
     }
 
-    private ContentValues getContentValues(AlarmVO vo) {
-        ContentValues content = new ContentValues();
-        content.put("hour", vo.getHour());
-        content.put("minute", vo.getMinute());
-        content.put("days_before", vo.getDaysBefore());
-        content.put("remind_every_day", vo.getRemindEveryDay());
-
-        return content;
-    }
-
     public AlarmVO getAlarm() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
         query.orderByDescending("createdAt");
@@ -137,6 +129,9 @@ public class AlarmDAO {
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
             query.fromLocalDatastore();
+        } else {
+            //Tira da lista offline
+            ParseObject.unpinAllInBackground();
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
@@ -171,6 +166,9 @@ public class AlarmDAO {
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
             query.fromLocalDatastore();
+        } else {
+            //Tira da lista offline
+            ParseObject.unpinAllInBackground();
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
