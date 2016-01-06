@@ -96,7 +96,7 @@ public class ListReplaceLensFragment extends ListFragment {
         if (idLens != null) {
 //            startActivity(Integer.valueOf(idLens.getText().toString()));
             TimeLensesFragment fragment
-                    = TimeLensesFragment.newInstance(idLens.getText().toString());
+                    = TimeLensesFragment.newInstance(idLens.getText().toString(), false);
             Utility.replaceFragmentWithBackStack(fragment, getFragmentManager());
         }
     }
@@ -122,7 +122,9 @@ public class ListReplaceLensFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menuInsertLens:
-                Utility.replaceFragmentWithBackStack(new TimeLensesFragment(), getFragmentManager());
+                TimeLensesFragment fragment
+                        = TimeLensesFragment.newInstance(null, true);
+                Utility.replaceFragmentWithBackStack(fragment, getFragmentManager());
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

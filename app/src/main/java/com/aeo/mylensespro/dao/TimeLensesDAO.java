@@ -49,10 +49,12 @@ public class TimeLensesDAO {
         post.pinInBackground(tableName);
 
 //        post.saveInBackground();
-        try {
-            post.save();
-        } catch (com.parse.ParseException e) {
-            e.printStackTrace();
+        if (Utility.isNetworkAvailable(context)) {
+            try {
+                post.save();
+            } catch (com.parse.ParseException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -93,7 +95,9 @@ public class TimeLensesDAO {
             content.saveEventually();
             content.pinInBackground(tableName);
 
-            content.save();
+            if (Utility.isNetworkAvailable(context)) {
+                content.save();
+            }
 
         } catch (com.parse.ParseException e) {
             e.printStackTrace();
@@ -364,7 +368,7 @@ public class TimeLensesDAO {
         try {
             List<ParseObject> list = query.find();
             for (ParseObject obj : list) {
-                obj.put("lens_id", obj.getString("lens_id").substring(7));
+                obj.put("lens_id", obj.getString("lens_id").replace("OFFLINE", ""));
                 obj.setACL(new ParseACL(ParseUser.getCurrentUser()));
                 obj.save();
             }

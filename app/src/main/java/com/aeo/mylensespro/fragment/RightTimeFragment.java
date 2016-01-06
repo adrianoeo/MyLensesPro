@@ -190,16 +190,8 @@ public class RightTimeFragment extends DialogFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        enableControls(idLenses == null);
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser && btnDateRight != null && btnDateRight.isEnabled()) {
-//			saveLens();
-//			getActivity().finish();
-        }
+//        enableControls(idLenses == null);
+        enableControls(TimeLensesFragment.isSaveVisible);
     }
 
 }

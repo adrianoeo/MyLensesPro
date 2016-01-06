@@ -129,7 +129,8 @@ public class LeftTimeFragment extends DialogFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        enableControls(idLenses == null);
+//        enableControls(idLenses == null);
+        enableControls(TimeLensesFragment.isSaveVisible);
     }
 
     private void setSpinnerDiscard() {
@@ -194,15 +195,6 @@ public class LeftTimeFragment extends DialogFragment {
         spinnerLeft.setEnabled(enabled);
         cbInUseLeft.setEnabled(enabled);
         qtdLeft.setEnabled(enabled);
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser && btnDateLeft != null && btnDateLeft.isEnabled()) {
-//            saveLens();
-//			getActivity().finish();
-        }
     }
 
 }

@@ -70,7 +70,7 @@ public class TimeLensesFragment extends Fragment {
 
     public static final String KEY_ID_LENS = "KEY_ID_LENS";
 
-    private static boolean isSaveVisible;
+    public static boolean isSaveVisible;
     private Tracker mTracker;
 
     private ProgressDialog progressDlg;
@@ -86,7 +86,8 @@ public class TimeLensesFragment extends Fragment {
      * @return A new instance of fragment TimeLensesFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TimeLensesFragment newInstance(String idLenses) {
+    public static TimeLensesFragment newInstance(String idLenses, boolean isSaveVisible1) {
+        isSaveVisible = isSaveVisible1;
         TimeLensesFragment fragment = new TimeLensesFragment();
         Bundle args = new Bundle();
         args.putString(KEY_ID_LENS, idLenses);
@@ -199,6 +200,21 @@ public class TimeLensesFragment extends Fragment {
         }
     }
 
+    private void enableControls(boolean enabled) {
+        if (getViewsFragmentLenses()) {
+            btnDateLeft.setEnabled(enabled);
+            btnDateRight.setEnabled(enabled);
+            numberPickerLeft.setEnabled(enabled);
+            numberPickerRight.setEnabled(enabled);
+            spinnerLeft.setEnabled(enabled);
+            spinnerRight.setEnabled(enabled);
+            cbInUseLeft.setEnabled(enabled);
+            cbInUseRight.setEnabled(enabled);
+            qtdLeft.setEnabled(enabled);
+            qtdRight.setEnabled(enabled);
+        }
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -226,21 +242,6 @@ public class TimeLensesFragment extends Fragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    private void enableControls(boolean enabled) {
-        if (getViewsFragmentLenses()) {
-            btnDateLeft.setEnabled(enabled);
-            btnDateRight.setEnabled(enabled);
-            numberPickerLeft.setEnabled(enabled);
-            numberPickerRight.setEnabled(enabled);
-            spinnerLeft.setEnabled(enabled);
-            spinnerRight.setEnabled(enabled);
-            cbInUseLeft.setEnabled(enabled);
-            cbInUseRight.setEnabled(enabled);
-            qtdLeft.setEnabled(enabled);
-            qtdRight.setEnabled(enabled);
         }
     }
 
