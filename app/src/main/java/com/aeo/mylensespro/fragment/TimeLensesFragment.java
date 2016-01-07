@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.adapter.TimeLensesCollectionPagerAdapter;
-import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
 import com.aeo.mylensespro.util.MyLensesApplication;
@@ -43,7 +42,6 @@ import java.util.UUID;
  */
 public class TimeLensesFragment extends Fragment {
     // TODO: Rename and change types of parameters
-    private String idLenses;
 
 //    private OnFragmentInteractionListener mListener;
 
@@ -75,6 +73,9 @@ public class TimeLensesFragment extends Fragment {
 
     private ProgressDialog progressDlg;
 
+//    private String idLenses;
+    private static TimeLensesVO timeLensesVO;
+
     public TimeLensesFragment() {
     }
 
@@ -82,29 +83,30 @@ public class TimeLensesFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param idLenses idLenses.
+     * @param vo timeLensesVO.
      * @return A new instance of fragment TimeLensesFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static TimeLensesFragment newInstance(String idLenses, boolean isSaveVisible1) {
+    public static TimeLensesFragment newInstance(TimeLensesVO vo, boolean isSaveVisible1) {
         isSaveVisible = isSaveVisible1;
+        timeLensesVO = vo;
         TimeLensesFragment fragment = new TimeLensesFragment();
-        Bundle args = new Bundle();
-        args.putString(KEY_ID_LENS, idLenses);
-        fragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putString(KEY_ID_LENS, idLenses);
+//        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
+//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
+//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
 
         mTracker.setScreenName("TimeLensesFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -117,7 +119,7 @@ public class TimeLensesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_time_lenses, container, false);
 
         timeLensesCollectionPagerAdapter
-                = new TimeLensesCollectionPagerAdapter(getFragmentManager(), getContext(), idLenses);
+                = new TimeLensesCollectionPagerAdapter(getFragmentManager(), getContext(), timeLensesVO);
 
         mViewPager = (ViewPager) view.findViewById(R.id.pagerTimeLenses);
         mViewPager.setAdapter(timeLensesCollectionPagerAdapter);
@@ -171,12 +173,13 @@ public class TimeLensesFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (idLenses == null) {
+//        if (timeLensesVO.getId() == null) {
+        if (timeLensesVO == null) {
             enableMenuEdit(false);
             enableMenuSaveCancel(true);
         } else {
             enableMenuSaveCancel(isSaveVisible);
-            enableMenuEdit(TimeLensesDAO.getInstance(getContext()).getLastIdLens().equals(idLenses)
+            enableMenuEdit(TimeLensesDAO.getInstance(getContext()).getLastIdLens().equals(timeLensesVO.getId())
                     && !isSaveVisible);
         }
     }
@@ -237,7 +240,7 @@ public class TimeLensesFragment extends Fragment {
                 returnToPreviousFragment();
                 return true;
             case R.id.menuDeleteLenses:
-                deleteLens(idLenses);
+                deleteLens(timeLensesVO.getId());
                 returnToPreviousFragment();
                 return true;
             default:
@@ -265,8 +268,8 @@ public class TimeLensesFragment extends Fragment {
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
         timeLensesDAO.delete(id);
 
-        AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
-        alarmDAO.setAlarm(timeLensesDAO.getLastLens());
+//        AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
+//        alarmDAO.setAlarm(timeLensesDAO.getLastLens());
     }
 
     private boolean getViewsFragmentLenses() {
@@ -304,30 +307,41 @@ public class TimeLensesFragment extends Fragment {
     }
 
     private TimeLensesVO setTimeLensesVO() {
-        TimeLensesVO timeLensesVO = new TimeLensesVO();
+        TimeLensesVO lensesVO = new TimeLensesVO();
 
-        timeLensesVO.setDateLeft(btnDateLeft.getText().toString());
-        timeLensesVO.setDateRight(btnDateRight.getText().toString());
-        timeLensesVO.setExpirationLeft(numberPickerLeft.getValue());
-        timeLensesVO.setExpirationRight(numberPickerRight.getValue());
-        timeLensesVO.setTypeLeft(spinnerLeft.getSelectedItemPosition());
-        timeLensesVO.setTypeRight(spinnerRight.getSelectedItemPosition());
-        timeLensesVO.setInUseLeft(cbInUseLeft.isChecked() ? 1 : 0);
-        timeLensesVO.setInUseRight(cbInUseRight.isChecked() ? 1 : 0);
-        timeLensesVO.setQtdLeft(qtdLeft.getValue());
-        timeLensesVO.setQtdRight(qtdRight.getValue());
+        lensesVO.setDateLeft(btnDateLeft.getText().toString());
+        lensesVO.setDateRight(btnDateRight.getText().toString());
+        lensesVO.setExpirationLeft(numberPickerLeft.getValue());
+        lensesVO.setExpirationRight(numberPickerRight.getValue());
+        lensesVO.setTypeLeft(spinnerLeft.getSelectedItemPosition());
+        lensesVO.setTypeRight(spinnerRight.getSelectedItemPosition());
+        lensesVO.setInUseLeft(cbInUseLeft.isChecked() ? 1 : 0);
+        lensesVO.setInUseRight(cbInUseRight.isChecked() ? 1 : 0);
+        lensesVO.setQtdLeft(qtdLeft.getValue());
+        lensesVO.setQtdRight(qtdRight.getValue());
 
-        if (idLenses != null) {
-            timeLensesVO.setId(idLenses);
-        } else {
+//        if (lensesId != null) {
+//            lensesVO.setId(tlensesId);
+//        } else {
+//            if (!Utility.isNetworkAvailable(getContext())) {
+//                lensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
+//            } else {
+//                lensesVO.setId(UUID.randomUUID().toString());
+//            }
+//        }
+
+        if (timeLensesVO == null || timeLensesVO.getId() == null) {
             if (!Utility.isNetworkAvailable(getContext())) {
-                timeLensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
+                lensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
             } else {
-                timeLensesVO.setId(UUID.randomUUID().toString());
+                lensesVO.setId(UUID.randomUUID().toString());
             }
+        } else {
+            lensesVO.setId(timeLensesVO.getId());
+            lensesVO.setObjectId(timeLensesVO.getObjectId());
         }
 
-        return timeLensesVO;
+        return lensesVO;
     }
 
     private void returnToPreviousFragment() {

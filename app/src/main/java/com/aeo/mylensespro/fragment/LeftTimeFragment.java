@@ -44,17 +44,20 @@ public class LeftTimeFragment extends DialogFragment {
 
     private View view;
 
-    public static String idLenses;
+//    public static String idLenses;
 
     private Context context;
 
     public static TimeLensesVO timeLensesVO;
 
-    public static LeftTimeFragment newInstance(String idLens) {
+    public static LeftTimeFragment newInstance(TimeLensesVO vo) {
         LeftTimeFragment lensFragment = new LeftTimeFragment();
-        Bundle args = new Bundle();
-        args.putString(KEY_ID_LENS, idLens);
-        lensFragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putString(KEY_ID_LENS, idLens);
+//        lensFragment.setArguments(args);
+
+        timeLensesVO = vo;
+
         return lensFragment;
     }
 
@@ -64,13 +67,13 @@ public class LeftTimeFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
+//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
+//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
@@ -168,7 +171,7 @@ public class LeftTimeFragment extends DialogFragment {
 
     private void setLensValues() {
         TimeLensesDAO dao = TimeLensesDAO.getInstance(context);
-        timeLensesVO = dao.getById(idLenses);
+//        timeLensesVO = dao.getById(idLenses);
         if (timeLensesVO != null) {
             btnDateLeft.setText(timeLensesVO.getDateLeft());
             numberPickerLeft.setValue(timeLensesVO.getExpirationLeft());

@@ -29,6 +29,7 @@
     <string name="title_error_reset_pswd">Problema ao alterar a senha</string>
     <string name="saving">Salvando</string>
     <string name="sync">Sincronizando</string>
+    <string name="loading">Carregando</string>
     <!---->
 
     <string name="nav_status">Status das lentes</string>

@@ -14,9 +14,9 @@ import com.parse.ParseUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TimeLensesDAO {
@@ -43,6 +43,7 @@ public class TimeLensesDAO {
     }
 
     public void insert(TimeLensesVO lensVO) {
+        lensVO.setDateCreate(new Date());
         ParseObject post = getParseObjectLens(lensVO);
         post.setACL(new ParseACL(ParseUser.getCurrentUser()));
         post.saveEventually();
@@ -150,16 +151,13 @@ public class TimeLensesDAO {
 
     private ParseQuery getParseQuery() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
-        query.orderByDescending("createdAt");
+        query.orderByDescending("date_create");
 
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
 //            query.fromLocalDatastore();
             query.fromPin(tableName);
-        } /*else {
-            //Tira da lista offline
-            ParseObject.unpinAllInBackground();
-        }*/
+        }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
 
@@ -169,12 +167,10 @@ public class TimeLensesDAO {
     private ParseObject getParseObjectLens(TimeLensesVO lensVO) {
         ParseObject content = new ParseObject(tableName);
 
-        if (!Utility.isNetworkAvailable(context)) {
-            content.put("lens_id", lensVO.getId());
-        } /*else {
-            content.put("lens_id", UUID.randomUUID().toString());
-        }
-*/
+//        if (!Utility.isNetworkAvailable(context)) {
+            content.put("lens_id", lensVO.getId().replace("OFFLINE", ""));
+//        }
+
         content.put("user_id", ParseUser.getCurrentUser());
         content.put("date_left", Utility.formatDateToSqlite(lensVO.getDateLeft()));
         content.put("date_right", Utility.formatDateToSqlite(lensVO.getDateRight()));
@@ -188,6 +184,7 @@ public class TimeLensesDAO {
         content.put("in_use_right", lensVO.getInUseRight());
         content.put("qtd_left", lensVO.getQtdLeft());
         content.put("qtd_right", lensVO.getQtdRight());
+        content.put("date_create", lensVO.getDateCreate());
 
         return content;
     }
@@ -221,15 +218,15 @@ public class TimeLensesDAO {
 
         // SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 //        ContentValues content = new ContentValues();
-//        if (lensVO.getInUseLeft() == 1) {
+//        if (timeLensesVO.getInUseLeft() == 1) {
 //            content.put("num_days_not_used_left",
-//                    lensVO.getNumDaysNotUsedLeft() + 1);
+//                    timeLensesVO.getNumDaysNotUsedLeft() + 1);
 //        }
-//        if (lensVO.getInUseRight() == 1) {
+//        if (timeLensesVO.getInUseRight() == 1) {
 //            content.put("num_days_not_used_right",
-//                    lensVO.getNumDaysNotUsedRight() + 1);
+//                    timeLensesVO.getNumDaysNotUsedRight() + 1);
 //        }
-//        return db.update(tableName, content, "id=?", new String[]{lensVO
+//        return db.update(tableName, content, "id=?", new String[]{timeLensesVO
 //                .getId().toString()}) > 0;
     }
 
@@ -292,7 +289,7 @@ public class TimeLensesDAO {
         try {
             List<ParseObject> list = query.find();
             for (ParseObject parseObj : list) {
-                timeLensesVO = setTimeLensesVO(parseObj);
+                timeLensesVO = setTimeLensesVODAO(parseObj);
 //                parseObj.saveEventually();
             }
 //            ParseObject.pinAllInBackground(list);
@@ -308,7 +305,7 @@ public class TimeLensesDAO {
 //            public void done(List<ParseObject> postList, com.parse.ParseException e) {
 //                if (e == null) {
 //                    for (ParseObject parseObj : postList) {
-//                        timeLensesVO[0] = setTimeLensesVO(parseObj);
+//                        timeLensesVO[0] = setTimeLensesVODAO(parseObj);
 //
 //                        parseObj.saveEventually();
 //                    }
@@ -323,14 +320,13 @@ public class TimeLensesDAO {
     }
 
     public List<TimeLensesVO> getListLenses() {
-//        List<TimeLensesVO> listVO = new ArrayList<>();
         ParseQuery query = getParseQuery();
 
-        listTimeLensesVO = new ArrayList<>();
+        listTimeLensesVO = new LinkedList<>();
         try {
             List<ParseObject> list = query.find();
             for (ParseObject parseObj : list) {
-                listTimeLensesVO.add(setTimeLensesVO(parseObj));
+                listTimeLensesVO.add(setTimeLensesVODAO(parseObj));
                 parseObj.saveEventually();
             }
             ParseObject.unpinAllInBackground(tableName);
@@ -345,7 +341,7 @@ public class TimeLensesDAO {
 //            public void done(List<ParseObject> postList, com.parse.ParseException e) {
 //                if (e == null) {
 //                    for (ParseObject parseObj : postList) {
-//                        listVO.add(setTimeLensesVO(parseObj));
+//                        listVO.add(setTimeLensesVODAO(parseObj));
 //
 //                        parseObj.saveEventually();
 //                    }
@@ -377,7 +373,7 @@ public class TimeLensesDAO {
         }
     }
 
-    private TimeLensesVO setTimeLensesVO(ParseObject obj) {
+    private TimeLensesVO setTimeLensesVODAO(ParseObject obj) {
         timeLensesVO = new TimeLensesVO();
         timeLensesVO.setObjectId(obj.getObjectId());
         timeLensesVO.setId(obj.getString("lens_id"));
@@ -421,7 +417,7 @@ public class TimeLensesDAO {
 
         try {
             ParseObject parseObj = query.getFirst();
-            return setTimeLensesVO(parseObj);
+            return setTimeLensesVODAO(parseObj);
 
         } catch (com.parse.ParseException e) {
             Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
@@ -430,7 +426,7 @@ public class TimeLensesDAO {
 //                + " order by id desc limit 1", null);
 //
 //        if (cursor.moveToFirst()) {
-//            return setTimeLensesVO(cursor);
+//            return setTimeLensesVODAO(cursor);
 //        }
 //
         return null;
@@ -550,37 +546,37 @@ public class TimeLensesDAO {
         int totalDaysLeft = 0;
         int totalDaysRight = 0;
 
-        TimeLensesVO lensVO = getById(id);
-        if (lensVO != null) {
-            int expirationLeft = lensVO.getExpirationLeft();
-            int expirationRight = lensVO.getExpirationRight();
-            int dayNotUsedLeft = lensVO.getNumDaysNotUsedLeft();
-            int dayNotUsedRight = lensVO.getNumDaysNotUsedRight();
+        TimeLensesVO timeLensesVO = getById(id);
+        if (timeLensesVO != null) {
+            int expirationLeft = timeLensesVO.getExpirationLeft();
+            int expirationRight = timeLensesVO.getExpirationRight();
+            int dayNotUsedLeft = timeLensesVO.getNumDaysNotUsedLeft();
+            int dayNotUsedRight = timeLensesVO.getNumDaysNotUsedRight();
 
             try {
-                if (lensVO.getDateLeft() != null) {
-                    if (lensVO.getTypeLeft() == 0) {
+                if (timeLensesVO.getDateLeft() != null) {
+                    if (timeLensesVO.getTypeLeft() == 0) {
                         totalDaysLeft = expirationLeft;
-                    } else if (lensVO.getTypeLeft() == 1) {
+                    } else if (timeLensesVO.getTypeLeft() == 1) {
                         totalDaysLeft = expirationLeft * 30;
-                    } else if (lensVO.getTypeLeft() == 2) {
+                    } else if (timeLensesVO.getTypeLeft() == 2) {
                         totalDaysLeft = expirationLeft * 365;
                     }
-                    dateExpLeft.setTime(dateFormat.parse(lensVO.getDateLeft()));
+                    dateExpLeft.setTime(dateFormat.parse(timeLensesVO.getDateLeft()));
                     int totalLeft = totalDaysLeft + dayNotUsedLeft;
                     dateExpLeft.add(Calendar.DATE, totalLeft);
                 }
-                if (lensVO.getDateRight() != null) {
-                    if (lensVO.getTypeRight() == 0) {
+                if (timeLensesVO.getDateRight() != null) {
+                    if (timeLensesVO.getTypeRight() == 0) {
                         totalDaysRight = expirationRight;
-                    } else if (lensVO.getTypeRight() == 1) {
+                    } else if (timeLensesVO.getTypeRight() == 1) {
                         totalDaysRight = expirationRight * 30;
-                    } else if (lensVO.getTypeRight() == 2) {
+                    } else if (timeLensesVO.getTypeRight() == 2) {
                         totalDaysRight = expirationRight * 365;
                     }
 
                     dateExpRight
-                            .setTime(dateFormat.parse(lensVO.getDateRight()));
+                            .setTime(dateFormat.parse(timeLensesVO.getDateRight()));
                     int totalRight = totalDaysRight + dayNotUsedRight;
                     dateExpRight.add(Calendar.DATE, totalRight);
                 }
@@ -602,7 +598,7 @@ public class TimeLensesDAO {
         int totalDaysLeft = 0;
         int totalDaysRight = 0;
 
-//        TimeLensesVO lensVO = getById(id);
+//        TimeLensesVO timeLensesVO = getById(id);
         if (lensVO != null) {
             int expirationLeft = lensVO.getExpirationLeft();
             int expirationRight = lensVO.getExpirationRight();
@@ -669,15 +665,15 @@ public class TimeLensesDAO {
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
         AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
 
-        String idLens = timeLensesVO.getId();
+        String idLens = timeLensesVO.getObjectId();
         if (idLens != null && !idLens.contains("OFFLINE")) {
             if (!timeLensesVO.equals(timeLensesDAO.getById(idLens))) {
                 timeLensesDAO.update(timeLensesVO);
-                alarmDAO.setAlarm(timeLensesVO);
+//                alarmDAO.setAlarm(timeLensesVO);
             }
         } else {
             timeLensesDAO.insert(timeLensesVO);
-            alarmDAO.setAlarm(timeLensesVO);
+//            alarmDAO.setAlarm(timeLensesVO);
         }
     }
 }

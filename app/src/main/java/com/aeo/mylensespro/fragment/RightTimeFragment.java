@@ -42,33 +42,31 @@ public class RightTimeFragment extends DialogFragment {
 
     private View view;
     private MenuItem menuItemEdit;
-    private MenuItem menuItemSave;
-    private MenuItem menuItemCancel;
-    private MenuItem menuItemDelete;
-    public static String idLenses;
+//    public static String idLenses;
 
     private Context context;
 
-    public static TimeLensesVO lensVO;
+    public static TimeLensesVO timeLensesVO;
 
-    public static RightTimeFragment newInstance(String idLens) {
+    public static RightTimeFragment newInstance(TimeLensesVO vo) {
         RightTimeFragment lensFragment = new RightTimeFragment();
-        Bundle args = new Bundle();
-        args.putString(KEY_ID_LENS, idLens);
-        lensFragment.setArguments(args);
+//        Bundle args = new Bundle();
+//        args.putString(KEY_ID_LENS, idLens);
+//        lensFragment.setArguments(args);
+        timeLensesVO = vo;
         return lensFragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
+//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
+//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
@@ -154,13 +152,13 @@ public class RightTimeFragment extends DialogFragment {
 
     private void setLensValues() {
         TimeLensesDAO dao = TimeLensesDAO.getInstance(context);
-        lensVO = dao.getById(idLenses);
-        if (lensVO != null) {
-            btnDateRight.setText(lensVO.getDateRight());
-            numberPickerRight.setValue(lensVO.getExpirationRight());
-            spinnerRight.setSelection(lensVO.getTypeRight());
-            cbInUseRight.setChecked(lensVO.getInUseRight() == 1 ? true : false);
-            qtdRight.setValue(lensVO.getQtdRight());
+//        timeLensesVO = dao.getById(idLenses);
+        if (timeLensesVO != null) {
+            btnDateRight.setText(timeLensesVO.getDateRight());
+            numberPickerRight.setValue(timeLensesVO.getExpirationRight());
+            spinnerRight.setSelection(timeLensesVO.getTypeRight());
+            cbInUseRight.setChecked(timeLensesVO.getInUseRight() == 1 ? true : false);
+            qtdRight.setValue(timeLensesVO.getQtdRight());
         } else {
             setDate();
             cbInUseRight.setChecked(true);

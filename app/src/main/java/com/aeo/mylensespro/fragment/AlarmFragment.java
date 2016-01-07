@@ -20,7 +20,6 @@ import android.widget.TimePicker;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.dao.AlarmDAO;
-import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
 import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.vo.AlarmVO;
@@ -161,7 +160,7 @@ public class AlarmFragment extends Fragment {
 //            dao.setAlarm(idLenses);
 //        }
 
-        dao.setAlarm(TimeLensesDAO.getInstance(context).getLastLens());
+//        dao.setAlarm(TimeLensesDAO.getInstance(context).getLastLens());
     }
 
     @Override

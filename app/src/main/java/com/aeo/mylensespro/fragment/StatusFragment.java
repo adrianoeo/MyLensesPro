@@ -2,6 +2,7 @@ package com.aeo.mylensespro.fragment;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -23,9 +24,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.aeo.mylensespro.R;
-import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
+import com.aeo.mylensespro.task.StatusTask;
 import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.vo.TimeLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
@@ -59,6 +60,9 @@ public class StatusFragment extends Fragment {
     private Animation animation;
     private Tracker mTracker;
     private ProgressBar progressBar;
+    private ProgressDialog progressDlg;
+    private TimeLensesVO timeLensesVO;
+    private static StatusFragment statusFragment;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -67,6 +71,7 @@ public class StatusFragment extends Fragment {
         setHasOptionsMenu(true);
 
         context = getContext();
+        statusFragment = this;
 
         tvLeftEye = (TextView) view.findViewById(R.id.tvLeftEye);
         tvRightEye = (TextView) view.findViewById(R.id.tvRightEye);
@@ -162,16 +167,20 @@ public class StatusFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-        progressBar.setVisibility(View.VISIBLE);
+        statusFragment = this;
+//        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+//        progressBar.setVisibility(View.VISIBLE);
 
-        TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
+//        TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
+        StatusTask task = new StatusTask(this, progressDlg);
+        task.execute();
 
-        setDays(timeLensesVO);
-        setNumUnitsLenses(timeLensesVO);
-        setDaysNotUsed(timeLensesVO);
+//        agora em processFinish
+//        setDays(timeLensesVO);
+//        setNumUnitsLenses(timeLensesVO);
+//        setDaysNotUsed(timeLensesVO);
 
-        progressBar.setVisibility(View.INVISIBLE);
+//        progressBar.setVisibility(View.INVISIBLE);
 
         mTracker.setScreenName("StatusFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -181,9 +190,6 @@ public class StatusFragment extends Fragment {
     @SuppressLint("ResourceAsColor")
     public void setDays(TimeLensesVO timeLensesVO) {
         TimeLensesDAO dao = TimeLensesDAO.getInstance(getContext());
-
-//        String idLenses = dao.getLastIdLens();
-//        String idLenses = timeLensesVO.getId();
 
         Long[] days = dao.getDaysToExpire(timeLensesVO);
 
@@ -365,7 +371,7 @@ public class StatusFragment extends Fragment {
         }
     }
 
-    private void setDaysNotUsed(TimeLensesVO timeLensesVO) {
+    public void setDaysNotUsed(TimeLensesVO timeLensesVO) {
 
         if (timeLensesVO != null) {
             // Left
@@ -468,13 +474,16 @@ public class StatusFragment extends Fragment {
                                     side = TimeLensesDAO.RIGHT;
                                 }
 
-                                TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-                                TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
-                                timeLensesDAO.updateDaysNotUsed(num, side,
-                                        timeLensesVO.getId());
+                                StatusTask task = new StatusTask(statusFragment, progressDlg, num, side);
+                                task.execute();
 
-                                setDays(timeLensesVO);
-                                AlarmDAO.getInstance(context).setAlarm(timeLensesVO);
+//                                TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+//                                TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
+//                                timeLensesDAO.updateDaysNotUsed(num, side,
+//                                        timeLensesVO.getId());
+//
+//                                setDays(timeLensesVO);
+//                                AlarmDAO.getInstance(context).setAlarm(timeLensesVO);
                             }
                         })
                 .setNegativeButton(R.string.btn_cancel,
@@ -486,4 +495,34 @@ public class StatusFragment extends Fragment {
         AlertDialog alertDialog = dialog.create();
         alertDialog.show();
     }
+//
+//    private class StatusTask extends AsyncTask<String, Void, TimeLensesVO> {
+//
+//        @Override
+//        protected TimeLensesVO doInBackground(String... params) {
+//            return TimeLensesDAO.getInstance(getContext()).getLastLens();
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            progressDlg = new ProgressDialog(getContext());
+//            progressDlg.setMessage(getResources().getString(R.string.loading));
+//            progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+//            progressDlg.setIndeterminate(true);
+//            progressDlg.show();
+//
+//        }
+//
+//        @Override
+//        protected void onPostExecute(TimeLensesVO timeLensesVO) {
+//            setDays(timeLensesVO);
+//            setNumUnitsLenses(timeLensesVO);
+//            setDaysNotUsed(timeLensesVO);
+//
+//            if (progressDlg != null && progressDlg.isShowing())
+//                progressDlg.dismiss();
+//        }
+//    }
+
 }

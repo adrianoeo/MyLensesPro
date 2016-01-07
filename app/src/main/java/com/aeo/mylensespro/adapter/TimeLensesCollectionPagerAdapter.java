@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.fragment.LeftTimeFragment;
 import com.aeo.mylensespro.fragment.RightTimeFragment;
+import com.aeo.mylensespro.vo.TimeLensesVO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,22 +22,23 @@ public class TimeLensesCollectionPagerAdapter extends FragmentStatePagerAdapter 
 	private Map<Integer, Fragment> mPageReferenceMap = new HashMap<Integer, Fragment>();
 
     private Context context;
-	private String idLenses;
+//	private String idLenses;
+	private TimeLensesVO timeLensesVO;
 
-	public TimeLensesCollectionPagerAdapter(FragmentManager fm, Context context, String idLenses) {
+	public TimeLensesCollectionPagerAdapter(FragmentManager fm, Context context, TimeLensesVO timeLensesVO) {
         super(fm);
         this.context = context;
-		this.idLenses = idLenses;
+		this.timeLensesVO = timeLensesVO;
 	}
 
 	@Override
 	public Fragment getItem(int position) {
 		Fragment fragment = null;
 		if (position == 0) {
-			fragment = LeftTimeFragment.newInstance(idLenses);
+			fragment = LeftTimeFragment.newInstance(timeLensesVO);
 			mPageReferenceMap.put(position, fragment);
 		} else {
-			fragment = RightTimeFragment.newInstance(idLenses);
+			fragment = RightTimeFragment.newInstance(timeLensesVO);
 			mPageReferenceMap.put(position, fragment);
 		}
 		return fragment;

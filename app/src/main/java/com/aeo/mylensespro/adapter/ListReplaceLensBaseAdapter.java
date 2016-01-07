@@ -49,6 +49,7 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
         View view = null;
 
         TextView idLens;
+        TextView objectId;
         TextView dateLeft;
         TextView dateRight;
         TextView timeLeft;
@@ -61,7 +62,8 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = mInflater.inflate(R.layout.fragment_item_list_lens, null);
 
-            idLens = (TextView) view.findViewById(R.id.textViewIdReplaceLens);
+            idLens = (TextView) view.findViewById(R.id.textViewIdLens);
+
             dateLeft = (TextView) view
                     .findViewById(R.id.textViewDateReplaceLensLeft);
             dateRight = (TextView) view

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.LensesDataDAO;
+import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.fragment.StatusFragment;
 import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.util.Utility;
@@ -174,8 +175,7 @@ public class MainActivity extends AppCompatActivity
 
     private void shop() {
         LensesDataDAO lensesDataDAO = LensesDataDAO.getInstance(this);
-        DataLensesVO lensesVO = lensesDataDAO
-                .getById(lensesDataDAO.getLastIdLens());
+        DataLensesVO lensesVO = lensesDataDAO.getById(lensesDataDAO.getLastIdLens());
 
         if (lensesVO != null) {
             String urlLeft = lensesVO.getBuy_site_left();
@@ -241,6 +241,16 @@ public class MainActivity extends AppCompatActivity
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        //Seta Alarme para notificações
+        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(getApplicationContext());
+        AlarmDAO alarmDAO = AlarmDAO.getInstance(getApplicationContext());
+        alarmDAO.setAlarm(timeLensesDAO.getLastLens());
     }
 
 }

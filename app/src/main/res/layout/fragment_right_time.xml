@@ -34,14 +34,14 @@
 
         <Button
             android:id="@+id/btnDateRight"
-            android:layout_width="150sp"
+            android:layout_width="200sp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="15dp"
             android:layout_marginTop="10dp"
             android:layout_weight="0.17"
             android:gravity="center"
             android:text="@string/btnDatePicker"
-            android:textSize="14sp"
+            android:textSize="20sp"
             android:layout_gravity="center_horizontal" />
 
         <View

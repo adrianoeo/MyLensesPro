@@ -29,6 +29,7 @@
     <string name="title_error_reset_pswd">Problem to Reset Password</string>
     <string name="saving">Saving</string>
     <string name="sync">Synchronizing</string>
+    <string name="loading">Loading</string>
 
     <!---->
 

@@ -1,5 +1,7 @@
 package com.aeo.mylensespro.vo;
 
+import java.util.Date;
+
 public class TimeLensesVO {
 
     private String id;
@@ -16,6 +18,7 @@ public class TimeLensesVO {
     private int numDaysNotUsedRight;
     private int qtdLeft;
     private int qtdRight;
+    private Date dateCreate;
 
     public TimeLensesVO() {
     }
@@ -34,6 +37,14 @@ public class TimeLensesVO {
 
     public void setObjectId(String objectId) {
         this.objectId = objectId;
+    }
+
+    public Date getDateCreate() {
+        return dateCreate;
+    }
+
+    public void setDateCreate(Date dateCreate) {
+        this.dateCreate = dateCreate;
     }
 
     public String getDateLeft() {
@@ -133,58 +144,45 @@ public class TimeLensesVO {
     }
 
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result
-                + ((dateLeft == null) ? 0 : dateLeft.hashCode());
-        result = prime * result
-                + ((dateRight == null) ? 0 : dateRight.hashCode());
-        result = prime * result + expirationLeft;
-        result = prime * result + expirationRight;
-        result = prime * result + inUseLeft;
-        result = prime * result + inUseRight;
-        result = prime * result + typeLeft;
-        result = prime * result + typeRight;
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        TimeLensesVO that = (TimeLensesVO) o;
+
+        if (expirationLeft != that.expirationLeft) return false;
+        if (expirationRight != that.expirationRight) return false;
+        if (typeLeft != that.typeLeft) return false;
+        if (typeRight != that.typeRight) return false;
+        if (inUseLeft != that.inUseLeft) return false;
+        if (inUseRight != that.inUseRight) return false;
+        if (numDaysNotUsedLeft != that.numDaysNotUsedLeft) return false;
+        if (numDaysNotUsedRight != that.numDaysNotUsedRight) return false;
+        if (qtdLeft != that.qtdLeft) return false;
+        if (qtdRight != that.qtdRight) return false;
+        if (!id.equals(that.id)) return false;
+        if (!dateLeft.equals(that.dateLeft)) return false;
+        if (!dateRight.equals(that.dateRight)) return false;
+        return dateCreate.equals(that.dateCreate);
+
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        TimeLensesVO other = (TimeLensesVO) obj;
-        if (dateLeft == null) {
-            if (other.dateLeft != null)
-                return false;
-        } else if (!dateLeft.equals(other.dateLeft))
-            return false;
-        if (dateRight == null) {
-            if (other.dateRight != null)
-                return false;
-        } else if (!dateRight.equals(other.dateRight))
-            return false;
-        if (expirationLeft != other.expirationLeft)
-            return false;
-        if (expirationRight != other.expirationRight)
-            return false;
-        if (inUseLeft != other.inUseLeft)
-            return false;
-        if (inUseRight != other.inUseRight)
-            return false;
-        if (typeLeft != other.typeLeft)
-            return false;
-        if (typeRight != other.typeRight)
-            return false;
-        if (qtdLeft != other.qtdLeft)
-            return false;
-        if (qtdRight != other.qtdRight)
-            return false;
-        return true;
+    public int hashCode() {
+        int result = id.hashCode();
+        result = 31 * result + dateLeft.hashCode();
+        result = 31 * result + dateRight.hashCode();
+        result = 31 * result + expirationLeft;
+        result = 31 * result + expirationRight;
+        result = 31 * result + typeLeft;
+        result = 31 * result + typeRight;
+        result = 31 * result + inUseLeft;
+        result = 31 * result + inUseRight;
+        result = 31 * result + numDaysNotUsedLeft;
+        result = 31 * result + numDaysNotUsedRight;
+        result = 31 * result + qtdLeft;
+        result = 31 * result + qtdRight;
+        result = 31 * result + dateCreate.hashCode();
+        return result;
     }
-
 }
