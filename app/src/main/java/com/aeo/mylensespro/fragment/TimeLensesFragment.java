@@ -41,10 +41,6 @@ import java.util.UUID;
  * create an instance of this fragment.
  */
 public class TimeLensesFragment extends Fragment {
-    // TODO: Rename and change types of parameters
-
-//    private OnFragmentInteractionListener mListener;
-
     TimeLensesCollectionPagerAdapter timeLensesCollectionPagerAdapter;
     ViewPager mViewPager;
     private SlidingTabLayout mSlidingTabLayout;
@@ -73,7 +69,6 @@ public class TimeLensesFragment extends Fragment {
 
     private ProgressDialog progressDlg;
 
-//    private String idLenses;
     private static TimeLensesVO timeLensesVO;
 
     public TimeLensesFragment() {
@@ -86,28 +81,21 @@ public class TimeLensesFragment extends Fragment {
      * @param vo timeLensesVO.
      * @return A new instance of fragment TimeLensesFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static TimeLensesFragment newInstance(TimeLensesVO vo, boolean isSaveVisible1) {
         isSaveVisible = isSaveVisible1;
         timeLensesVO = vo;
         TimeLensesFragment fragment = new TimeLensesFragment();
-//        Bundle args = new Bundle();
-//        args.putString(KEY_ID_LENS, idLenses);
-//        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
-
         mTracker.setScreenName("TimeLensesFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
@@ -173,13 +161,13 @@ public class TimeLensesFragment extends Fragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-//        if (timeLensesVO.getId() == null) {
         if (timeLensesVO == null) {
             enableMenuEdit(false);
             enableMenuSaveCancel(true);
         } else {
             enableMenuSaveCancel(isSaveVisible);
-            enableMenuEdit(TimeLensesDAO.getInstance(getContext()).getLastIdLens().equals(timeLensesVO.getId())
+            enableMenuEdit(timeLensesVO.getId() != null
+                    && TimeLensesDAO.getInstance(getContext()).getLastIdLens().equals(timeLensesVO.getId())
                     && !isSaveVisible);
         }
     }
@@ -222,12 +210,10 @@ public class TimeLensesFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-//                saveLens();
                 returnToPreviousFragment();
                 return true;
             case R.id.menuSaveLenses:
                 saveLens();
-//                returnToPreviousFragment();
                 return true;
             case R.id.menuEditLenses:
                 enableControls(true);
@@ -241,7 +227,6 @@ public class TimeLensesFragment extends Fragment {
                 return true;
             case R.id.menuDeleteLenses:
                 deleteLens(timeLensesVO.getId());
-                returnToPreviousFragment();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -249,27 +234,13 @@ public class TimeLensesFragment extends Fragment {
     }
 
     private void saveLens() {
-
-        TimeLensesTask task = new TimeLensesTask();
+        SaveTask task = new SaveTask(getContext());
         task.execute();
-
-//        if (getViewsFragmentLenses()) {
-//            TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(getContext());
-//
-//            timeLensesDAO.save(setTimeLensesVO());
-//
-//            Toast.makeText(getContext(), R.string.msgSaved, Toast.LENGTH_SHORT).show();
-//        }
     }
 
     private void deleteLens(final String id) {
-        Context context = getContext();
-
-        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-        timeLensesDAO.delete(id);
-
-//        AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
-//        alarmDAO.setAlarm(timeLensesDAO.getLastLens());
+        DeleteTask task = new DeleteTask(getContext());
+        task.execute(new String[]{id});
     }
 
     private boolean getViewsFragmentLenses() {
@@ -351,12 +322,17 @@ public class TimeLensesFragment extends Fragment {
         }
     }
 
-    private class TimeLensesTask extends AsyncTask<String, Void, Boolean> {
+    private class SaveTask extends AsyncTask<String, Void, Boolean> {
+        private Context context;
+
+        public SaveTask(Context context) {
+            this.context = context;
+        }
 
         @Override
         protected Boolean doInBackground(String... params) {
             if (getViewsFragmentLenses()) {
-                TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(getContext());
+                TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
 
                 timeLensesDAO.save(setTimeLensesVO());
             }
@@ -366,12 +342,11 @@ public class TimeLensesFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDlg = new ProgressDialog(getContext());
+            progressDlg = new ProgressDialog(context);
             progressDlg.setMessage(getResources().getString(R.string.saving));
             progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDlg.setIndeterminate(true);
             progressDlg.show();
-
         }
 
         @Override
@@ -381,7 +356,37 @@ public class TimeLensesFragment extends Fragment {
             if (progressDlg != null && progressDlg.isShowing())
                 progressDlg.dismiss();
 
-            Toast.makeText(getContext(), R.string.msgSaved, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.msgSaved, Toast.LENGTH_SHORT).show();
+            returnToPreviousFragment();
+        }
+    }
+
+    private class DeleteTask extends AsyncTask<String, Void, Void> {
+        private Context context;
+
+        public DeleteTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Void doInBackground(String... params) {
+            TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+            timeLensesDAO.delete(params[0]);
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
+
             returnToPreviousFragment();
         }
     }

@@ -38,11 +38,9 @@ public class RightTimeFragment extends DialogFragment {
     private static Spinner spinnerRight;
 
     public static final String DATE_RIGHT_EYE = "DATE_RIGHT_EYE";
-    public static final String KEY_ID_LENS = "KEY_ID_LENS";
 
     private View view;
     private MenuItem menuItemEdit;
-//    public static String idLenses;
 
     private Context context;
 
@@ -50,9 +48,6 @@ public class RightTimeFragment extends DialogFragment {
 
     public static RightTimeFragment newInstance(TimeLensesVO vo) {
         RightTimeFragment lensFragment = new RightTimeFragment();
-//        Bundle args = new Bundle();
-//        args.putString(KEY_ID_LENS, idLens);
-//        lensFragment.setArguments(args);
         timeLensesVO = vo;
         return lensFragment;
     }
@@ -60,13 +55,11 @@ public class RightTimeFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
@@ -80,8 +73,7 @@ public class RightTimeFragment extends DialogFragment {
         context = getContext();
 
         spinnerRight = (Spinner) view.findViewById(R.id.spinnerRight);
-        numberPickerRight = (NumberPicker) view
-                .findViewById(R.id.numberPickerRight);
+        numberPickerRight = (NumberPicker) view.findViewById(R.id.numberPickerRight);
         btnDateRight = (Button) view.findViewById(R.id.btnDateRight);
         cbInUseRight = (CheckBox) view.findViewById(R.id.cbxWearRight);
         qtdRight = (NumberPicker) view.findViewById(R.id.qtdRight);
@@ -97,9 +89,7 @@ public class RightTimeFragment extends DialogFragment {
                     e.printStackTrace();
                 }
 
-                fragmentDate = DatePickerFragment.newInstance(/*
-                                                             * RightTimeFragment.this,
-															 */DATE_RIGHT_EYE,
+                fragmentDate = DatePickerFragment.newInstance(DATE_RIGHT_EYE,
                         date.get(Calendar.YEAR), date.get(Calendar.MONTH),
                         date.get(Calendar.DAY_OF_MONTH));
                 fragmentDate.show(getFragmentManager(), "datePickerRight");
@@ -120,7 +110,7 @@ public class RightTimeFragment extends DialogFragment {
     private void setSpinnerDiscard() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 context, R.array.discard_array,
-                android.R.layout.simple_spinner_item);
+                R.layout.spinner_item_time);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinnerRight.setAdapter(adapter);
@@ -152,7 +142,6 @@ public class RightTimeFragment extends DialogFragment {
 
     private void setLensValues() {
         TimeLensesDAO dao = TimeLensesDAO.getInstance(context);
-//        timeLensesVO = dao.getById(idLenses);
         if (timeLensesVO != null) {
             btnDateRight.setText(timeLensesVO.getDateRight());
             numberPickerRight.setValue(timeLensesVO.getExpirationRight());
@@ -188,7 +177,6 @@ public class RightTimeFragment extends DialogFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-//        enableControls(idLenses == null);
         enableControls(TimeLensesFragment.isSaveVisible);
     }
 

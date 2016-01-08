@@ -26,18 +26,16 @@ public class DatePickerFragment extends DialogFragment implements
 
     private Button btnDateLeft;
     private Button btnDateRight;
-    private Button btnDateIniLeft;
-    private Button btnDateIniRight;
     private String tag;
 
     public static DatePickerFragment newInstance(String tagLens, int year,
-                                                 int monht, int day) {
+                                                 int month, int day) {
 
         DatePickerFragment datePickerFragment = new DatePickerFragment();
         Bundle args = new Bundle();
         args.putString(TAG, tagLens);
         args.putInt(YEAR, year);
-        args.putInt(MONTH, monht);
+        args.putInt(MONTH, month);
         args.putInt(DAY, day);
         datePickerFragment.setArguments(args);
         return datePickerFragment;
@@ -58,24 +56,20 @@ public class DatePickerFragment extends DialogFragment implements
 
         Fragment fragment = null;
 
+        ViewPager mViewPager = (ViewPager) getActivity().findViewById(
+                R.id.pagerTimeLenses);
+        int index = mViewPager.getCurrentItem();
+        TimeLensesCollectionPagerAdapter adapter = ((TimeLensesCollectionPagerAdapter) mViewPager
+                .getAdapter());
+
         // Fragment of lenses/replacement date
         if (tag.equals(LeftTimeFragment.DATE_LEFT_EYE)) {
-            ViewPager mViewPager = (ViewPager) getActivity().findViewById(
-                    R.id.pagerTimeLenses);
-            int index = mViewPager.getCurrentItem();
-            TimeLensesCollectionPagerAdapter adapter = ((TimeLensesCollectionPagerAdapter) mViewPager
-                    .getAdapter());
             fragment = (LeftTimeFragment) adapter.getFragment(index);
         } else if (tag.equals(RightTimeFragment.DATE_RIGHT_EYE)) {
-            ViewPager mViewPager = (ViewPager) getActivity().findViewById(
-                    R.id.pagerTimeLenses);
-            int index = mViewPager.getCurrentItem();
-            TimeLensesCollectionPagerAdapter adapter = ((TimeLensesCollectionPagerAdapter) mViewPager
-                    .getAdapter());
             fragment = (RightTimeFragment) adapter.getFragment(index);
         } // Fragment of left lens data
         /*else if (tag.equals(LeftDataFragment.DATE_LENS_LEFT)) {
-			ViewPager mViewPager = (ViewPager) getActivity().findViewById(
+            ViewPager mViewPager = (ViewPager) getActivity().findViewById(
 					R.id.pagerLenses);
 			int index = mViewPager.getCurrentItem();
 			LensesCollectionPagerAdapter adapter = ((LensesCollectionPagerAdapter) mViewPager

@@ -26,8 +26,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-//import com.aeo.mylensespro.dao.AlarmDAO;
-
 @SuppressLint("SimpleDateFormat")
 public class LeftTimeFragment extends DialogFragment {
     private static Button btnDateLeft;
@@ -44,18 +42,12 @@ public class LeftTimeFragment extends DialogFragment {
 
     private View view;
 
-//    public static String idLenses;
-
     private Context context;
 
     public static TimeLensesVO timeLensesVO;
 
     public static LeftTimeFragment newInstance(TimeLensesVO vo) {
         LeftTimeFragment lensFragment = new LeftTimeFragment();
-//        Bundle args = new Bundle();
-//        args.putString(KEY_ID_LENS, idLens);
-//        lensFragment.setArguments(args);
-
         timeLensesVO = vo;
 
         return lensFragment;
@@ -67,13 +59,11 @@ public class LeftTimeFragment extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-//        idLenses = getArguments() != null ? getArguments().getString(KEY_ID_LENS) : null;
     }
 
     @Override
@@ -87,8 +77,7 @@ public class LeftTimeFragment extends DialogFragment {
         context = getContext();
 
         spinnerLeft = (Spinner) view.findViewById(R.id.spinnerLeft);
-        numberPickerLeft = (NumberPicker) view
-                .findViewById(R.id.numberPickerLeft);
+        numberPickerLeft = (NumberPicker) view.findViewById(R.id.numberPickerLeft);
         btnDateLeft = (Button) view.findViewById(R.id.btnDateLeft);
         cbInUseLeft = (CheckBox) view.findViewById(R.id.cbxWearLeft);
         qtdLeft = (NumberPicker) view.findViewById(R.id.qtdLeft);
@@ -104,9 +93,7 @@ public class LeftTimeFragment extends DialogFragment {
                     e.printStackTrace();
                 }
 
-                fragmentDate = DatePickerFragment.newInstance(/*
-                                                             * LeftTimeFragment.this,
-															 */DATE_LEFT_EYE,
+                fragmentDate = DatePickerFragment.newInstance(DATE_LEFT_EYE,
                         date.get(Calendar.YEAR), date.get(Calendar.MONTH),
                         date.get(Calendar.DAY_OF_MONTH));
                 fragmentDate.show(getFragmentManager(), "datePickerLeft");
@@ -132,14 +119,13 @@ public class LeftTimeFragment extends DialogFragment {
     @Override
     public void onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-//        enableControls(idLenses == null);
         enableControls(TimeLensesFragment.isSaveVisible);
     }
 
     private void setSpinnerDiscard() {
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 context, R.array.discard_array,
-                android.R.layout.simple_spinner_item);
+                R.layout.spinner_item_time);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinnerLeft.setAdapter(adapter);
@@ -171,7 +157,6 @@ public class LeftTimeFragment extends DialogFragment {
 
     private void setLensValues() {
         TimeLensesDAO dao = TimeLensesDAO.getInstance(context);
-//        timeLensesVO = dao.getById(idLenses);
         if (timeLensesVO != null) {
             btnDateLeft.setText(timeLensesVO.getDateLeft());
             numberPickerLeft.setValue(timeLensesVO.getExpirationLeft());

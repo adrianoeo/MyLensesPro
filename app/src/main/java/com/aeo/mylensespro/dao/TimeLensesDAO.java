@@ -42,94 +42,6 @@ public class TimeLensesDAO {
         this.context = context;
     }
 
-    public void insert(TimeLensesVO lensVO) {
-        lensVO.setDateCreate(new Date());
-        ParseObject post = getParseObjectLens(lensVO);
-        post.setACL(new ParseACL(ParseUser.getCurrentUser()));
-        post.saveEventually();
-        post.pinInBackground(tableName);
-
-//        post.saveInBackground();
-        if (Utility.isNetworkAvailable(context)) {
-            try {
-                post.save();
-            } catch (com.parse.ParseException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void update(TimeLensesVO lensVO) {
-
-        final String date_left = Utility.formatDateToSqlite(lensVO.getDateLeft());
-        final String date_right = Utility.formatDateToSqlite(lensVO.getDateRight());
-        final int expiration_left = lensVO.getExpirationLeft();
-        final int expiration_right = lensVO.getExpirationRight();
-        final int type_left = lensVO.getTypeLeft();
-        final int type_right = lensVO.getTypeRight();
-        final int in_use_left = lensVO.getInUseLeft();
-        final int in_use_right = lensVO.getInUseRight();
-        final int qtd_left = lensVO.getQtdLeft();
-        final int qtd_right = lensVO.getQtdRight();
-        final int num_days_not_used_left = lensVO.getNumDaysNotUsedLeft();
-        final int num_days_not_used_right = lensVO.getNumDaysNotUsedRight();
-
-        ParseQuery<ParseObject> query = getParseQuery(lensVO.getId());
-
-        // Retrieve the object by id
-        try {
-            ParseObject content = query.getFirst();
-            content.put("date_left", date_left);
-            content.put("date_right", date_right);
-            content.put("expiration_left", expiration_left);
-            content.put("expiration_right", expiration_right);
-            content.put("type_left", type_left);
-            content.put("type_right", type_right);
-            content.put("num_days_not_used_left", num_days_not_used_left);
-            content.put("num_days_not_used_right", num_days_not_used_right);
-            content.put("in_use_left", in_use_left);
-            content.put("in_use_right", in_use_right);
-            content.put("qtd_left", qtd_left);
-            content.put("qtd_right", qtd_right);
-
-            content.setACL(new ParseACL(ParseUser.getCurrentUser()));
-            content.saveEventually();
-            content.pinInBackground(tableName);
-
-            if (Utility.isNetworkAvailable(context)) {
-                content.save();
-            }
-
-        } catch (com.parse.ParseException e) {
-            e.printStackTrace();
-        }
-
-//        query.getFirstInBackground(new GetCallback<ParseObject>() {
-//            public void done(ParseObject content, com.parse.ParseException e) {
-//                if (e == null) {
-//                    content.put("date_left", date_left);
-//                    content.put("date_right", date_right);
-//                    content.put("expiration_left", expiration_left);
-//                    content.put("expiration_right", expiration_right);
-//                    content.put("type_left", type_left);
-//                    content.put("type_right", type_right);
-//                    content.put("num_days_not_used_left", num_days_not_used_left);
-//                    content.put("num_days_not_used_right", num_days_not_used_right);
-//                    content.put("in_use_left", in_use_left);
-//                    content.put("in_use_right", in_use_right);
-//                    content.put("qtd_left", qtd_left);
-//                    content.put("qtd_right", qtd_right);
-//
-//                    content.setACL(new ParseACL(ParseUser.getCurrentUser()));
-////                    content.pinInBackground();
-//                    content.saveEventually();
-//
-//                    content.saveInBackground();
-//                }
-//            }
-//        });
-    }
-
     private ParseQuery getParseQuery(String idLens) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
@@ -168,7 +80,7 @@ public class TimeLensesDAO {
         ParseObject content = new ParseObject(tableName);
 
 //        if (!Utility.isNetworkAvailable(context)) {
-            content.put("lens_id", lensVO.getId().replace("OFFLINE", ""));
+        content.put("lens_id", lensVO.getId().replace("OFFLINE", ""));
 //        }
 
         content.put("user_id", ParseUser.getCurrentUser());
@@ -266,22 +178,6 @@ public class TimeLensesDAO {
 //        }
     }
 
-    public void delete(String id) {
-        ParseQuery<ParseObject> query = getParseQuery(id);
-
-        // Retrieve the object by id
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-            public void done(ParseObject content, com.parse.ParseException e) {
-                if (e == null) {
-                    content.unpinInBackground(tableName);
-                    content.deleteInBackground();
-                }
-            }
-        });
-
-
-    }
-
     public TimeLensesVO getById(String id) {
         ParseQuery<ParseObject> query = getParseQuery(id);
         TimeLensesVO timeLensesVO = null;
@@ -321,6 +217,7 @@ public class TimeLensesDAO {
 
     public List<TimeLensesVO> getListLenses() {
         ParseQuery query = getParseQuery();
+        query.setLimit(10);
 
         listTimeLensesVO = new LinkedList<>();
         try {
@@ -351,6 +248,29 @@ public class TimeLensesDAO {
 //                }
 //            }
 //        });
+
+        return listTimeLensesVO;
+    }
+
+    public List<TimeLensesVO> getListLensesLimit(List<TimeLensesVO> listTimeLensesVO) {
+        ParseQuery query = getParseQuery();
+
+        query.setLimit(10);
+        query.setSkip(listTimeLensesVO.size());
+
+//        listTimeLensesVO = new LinkedList<>();
+        try {
+            List<ParseObject> list = query.find();
+            for (ParseObject parseObj : list) {
+                listTimeLensesVO.add(setTimeLensesVODAO(parseObj));
+                parseObj.saveEventually();
+            }
+            ParseObject.unpinAllInBackground(tableName);
+            ParseObject.pinAllInBackground(tableName, list);
+
+        } catch (com.parse.ParseException e) {
+            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+        }
 
         return listTimeLensesVO;
     }
@@ -663,7 +583,7 @@ public class TimeLensesDAO {
     @SuppressLint("SimpleDateFormat")
     public void save(TimeLensesVO timeLensesVO) {
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-        AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
+//        AlarmDAO alarmDAO = AlarmDAO.getInstance(context);
 
         String idLens = timeLensesVO.getObjectId();
         if (idLens != null && !idLens.contains("OFFLINE")) {
@@ -676,4 +596,87 @@ public class TimeLensesDAO {
 //            alarmDAO.setAlarm(timeLensesVO);
         }
     }
+
+    public void insert(TimeLensesVO lensVO) {
+        Calendar calendar = Calendar.getInstance();
+        lensVO.setDateCreate(new Date());
+
+        ParseObject post = getParseObjectLens(lensVO);
+        post.setACL(new ParseACL(ParseUser.getCurrentUser()));
+        post.saveEventually();
+        post.pinInBackground(tableName);
+
+//        post.saveInBackground();
+        if (Utility.isNetworkAvailable(context)) {
+            try {
+                post.save();
+            } catch (com.parse.ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void update(TimeLensesVO lensVO) {
+
+        final String date_left = Utility.formatDateToSqlite(lensVO.getDateLeft());
+        final String date_right = Utility.formatDateToSqlite(lensVO.getDateRight());
+        final int expiration_left = lensVO.getExpirationLeft();
+        final int expiration_right = lensVO.getExpirationRight();
+        final int type_left = lensVO.getTypeLeft();
+        final int type_right = lensVO.getTypeRight();
+        final int in_use_left = lensVO.getInUseLeft();
+        final int in_use_right = lensVO.getInUseRight();
+        final int qtd_left = lensVO.getQtdLeft();
+        final int qtd_right = lensVO.getQtdRight();
+        final int num_days_not_used_left = lensVO.getNumDaysNotUsedLeft();
+        final int num_days_not_used_right = lensVO.getNumDaysNotUsedRight();
+
+        ParseQuery<ParseObject> query = getParseQuery(lensVO.getId());
+
+        // Retrieve the object by id
+        try {
+            ParseObject content = query.getFirst();
+            content.put("date_left", date_left);
+            content.put("date_right", date_right);
+            content.put("expiration_left", expiration_left);
+            content.put("expiration_right", expiration_right);
+            content.put("type_left", type_left);
+            content.put("type_right", type_right);
+            content.put("num_days_not_used_left", num_days_not_used_left);
+            content.put("num_days_not_used_right", num_days_not_used_right);
+            content.put("in_use_left", in_use_left);
+            content.put("in_use_right", in_use_right);
+            content.put("qtd_left", qtd_left);
+            content.put("qtd_right", qtd_right);
+
+            content.setACL(new ParseACL(ParseUser.getCurrentUser()));
+            content.saveEventually();
+            content.pinInBackground(tableName);
+
+            if (Utility.isNetworkAvailable(context)) {
+                content.save();
+            }
+
+        } catch (com.parse.ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void delete(String id) {
+        ParseQuery<ParseObject> query = getParseQuery(id);
+
+        try {
+            ParseObject parseObject = query.getFirst();
+            parseObject.unpinInBackground(tableName);
+            parseObject.deleteEventually();
+
+            if (Utility.isNetworkAvailable(context)) {
+                parseObject.delete();
+            }
+
+        } catch (com.parse.ParseException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

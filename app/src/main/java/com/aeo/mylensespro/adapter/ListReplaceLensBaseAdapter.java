@@ -3,6 +3,7 @@ package com.aeo.mylensespro.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +20,15 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
     private Context context;
     private FragmentManager fragmentManager;
 
+    private ListFragment listFragment;
+
     public ListReplaceLensBaseAdapter(Context context, List<TimeLensesVO> list,
-                                      FragmentManager fragmentManager) {
+                                      FragmentManager fragmentManager,
+                                      ListFragment listFragment) {
         this.context = context;
         this.list = list;
         this.fragmentManager = fragmentManager;
+        this.listFragment = listFragment;
     }
 
     @Override
@@ -48,34 +53,33 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View view = null;
 
-        TextView idLens;
-        TextView objectId;
-        TextView dateLeft;
-        TextView dateRight;
-        TextView timeLeft;
-        TextView timeRight;
-        TextView txtLensLeft;
-        TextView txtLensRight;
+//        if (position == getCount()-1) {
+//            ListLensesTask task = new ListLensesTask(context, this, fragmentManager, listFragment, list);
+//            task.execute();
+//        }
+
+//        TextView idLens;
+//        TextView dateLeft;
+//        TextView dateRight;
+//        TextView timeLeft;
+//        TextView timeRight;
+//        TextView txtLensLeft;
+//        TextView txtLensRight;
 
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater) context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            view = mInflater.inflate(R.layout.fragment_item_list_lens, null);
+            view = getViewHolder(mInflater.inflate(R.layout.fragment_item_list_lens, null));
 
-            idLens = (TextView) view.findViewById(R.id.textViewIdLens);
 
-            dateLeft = (TextView) view
-                    .findViewById(R.id.textViewDateReplaceLensLeft);
-            dateRight = (TextView) view
-                    .findViewById(R.id.textViewDateReplaceLensRight);
-            timeLeft = (TextView) view
-                    .findViewById(R.id.textViewTimeReplaceLensLeft);
-            timeRight = (TextView) view
-                    .findViewById(R.id.textViewTimeReplaceLensRight);
-            txtLensLeft = (TextView) view
-                    .findViewById(R.id.textViewDescReplaceLensLeft);
-            txtLensRight = (TextView) view
-                    .findViewById(R.id.textViewDescReplaceLensRight);
+//            idLens = (TextView) view.findViewById(R.id.textViewIdLens);
+//
+//            dateLeft = (TextView) view.findViewById(R.id.textViewDateReplaceLensLeft);
+//            dateRight = (TextView) view.findViewById(R.id.textViewDateReplaceLensRight);
+//            timeLeft = (TextView) view.findViewById(R.id.textViewTimeReplaceLensLeft);
+//            timeRight = (TextView) view.findViewById(R.id.textViewTimeReplaceLensRight);
+//            txtLensLeft = (TextView) view.findViewById(R.id.textViewDescReplaceLensLeft);
+//            txtLensRight = (TextView) view.findViewById(R.id.textViewDescReplaceLensRight);
 
             TimeLensesVO lenses = list.get(position);
             String typeLeft = null;
@@ -96,67 +100,96 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
                 typeRight = "Year(s)";
             }
 
-            dateLeft.setText(lenses.getDateLeft());
-            dateRight.setText(lenses.getDateRight());
-            timeLeft.setText(new StringBuilder()
+            ViewHolder viewHolder = (ViewHolder) view.getTag();
+
+            viewHolder.idLens.setText(lenses.getId().toString());
+            viewHolder.dateLeft.setText(lenses.getDateLeft());
+            viewHolder.dateRight.setText(lenses.getDateRight());
+            viewHolder.timeLeft.setText(new StringBuilder()
                     .append(lenses.getExpirationLeft()).append(" ")
                     .append(typeLeft));
-            timeRight.setText(new StringBuilder()
+            viewHolder.timeRight.setText(new StringBuilder()
                     .append(lenses.getExpirationRight()).append(" ")
                     .append(typeRight));
 
-            idLens.setText(lenses.getId().toString());
+//            dateLeft.setText(lenses.getDateLeft());
+//            dateRight.setText(lenses.getDateRight());
+//            timeLeft.setText(new StringBuilder()
+//                    .append(lenses.getExpirationLeft()).append(" ")
+//                    .append(typeLeft));
+//            timeRight.setText(new StringBuilder()
+//                    .append(lenses.getExpirationRight()).append(" ")
+//                    .append(typeRight));
+//
+//            idLens.setText(lenses.getId().toString());
 
-            if (position > 0) {
-                txtLensLeft.setTextColor(Color.GRAY);
-                txtLensRight.setTextColor(Color.GRAY);
-                dateLeft.setTextColor(Color.GRAY);
-                dateRight.setTextColor(Color.GRAY);
-                timeLeft.setTextColor(Color.GRAY);
-                timeRight.setTextColor(Color.GRAY);
-            } else {
-                txtLensLeft.setTextColor(Color.BLACK);
-                txtLensRight.setTextColor(Color.BLACK);
-                dateLeft.setTextColor(Color.BLACK);
-                dateRight.setTextColor(Color.BLACK);
-                timeLeft.setTextColor(Color.BLACK);
-                timeRight.setTextColor(Color.BLACK);
-            }
+            setColor(position, viewHolder);
 
         } else {
-            view = convertView;
+            view = getViewHolder(convertView);
 
-            dateLeft = (TextView) view
-                    .findViewById(R.id.textViewDateReplaceLensLeft);
-            dateRight = (TextView) view
-                    .findViewById(R.id.textViewDateReplaceLensRight);
-            timeLeft = (TextView) view
-                    .findViewById(R.id.textViewTimeReplaceLensLeft);
-            timeRight = (TextView) view
-                    .findViewById(R.id.textViewTimeReplaceLensRight);
-            txtLensLeft = (TextView) view
-                    .findViewById(R.id.textViewDescReplaceLensLeft);
-            txtLensRight = (TextView) view
-                    .findViewById(R.id.textViewDescReplaceLensRight);
+            ViewHolder viewHolder = (ViewHolder) view.getTag();
 
-            if (position > 0) {
-                txtLensLeft.setTextColor(Color.GRAY);
-                txtLensRight.setTextColor(Color.GRAY);
-                dateLeft.setTextColor(Color.GRAY);
-                dateRight.setTextColor(Color.GRAY);
-                timeLeft.setTextColor(Color.GRAY);
-                timeRight.setTextColor(Color.GRAY);
-            } else {
-                txtLensLeft.setTextColor(Color.BLACK);
-                txtLensRight.setTextColor(Color.BLACK);
-                dateLeft.setTextColor(Color.BLACK);
-                dateRight.setTextColor(Color.BLACK);
-                timeLeft.setTextColor(Color.BLACK);
-                timeRight.setTextColor(Color.BLACK);
-            }
+            setColor(position, viewHolder);
+
         }
 
         return view;
     }
 
+    private void setColor(int position, ViewHolder holder) {
+        if (position > 0) {
+            holder.txtLensLeft.setTextColor(Color.GRAY);
+            holder.txtLensRight.setTextColor(Color.GRAY);
+            holder.dateLeft.setTextColor(Color.GRAY);
+            holder.dateRight.setTextColor(Color.GRAY);
+            holder.timeLeft.setTextColor(Color.GRAY);
+            holder.timeRight.setTextColor(Color.GRAY);
+
+//                txtLensLeft.setTextColor(Color.GRAY);
+//                txtLensRight.setTextColor(Color.GRAY);
+//                dateLeft.setTextColor(Color.GRAY);
+//                dateRight.setTextColor(Color.GRAY);
+//                timeLeft.setTextColor(Color.GRAY);
+//                timeRight.setTextColor(Color.GRAY);
+        } else {
+            holder.txtLensLeft.setTextColor(Color.BLACK);
+            holder.txtLensRight.setTextColor(Color.BLACK);
+            holder.dateLeft.setTextColor(Color.BLACK);
+            holder.dateRight.setTextColor(Color.BLACK);
+            holder.timeLeft.setTextColor(Color.BLACK);
+            holder.timeRight.setTextColor(Color.BLACK);
+//                txtLensLeft.setTextColor(Color.BLACK);
+//                txtLensRight.setTextColor(Color.BLACK);
+//                dateLeft.setTextColor(Color.BLACK);
+//                dateRight.setTextColor(Color.BLACK);
+//                timeLeft.setTextColor(Color.BLACK);
+//                timeRight.setTextColor(Color.BLACK);
+        }
+    }
+
+    private View getViewHolder(View view) {
+        ViewHolder viewHolder = new ViewHolder();
+        viewHolder.idLens = (TextView) view.findViewById(R.id.textViewIdLens);
+        viewHolder.dateLeft = (TextView) view.findViewById(R.id.textViewDateReplaceLensLeft);
+        viewHolder.dateRight = (TextView) view.findViewById(R.id.textViewDateReplaceLensRight);
+        viewHolder.timeLeft = (TextView) view.findViewById(R.id.textViewTimeReplaceLensLeft);
+        viewHolder.timeRight = (TextView) view.findViewById(R.id.textViewTimeReplaceLensRight);
+        viewHolder.txtLensLeft = (TextView) view.findViewById(R.id.textViewDescReplaceLensLeft);
+        viewHolder.txtLensRight = (TextView) view.findViewById(R.id.textViewDescReplaceLensRight);
+
+        view.setTag(viewHolder);
+
+        return view;
+    }
+
+    static class ViewHolder {
+        public TextView dateLeft;
+        public TextView dateRight;
+        public TextView txtLensLeft;
+        public TextView txtLensRight;
+        public TextView timeLeft;
+        public TextView timeRight;
+        public TextView idLens;
+    }
 }

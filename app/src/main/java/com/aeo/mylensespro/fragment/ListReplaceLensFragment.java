@@ -1,20 +1,24 @@
 package com.aeo.mylensespro.fragment;
 
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -32,33 +36,35 @@ import java.util.List;
 
 public class ListReplaceLensFragment extends ListFragment {
 
-    public static List<TimeLensesVO> listLenses;
     ListReplaceLensBaseAdapter mListAdapter;
-    public static final String TAG_LENS = "TAG_LENS";
     private Tracker mTracker;
 
     private ProgressDialog progressDlg;
+    private View view;
+    private ListView listView;
 
     private static Boolean isNetworkAvailable;
+    private static List<TimeLensesVO> listTimeLensesVO;
 
+    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-//        List<TimeLensesVO> listLens = TimeLensesDAO.getInstance(getContext()).getListLenses();
+//        List<TimeLensesVO> listLens = TimeLensesDAO.listTimeLensesVO;
+//
+//        if (listLens != null && listLens.size() == 0) {
+//            ArrayAdapter<String> adapter = new ArrayAdapter<>(
+//                    inflater.getContext(),
+//                    android.R.layout.simple_list_item_1,
+//                    new String[]{getString(R.string.msg_insert_time_replace)});
+//            setListAdapter(adapter);
+//        }
 
-        List<TimeLensesVO> listLens = TimeLensesDAO.listTimeLensesVO;
-
-        if (listLens != null && listLens.size() == 0) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    inflater.getContext(),
-                    android.R.layout.simple_list_item_1,
-                    new String[]{getString(R.string.msg_insert_time_replace)});
-            setListAdapter(adapter);
-        }
+        view = inflater.inflate(R.layout.listview_lens, container, false);
 
         //Retira Tab referente ao Fragment do Periodo das lentes
-        View viewMain = getActivity().findViewById(R.id.drawer_layout);
+        DrawerLayout viewMain = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         SlidingTabLayout mSlidingTabLayout = (SlidingTabLayout) viewMain.findViewById(R.id.sliding_tabs);
         mSlidingTabLayout.setViewPager(null);
 
@@ -67,16 +73,35 @@ public class ListReplaceLensFragment extends ListFragment {
 
         Toolbar toolbar = (Toolbar) viewMain.findViewById(R.id.toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+//        DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                getActivity(), drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
+                getActivity(), viewMain, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        viewMain.setDrawerListener(toggle);
         toggle.syncState();
 
         // Obtain the shared Tracker instance.
         MyLensesApplication application = (MyLensesApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
 
+
+        listView = (ListView) view.findViewById(R.id.listViewLens);
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (listView.getAdapter() != null) {
+                    if (listView.getLastVisiblePosition() == listView.getAdapter().getCount() - 1 &&
+                            listView.getChildAt(listView.getChildCount() - 1).getBottom() <= listView.getHeight()) {
+                        //It is scrolled all the way down here
+                        Log.d("teste", "getMore");
+                    }
+                }
+            }
+        });
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -131,30 +156,15 @@ public class ListReplaceLensFragment extends ListFragment {
             isNetworkAvailable = Utility.isNetworkAvailable(getContext());
         } else {
             if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(getContext())) {
-                SyncLensesTask task = new SyncLensesTask();
+                SyncLensesTask task = new SyncLensesTask(getContext());
                 task.execute();
             }
             isNetworkAvailable = Utility.isNetworkAvailable(getContext());
         }
 
-        ListLensesTask task = new ListLensesTask();
+        ListLensesTask task = new ListLensesTask(getContext(), this);
+//                = new com.aeo.mylensespro.task.ListLensesTask(getContext(), mListAdapter, getFragmentManager(), this);
         task.execute();
-
-//        List<TimeLensesVO> listLens = TimeLensesDAO.getInstance(getContext()).getListLenses();
-
-//        if (listLens != null && listLens.size() > 0) {
-//            mListAdapter = new ListReplaceLensBaseAdapter(getContext(), listLens, getFragmentManager());
-//            setListAdapter(mListAdapter);
-//        } else {
-//            LayoutInflater inflater = (LayoutInflater) getContext()
-//                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//
-//            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-//                    inflater.getContext(),
-//                    android.R.layout.simple_list_item_1,
-//                    new String[]{getString(R.string.msg_insert_time_replace)});
-//            setListAdapter(adapter);
-//        }
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_action_new);
@@ -170,7 +180,13 @@ public class ListReplaceLensFragment extends ListFragment {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
+
     private class SyncLensesTask extends AsyncTask<String, Void, Boolean> {
+        private Context context;
+
+        public SyncLensesTask(Context ctx) {
+            context = ctx;
+        }
 
         @Override
         protected Boolean doInBackground(String... params) {
@@ -181,7 +197,7 @@ public class ListReplaceLensFragment extends ListFragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDlg = new ProgressDialog(getContext());
+            progressDlg = new ProgressDialog(context);
             progressDlg.setMessage(getResources().getString(R.string.sync));
             progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDlg.setIndeterminate(true);
@@ -197,42 +213,42 @@ public class ListReplaceLensFragment extends ListFragment {
     }
 
     private class ListLensesTask extends AsyncTask<String, Void, List<TimeLensesVO>> {
+        private Context context;
+        private ListFragment listFragment;
+
+        public ListLensesTask(Context ctx, ListFragment listFragment) {
+            context = ctx;
+            this.listFragment = listFragment;
+        }
 
         @Override
         protected List<TimeLensesVO> doInBackground(String... params) {
-            return TimeLensesDAO.getInstance(getContext()).getListLenses();
+            return TimeLensesDAO.getInstance(context).getListLenses();
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            if (Utility.isNetworkAvailable(getContext())) {
-                progressDlg = new ProgressDialog(getContext());
-                progressDlg.setMessage(getResources().getString(R.string.loading));
-                progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                progressDlg.setIndeterminate(true);
-                progressDlg.show();
-            }
         }
 
         @Override
         protected void onPostExecute(List<TimeLensesVO> listLens) {
+            listTimeLensesVO = listLens;
             if (listLens != null && listLens.size() > 0) {
-                mListAdapter = new ListReplaceLensBaseAdapter(getContext(), listLens, getFragmentManager());
+                mListAdapter = new ListReplaceLensBaseAdapter(context, listLens,
+                        getFragmentManager(), listFragment);
                 setListAdapter(mListAdapter);
             } else {
-                LayoutInflater inflater = (LayoutInflater) getContext()
+                LayoutInflater inflater = (LayoutInflater) context
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
                         inflater.getContext(),
                         android.R.layout.simple_list_item_1,
                         new String[]{getString(R.string.msg_insert_time_replace)});
                 setListAdapter(adapter);
             }
 
-            if (progressDlg != null && progressDlg.isShowing())
-                progressDlg.dismiss();
         }
     }
 }
