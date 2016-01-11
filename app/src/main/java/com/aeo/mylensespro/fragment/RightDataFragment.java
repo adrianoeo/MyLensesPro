@@ -42,8 +42,11 @@ public class RightDataFragment extends Fragment {
 
 	private View view;
 
-	public static RightDataFragment newInstance() {
+	private static DataLensesVO dataLensesVO;
+
+	public static RightDataFragment newInstance(DataLensesVO vo) {
 		RightDataFragment dataLensesFragment = new RightDataFragment();
+		dataLensesVO = vo;
 //        Bundle args = new Bundle();
 //        args.putInt(KEY_ID_LENS, idLens);
 //        dataLensesFragment.setArguments(args);
@@ -183,29 +186,29 @@ public class RightDataFragment extends Fragment {
 
 	private void getLens() {
 		LensesDataDAO dao = LensesDataDAO.getInstance(context);
-		DataLensesVO vo = dao.getById(dao.getLastIdLens());
+//		DataLensesVO dataLensesVO = dao.getLastDataLenses();
 
-		if (vo != null) {
-			editTextDesc.setText(vo.getDescription_right());
-			editTextBrand.setText(vo.getBrand_right());
-			editTextBuySite.setText(vo.getBuy_site_right());
-			spinnerPower.setSelection(vo.getPower_right() == null
-					|| "".equals(vo.getPower_right()) ? 0 : Integer.valueOf(vo
-					.getPower_right()));
-			spinnerAdd.setSelection(vo.getAdd_right() == null
-					|| "".equals(vo.getAdd_right()) ? 0 : Integer.valueOf(vo
-					.getAdd_right()));
-			spinnerAxis.setSelection(vo.getAxis_right() == null
-					|| "".equals(vo.getAxis_right()) ? 0 : Integer.valueOf(vo
-					.getAxis_right()));
-			spinnerCylinder.setSelection(vo.getCylinder_right() == null
-					|| "".equals(vo.getCylinder_right()) ? 0 : Integer
-					.valueOf(vo.getCylinder_right()));
-			spinnerTypeLens.setSelection(vo.getType_right() == null
-					|| "".equals(vo.getType_right()) ? 0 : Integer.valueOf(vo
-					.getType_right()));
-			editTextBC.setText(vo.getBc_right().toString());
-			editTextDia.setText(vo.getDia_right().toString());
+		if (dataLensesVO != null) {
+			editTextDesc.setText(dataLensesVO.getDescriptionRight());
+			editTextBrand.setText(dataLensesVO.getBrandRight());
+			editTextBuySite.setText(dataLensesVO.getBuySiteRight());
+			spinnerPower.setSelection(dataLensesVO.getPowerRight() == null
+					|| "".equals(dataLensesVO.getPowerRight()) ? 0 : Integer.valueOf(dataLensesVO
+					.getPowerRight()));
+			spinnerAdd.setSelection(dataLensesVO.getAddRight() == null
+					|| "".equals(dataLensesVO.getAddRight()) ? 0 : Integer.valueOf(dataLensesVO
+					.getAddRight()));
+			spinnerAxis.setSelection(dataLensesVO.getAxisRight() == null
+					|| "".equals(dataLensesVO.getAxisRight()) ? 0 : Integer.valueOf(dataLensesVO
+					.getAxisRight()));
+			spinnerCylinder.setSelection(dataLensesVO.getCylinderRight() == null
+					|| "".equals(dataLensesVO.getCylinderRight()) ? 0 : Integer
+					.valueOf(dataLensesVO.getCylinderRight()));
+			spinnerTypeLens.setSelection(dataLensesVO.getTypeRight() == null
+					|| "".equals(dataLensesVO.getTypeRight()) ? 0 : Integer.valueOf(dataLensesVO
+					.getTypeRight()));
+			editTextBC.setText(dataLensesVO.getBcRight().toString());
+			editTextDia.setText(dataLensesVO.getDiaRight().toString());
 		}
 	}
 }

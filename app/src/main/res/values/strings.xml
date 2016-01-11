@@ -117,7 +117,7 @@
     <string name="str_count_unit">Count unit</string>
     <string name="lbl_brand">Manufacturer</string>
     <string name="lbl_desc_lens">Name of lens/brand</string>
-    <string name="lbl_power">Power</string>
+    <string name="lbl_power">Sphere Power</string>
     <string name="lbl_cylinder">Cylinder</string>
     <string name="lbl_axis">Axis</string>
     <string name="lbl_add">Add</string>

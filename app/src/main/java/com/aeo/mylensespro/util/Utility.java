@@ -75,7 +75,7 @@ public abstract class Utility {
         trans.replace(R.id.fragment_container, fragment);
 
 		/*
-		 * IMPORTANT: The following lines allow us to add the fragment to the
+         * IMPORTANT: The following lines allow us to add the fragment to the
 		 * stack and return to it later, by pressing back
 		 */
         trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -107,9 +107,11 @@ public abstract class Utility {
     }
 
     public static boolean isNetworkAvailable(final Context context) {
-        final ConnectivityManager connectivityManager
+        ConnectivityManager connectivityManager
                 = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+
         return connectivityManager.getActiveNetworkInfo() != null
-                && connectivityManager.getActiveNetworkInfo().isConnected();
+                && connectivityManager.getActiveNetworkInfo().isConnected()
+                && connectivityManager.getActiveNetworkInfo().isAvailable();
     }
 }

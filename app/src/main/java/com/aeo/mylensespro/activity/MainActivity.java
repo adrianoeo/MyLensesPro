@@ -175,11 +175,11 @@ public class MainActivity extends AppCompatActivity
 
     private void shop() {
         LensesDataDAO lensesDataDAO = LensesDataDAO.getInstance(this);
-        DataLensesVO lensesVO = lensesDataDAO.getById(lensesDataDAO.getLastIdLens());
+        DataLensesVO lensesVO = lensesDataDAO.getLastDataLenses();
 
         if (lensesVO != null) {
-            String urlLeft = lensesVO.getBuy_site_left();
-            String urlRight = lensesVO.getBuy_site_right();
+            String urlLeft = lensesVO.getBuySiteLeft();
+            String urlRight = lensesVO.getBuySiteRight();
 
             if ((urlLeft == null || "".equals(urlLeft))
                     && (urlRight == null || "".equals(urlRight))) {

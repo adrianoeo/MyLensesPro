@@ -1,188 +1,265 @@
 package com.aeo.mylensespro.dao;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 
-import com.aeo.mylensespro.activity.MainActivity;
-import com.aeo.mylensespro.db.DB;
 import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.DataLensesVO;
+import com.parse.ParseACL;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 public class LensesDataDAO {
 
-	private static String tableName = "reg_lenses";
-	private static String[] columns = { "id", "description_left", "brand_left",
-			"discard_type_left", "type_left", "power_left", "cylinder_left",
-			"axis_left", "add_left", "buy_site_left", "date_ini_left",
-			"number_units_left", "description_right", "brand_right",
-			"discard_type_right", "type_right", "power_right",
-			"cylinder_right", "axis_right", "add_right", "buy_site_right",
-			"date_ini_right", "number_units_right", "bc_left", "bc_right", "dia_left", "dia_right" };
-	private SQLiteDatabase db;
-	private static LensesDataDAO instance;
-	private Context context;
+    private static String tableName = "data_lens";
+    private static LensesDataDAO instance;
+    private Context context;
 
-	public static LensesDataDAO getInstance(Context context) {
-		if (instance == null) {
-			return new LensesDataDAO(context);
-		}
-		return instance;
-	}
+    public static DataLensesVO dataLensesVO;
 
-	public LensesDataDAO(Context context) {
-		this.context = context;
-		db = new DB(context).getWritableDatabase();
-	}
+    public static LensesDataDAO getInstance(Context context) {
+        if (instance == null) {
+            return new LensesDataDAO(context);
+        }
+        return instance;
+    }
 
-	public boolean insert(DataLensesVO vo) {
-		synchronized (MainActivity.sDataLock) {
-			ContentValues content = getContentValues(vo);
+    public LensesDataDAO(Context context) {
+        this.context = context;
+    }
 
-			return db.insert(tableName, null, content) > 0;
-		}
-	}
+    public void insert(DataLensesVO vo) {
+        ParseObject post = getParseObjectDataLens(vo);
+        post.setACL(new ParseACL(ParseUser.getCurrentUser()));
+        post.saveEventually();
+        post.pinInBackground(tableName);
 
-	public boolean update(DataLensesVO vo) {
-		synchronized (MainActivity.sDataLock) {
-			ContentValues content = getContentValues(vo);
+        if (Utility.isNetworkAvailable(context)) {
+            try {
+                post.save();
+            } catch (com.parse.ParseException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-			return db.update(tableName, content, "id=?", new String[] { vo
-					.getId().toString() }) > 0;
-		}
-	}
+    public void update(DataLensesVO vo) {
+        ParseQuery<ParseObject> query = getParseQuery(vo.getId());
 
-	private ContentValues getContentValues(DataLensesVO vo) {
-		ContentValues content = new ContentValues();
-		content.put("description_left", vo.getDescription_left().trim());
-		content.put("brand_left", vo.getBrand_left().trim());
-		content.put("discard_type_left", vo.getDiscard_type_left());
-		content.put("type_left", vo.getType_left());
-		content.put("power_left", vo.getPower_left());
-		content.put("cylinder_left", vo.getCylinder_left());
-		content.put("axis_left", vo.getAxis_left());
-		content.put("add_left", vo.getAdd_left());
-		content.put("buy_site_left", vo.getBuy_site_left().trim());
-		content.put("date_ini_left",
-				Utility.formatDateToSqlite(vo.getDate_ini_left()));
-		content.put("number_units_left", vo.getNumber_units_left());
-		content.put("description_right", vo.getDescription_right().trim());
-		content.put("brand_right", vo.getBrand_right().trim());
-		content.put("discard_type_right", vo.getDiscard_type_right());
-		content.put("type_right", vo.getType_right());
-		content.put("power_right", vo.getPower_right());
-		content.put("cylinder_right", vo.getCylinder_right());
-		content.put("axis_right", vo.getAxis_right());
-		content.put("add_right", vo.getAdd_right());
-		content.put("buy_site_right", vo.getBuy_site_right().trim());
-		content.put("date_ini_right",
-				Utility.formatDateToSqlite(vo.getDate_ini_right()));
-		content.put("number_units_right", vo.getNumber_units_right());
-		content.put("bc_left", vo.getBc_left());
-		content.put("bc_right", vo.getBc_right());
-		content.put("dia_left", vo.getDia_left());
-		content.put("dia_right", vo.getDia_right());
-		return content;
-	}
+        // Retrieve the object by id
+        try {
+            ParseObject content = query.getFirst();
 
-	public DataLensesVO getById(Integer id) {
-		Cursor rs = db.query(tableName, columns, "id=?",
-				new String[] { id.toString() }, null, null, null);
+            content = setParseObject(content, vo);
 
-		DataLensesVO vo = null;
-		if (rs.moveToFirst()) {
-			vo = setLensesVO(rs);
-		}
-		return vo;
-	}
+            content.setACL(new ParseACL(ParseUser.getCurrentUser()));
+            content.saveEventually();
+            content.pinInBackground(tableName);
 
-	public DataLensesVO getLastLenses() {
-		Cursor c = db.rawQuery("select * from " + tableName
-				+ " order by id desc limit 1", null);
+            if (Utility.isNetworkAvailable(context)) {
+                content.save();
+            }
 
-		DataLensesVO vo = null;
-		if (c.moveToFirst()) {
-			vo = setLensesVO(c);
-		}
-		return vo;
-	}
+        } catch (com.parse.ParseException e) {
+            e.printStackTrace();
+        }
 
-	private DataLensesVO setLensesVO(Cursor c) {
-		DataLensesVO vo;
-		vo = new DataLensesVO();
-		vo.setId(c.getInt(c.getColumnIndex("id")));
-		vo.setDescription_left(c.getString(c.getColumnIndex("description_left")));
-		vo.setBrand_left(c.getString(c.getColumnIndex("brand_left")));
-		vo.setDiscard_type_left(c.getString(c
-				.getColumnIndex("discard_type_left")));
-		vo.setType_left(c.getString(c.getColumnIndex("type_left")));
-		vo.setPower_left(c.getString(c.getColumnIndex("power_left")));
-		vo.setCylinder_left(c.getString(c.getColumnIndex("cylinder_left")));
-		vo.setAxis_left(c.getString(c.getColumnIndex("axis_left")));
-		vo.setAdd_left(c.getString(c.getColumnIndex("add_left")));
-		vo.setBuy_site_left(c.getString(c.getColumnIndex("buy_site_left")));
-		vo.setDate_ini_left(Utility.formatDateDefault(c.getString(c
-				.getColumnIndex("date_ini_left"))));
-		vo.setNumber_units_left(c.getInt(c.getColumnIndex("number_units_left")));
-		vo.setDescription_right(c.getString(c
-				.getColumnIndex("description_right")));
-		vo.setBrand_right(c.getString(c.getColumnIndex("brand_right")));
-		vo.setDiscard_type_right(c.getString(c
-				.getColumnIndex("discard_type_right")));
-		vo.setType_right(c.getString(c.getColumnIndex("type_right")));
-		vo.setPower_right(c.getString(c.getColumnIndex("power_right")));
-		vo.setCylinder_right(c.getString(c.getColumnIndex("cylinder_right")));
-		vo.setAxis_right(c.getString(c.getColumnIndex("axis_right")));
-		vo.setAdd_right(c.getString(c.getColumnIndex("add_right")));
-		vo.setBuy_site_right(c.getString(c.getColumnIndex("buy_site_right")));
-		vo.setDate_ini_right(Utility.formatDateDefault(c.getString(c
-				.getColumnIndex("date_ini_right"))));
-		vo.setNumber_units_right(c.getInt(c
-				.getColumnIndex("number_units_right")));
-		vo.setBc_left(c.getDouble(c.getColumnIndex("bc_left")));
-		vo.setBc_right(c.getDouble(c.getColumnIndex("bc_right")));
-		vo.setDia_left(c.getDouble(c.getColumnIndex("dia_left")));
-		vo.setDia_right(c.getDouble(c.getColumnIndex("dia_right")));
-		return vo;
-	}
+    }
 
-	public int getLastIdLens() {
-		Cursor rs = db.rawQuery("select max(id) from " + tableName, null);
+    private ParseQuery getParseQuery() {
 
-		if (rs.moveToFirst()) {
-			return rs.getInt(0);
-		}
-		return 0;
-	}
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.orderByDescending("createdAt");
+
+        //se não estiver online, utiliza base local
+        if (!Utility.isNetworkAvailable(context)) {
+            query.fromPin(tableName);
+        }
+
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+
+        return query;
+    }
+
+    private ParseQuery getParseQuery(String id) {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+
+        //se não estiver online, utiliza base local
+        if (!Utility.isNetworkAvailable(context)) {
+            query.fromPin(tableName);
+        }
+
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+        query.whereEqualTo("objectId", id);
+        return query;
+    }
+
 /*
-	public int[] getUnitsRemaining() {
-//		HistoryDAO dao = HistoryDAO.getInstance(context);
-//		int unitsLeft = dao.getSaldoLensLeft();
-//		int unitsRight = dao.getSaldoLensRight();
-
-		int unitsLeft = ListReplaceLensFragment.listLenses == null ? TimeLensesDAO.getInstance(
-				context).getLastLens().getQtdLeft() : ListReplaceLensFragment.listLenses
-				.get(0).getQtdLeft();
-
-		int unitsRight = ListReplaceLensFragment.listLenses == null ? TimeLensesDAO.getInstance(
-				context).getLastLens().getQtdRight() : ListReplaceLensFragment.listLenses
-				.get(0).getQtdRight();
-
-		return new int[] { unitsLeft, unitsRight };
-	}
+    private ContentValues getContentValues(DataLensesVO vo) {
+        ContentValues content = new ContentValues();
+        content.put("description_left", vo.getDescriptionLeft().trim());
+        content.put("brand_left", vo.getBrandLeft().trim());
+        content.put("discard_type_left", vo.getDiscardTypeLeft());
+        content.put("type_left", vo.getTypeLeft());
+        content.put("power_left", vo.getPowerLeft());
+        content.put("cylinder_left", vo.getCylinderLeft());
+        content.put("axis_left", vo.getAxisLeft());
+        content.put("add_left", vo.getAddLeft());
+        content.put("buy_site_left", vo.getBuySiteLeft().trim());
+        content.put("date_ini_left",
+                Utility.formatDateToSqlite(vo.getDate_ini_left()));
+        content.put("number_units_left", vo.getNumber_units_left());
+        content.put("description_right", vo.getDescriptionRight().trim());
+        content.put("brand_right", vo.getBrandRight().trim());
+        content.put("discard_type_right", vo.getDiscardTypeRight());
+        content.put("type_right", vo.getTypeRight());
+        content.put("power_right", vo.getPowerRight());
+        content.put("cylinder_right", vo.getCylinderRight());
+        content.put("axis_right", vo.getAxisRight());
+        content.put("add_right", vo.getAddRight());
+        content.put("buy_site_right", vo.getBuySiteRight().trim());
+        content.put("date_ini_right",
+                Utility.formatDateToSqlite(vo.getDate_ini_right()));
+        content.put("number_units_right", vo.getNumber_units_right());
+        content.put("bc_left", vo.getBcLeft());
+        content.put("bc_right", vo.getBcRight());
+        content.put("dia_left", vo.getDiaLeft());
+        content.put("dia_right", vo.getDiaRight());
+        return content;
+    }
 */
 
-	@SuppressLint("SimpleDateFormat")
-	public boolean updateDate(String column, int idLensesData, String date) {
-		synchronized (MainActivity.sDataLock) {
-			ContentValues content = new ContentValues();
-			content.put(column, date);
+//    public DataLensesVO getById(String id) {
+//        ParseQuery<ParseObject> query = getParseQuery(id);
+//        DataLensesVO dataLensesVO = null;
+//
+//        try {
+//            List<ParseObject> list = query.find();
+//            for (ParseObject parseObj : list) {
+//                dataLensesVO = setDataLensesVO(parseObj);
+//            }
+//        } catch (com.parse.ParseException e) {
+//            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
+//        }
+//
+//        return dataLensesVO;
+//    }
 
-			return db.update(tableName, content, "id=?",
-					new String[] { String.valueOf(idLensesData) }) > 0;
-		}
-	}
+    public DataLensesVO getLastDataLenses() {
+        ParseQuery<ParseObject> query = getParseQuery();
 
+        try {
+            ParseObject parseObject = query.getFirst();
+            return setDataLensesVO(parseObject);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private DataLensesVO setDataLensesVO(ParseObject obj) {
+        DataLensesVO vo = new DataLensesVO();
+        vo.setId(obj.getObjectId());
+        vo.setDescriptionLeft(obj.getString("description_lef"));
+        vo.setBrandLeft(obj.getString("brand_left"));
+        vo.setTypeLeft(obj.getInt("type_left"));
+        vo.setPowerLeft(obj.getInt("power_left"));
+        vo.setCylinderLeft(obj.getInt("cylinder_left"));
+        vo.setAxisLeft(obj.getInt("axis_left"));
+        vo.setAddLeft(obj.getInt("add_left"));
+        vo.setBuySiteLeft(obj.getString("buy_site_left"));
+        vo.setDescriptionRight(obj.getString("description_right"));
+        vo.setBrandRight(obj.getString("brand_right"));
+        vo.setTypeRight(obj.getInt("type_right"));
+        vo.setPowerRight(obj.getInt("power_right"));
+        vo.setCylinderRight(obj.getInt("cylinder_right"));
+        vo.setAxisRight(obj.getInt("axis_right"));
+        vo.setAddRight(obj.getInt("add_right"));
+        vo.setBuySiteRight(obj.getString("buy_site_right"));
+        vo.setBcLeft(obj.getDouble("bc_left"));
+        vo.setBcRight(obj.getDouble("bc_right"));
+        vo.setDiaLeft(obj.getDouble("dia_left"));
+        vo.setDiaRight(obj.getDouble("dia_right"));
+        return vo;
+    }
+
+//    public int getLastIdLens() {
+//		Cursor rs = db.rawQuery("select max(id) from " + tableName, null);
+//
+//		if (rs.moveToFirst()) {
+//			return rs.getInt(0);
+//		}
+//        return 0;
+//    }
+
+    @SuppressLint("SimpleDateFormat")
+    public boolean updateDate(String column, int idLensesData, String date) {
+//		synchronized (MainActivity.sDataLock) {
+//			ContentValues content = new ContentValues();
+//			content.put(column, date);
+//
+//			return db.update(tableName, content, "id=?",
+//					new String[] { String.valueOf(idLensesData) }) > 0;
+//		}
+        return true;
+    }
+
+    private ParseObject getParseObjectDataLens(DataLensesVO vo) {
+        ParseObject parseObject = new ParseObject(tableName);
+
+        return setParseObject(parseObject, vo);
+    }
+
+    private ParseObject setParseObject(ParseObject parseObject, DataLensesVO vo) {
+        parseObject.put("user_id", ParseUser.getCurrentUser());
+        parseObject.put("description_left", vo.getDescriptionLeft().trim());
+        parseObject.put("brand_left", vo.getBrandLeft().trim());
+        parseObject.put("type_left", vo.getTypeLeft());
+        parseObject.put("power_left", vo.getPowerLeft());
+
+        if (vo.getCylinderLeft() != null) {
+            parseObject.put("cylinder_left", vo.getCylinderLeft());
+        }
+        if (vo.getAxisLeft() != null) {
+            parseObject.put("axis_left", vo.getAxisLeft());
+        }
+
+        if (vo.getAddLeft() != null) {
+            parseObject.put("add_left", vo.getAddLeft());
+        }
+        parseObject.put("buy_site_left", vo.getBuySiteLeft().trim());
+        parseObject.put("description_right", vo.getDescriptionRight().trim());
+        parseObject.put("brand_right", vo.getBrandRight().trim());
+        parseObject.put("type_right", vo.getTypeRight());
+        parseObject.put("power_right", vo.getPowerRight());
+        parseObject.put("buy_site_right", vo.getBuySiteRight().trim());
+
+        if (vo.getCylinderRight() != null) {
+            parseObject.put("cylinder_right", vo.getCylinderRight());
+        }
+        if (vo.getAxisRight() != null) {
+            parseObject.put("axis_right", vo.getAxisRight());
+        }
+        if (vo.getAddRight() != null) {
+            parseObject.put("add_right", vo.getAddRight());
+        }
+
+
+        if (vo.getBcLeft() != null) {
+            parseObject.put("bc_left", vo.getBcLeft());
+        }
+        if (vo.getBcRight() != null) {
+            parseObject.put("bc_right", vo.getBcRight());
+        }
+        if (vo.getDiaLeft() != null) {
+            parseObject.put("dia_left", vo.getDiaLeft());
+        }
+        if (vo.getDiaRight() != null) {
+            parseObject.put("dia_right", vo.getDiaRight());
+        }
+        return parseObject;
+    }
 }

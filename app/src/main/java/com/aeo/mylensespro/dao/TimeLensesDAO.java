@@ -48,12 +48,8 @@ public class TimeLensesDAO {
 
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
-//            query.fromLocalDatastore();
             query.fromPin(tableName);
-        }/* else {
-            //Tira da lista offline
-            ParseObject.unpinAllInBackground();
-        }*/
+        }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
         query.whereEqualTo("lens_id", idLens);
@@ -217,7 +213,6 @@ public class TimeLensesDAO {
 
     public List<TimeLensesVO> getListLenses() {
         ParseQuery query = getParseQuery();
-        query.setLimit(10);
 
         listTimeLensesVO = new LinkedList<>();
         try {
@@ -256,9 +251,10 @@ public class TimeLensesDAO {
         ParseQuery query = getParseQuery();
 
         query.setLimit(10);
-        query.setSkip(listTimeLensesVO.size());
 
-//        listTimeLensesVO = new LinkedList<>();
+        int size = listTimeLensesVO == null ? 0 : listTimeLensesVO.size();
+        query.setSkip(size);
+
         try {
             List<ParseObject> list = query.find();
             for (ParseObject parseObj : list) {
@@ -598,7 +594,6 @@ public class TimeLensesDAO {
     }
 
     public void insert(TimeLensesVO lensVO) {
-        Calendar calendar = Calendar.getInstance();
         lensVO.setDateCreate(new Date());
 
         ParseObject post = getParseObjectLens(lensVO);
@@ -606,7 +601,6 @@ public class TimeLensesDAO {
         post.saveEventually();
         post.pinInBackground(tableName);
 
-//        post.saveInBackground();
         if (Utility.isNetworkAvailable(context)) {
             try {
                 post.save();

@@ -42,9 +42,11 @@ public class LeftDataFragment extends Fragment {
 
     private View view;
 
+    private static DataLensesVO dataLensesVO;
 
-    public static LeftDataFragment newInstance() {
+    public static LeftDataFragment newInstance(DataLensesVO vo) {
         LeftDataFragment dataLensesFragment = new LeftDataFragment();
+        dataLensesVO = vo;
 //        Bundle args = new Bundle();
 //        args.putInt(KEY_ID_LENS, idLens);
 //        dataLensesFragment.setArguments(args);
@@ -184,29 +186,29 @@ public class LeftDataFragment extends Fragment {
 
     private void getLens() {
         LensesDataDAO dao = LensesDataDAO.getInstance(context);
-        DataLensesVO vo = dao.getById(dao.getLastIdLens());
+//        DataLensesVO dataLensesVO = dao.getLastDataLenses();
 
-        if (vo != null) {
-            editTextDesc.setText(vo.getDescription_left());
-            editTextBrand.setText(vo.getBrand_left());
-            editTextBuySite.setText(vo.getBuy_site_left());
-            spinnerPower.setSelection(vo.getPower_left() == null
-                    || "".equals(vo.getPower_left()) ? 0 : Integer.valueOf(vo
-                    .getPower_left()));
-            spinnerAdd.setSelection(vo.getAdd_left() == null
-                    || "".equals(vo.getAdd_left()) ? 0 : Integer.valueOf(vo
-                    .getAdd_left()));
-            spinnerAxis.setSelection(vo.getAxis_left() == null
-                    || "".equals(vo.getAxis_left()) ? 0 : Integer.valueOf(vo
-                    .getAxis_left()));
-            spinnerCylinder.setSelection(vo.getCylinder_left() == null
-                    || "".equals(vo.getCylinder_left()) ? 0 : Integer
-                    .valueOf(vo.getCylinder_left()));
-            spinnerTypeLens.setSelection(vo.getType_left() == null
-                    || "".equals(vo.getType_left()) ? 0 : Integer.valueOf(vo
-                    .getType_left()));
-            editTextBC.setText(vo.getBc_left().toString());
-            editTextDia.setText(vo.getDia_left().toString());
+        if (dataLensesVO != null) {
+            editTextDesc.setText(dataLensesVO.getDescriptionLeft());
+            editTextBrand.setText(dataLensesVO.getBrandLeft());
+            editTextBuySite.setText(dataLensesVO.getBuySiteLeft());
+            spinnerPower.setSelection(dataLensesVO.getPowerLeft() == null
+                    || "".equals(dataLensesVO.getPowerLeft()) ? 0 : Integer.valueOf(dataLensesVO
+                    .getPowerLeft()));
+            spinnerAdd.setSelection(dataLensesVO.getAddLeft() == null
+                    || "".equals(dataLensesVO.getAddLeft()) ? 0 : Integer.valueOf(dataLensesVO
+                    .getAddLeft()));
+            spinnerAxis.setSelection(dataLensesVO.getAxisLeft() == null
+                    || "".equals(dataLensesVO.getAxisLeft()) ? 0 : Integer.valueOf(dataLensesVO
+                    .getAxisLeft()));
+            spinnerCylinder.setSelection(dataLensesVO.getCylinderLeft() == null
+                    || "".equals(dataLensesVO.getCylinderLeft()) ? 0 : Integer
+                    .valueOf(dataLensesVO.getCylinderLeft()));
+            spinnerTypeLens.setSelection(dataLensesVO.getTypeLeft() == null
+                    || "".equals(dataLensesVO.getTypeLeft()) ? 0 : Integer.valueOf(dataLensesVO
+                    .getTypeLeft()));
+            editTextBC.setText(dataLensesVO.getBcLeft().toString());
+            editTextDia.setText(dataLensesVO.getDiaLeft().toString());
         }
     }
 

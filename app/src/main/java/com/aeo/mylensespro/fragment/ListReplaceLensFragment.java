@@ -11,14 +11,12 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -44,7 +42,6 @@ public class ListReplaceLensFragment extends ListFragment {
     private ListView listView;
 
     private static Boolean isNetworkAvailable;
-    private static List<TimeLensesVO> listTimeLensesVO;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -61,7 +58,7 @@ public class ListReplaceLensFragment extends ListFragment {
 //            setListAdapter(adapter);
 //        }
 
-        view = inflater.inflate(R.layout.listview_lens, container, false);
+//        view = inflater.inflate(R.layout.listview_lens, container, false);
 
         //Retira Tab referente ao Fragment do Periodo das lentes
         DrawerLayout viewMain = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
@@ -84,24 +81,36 @@ public class ListReplaceLensFragment extends ListFragment {
         mTracker = application.getDefaultTracker();
 
 
-        listView = (ListView) view.findViewById(R.id.listViewLens);
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
 
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if (listView.getAdapter() != null) {
-                    if (listView.getLastVisiblePosition() == listView.getAdapter().getCount() - 1 &&
-                            listView.getChildAt(listView.getChildCount() - 1).getBottom() <= listView.getHeight()) {
-                        //It is scrolled all the way down here
-                        Log.d("teste", "getMore");
-                    }
-                }
-            }
-        });
+//        listView = (ListView) view.findViewById(R.id.listViewLens);
+//        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+//            @Override
+//            public void onScrollStateChanged(AbsListView view, int scrollState) {
+//
+//            }
+//
+//            @Override
+//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+////                if (listView.getAdapter() != null) {
+////                    if (listView.getLastVisiblePosition() == listView.getAdapter().getCount() - 1 &&
+////                            listView.getChildAt(listView.getChildCount() - 1).getBottom() <= listView.getHeight()) {
+////                        //It is scrolled all the way down here
+////                        Log.d("teste", "getMore");
+////                    }
+////                }
+//
+//                if (listView.getAdapter() == null || listView.getAdapter().getCount() == 0)
+//                    return;
+//
+//                int l = visibleItemCount + firstVisibleItem;
+//                if (l >= totalItemCount /*&& !isLoading*/) {
+//                    // It is time to add new data. We call the listener
+////                    listView.addFooterView(footer);
+////                    isLoading = true;
+////                    listener.loadData();
+//                }
+//            }
+//        });
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -163,7 +172,6 @@ public class ListReplaceLensFragment extends ListFragment {
         }
 
         ListLensesTask task = new ListLensesTask(getContext(), this);
-//                = new com.aeo.mylensespro.task.ListLensesTask(getContext(), mListAdapter, getFragmentManager(), this);
         task.execute();
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
@@ -233,10 +241,8 @@ public class ListReplaceLensFragment extends ListFragment {
 
         @Override
         protected void onPostExecute(List<TimeLensesVO> listLens) {
-            listTimeLensesVO = listLens;
             if (listLens != null && listLens.size() > 0) {
-                mListAdapter = new ListReplaceLensBaseAdapter(context, listLens,
-                        getFragmentManager(), listFragment);
+                mListAdapter = new ListReplaceLensBaseAdapter(context, listLens);
                 setListAdapter(mListAdapter);
             } else {
                 LayoutInflater inflater = (LayoutInflater) context

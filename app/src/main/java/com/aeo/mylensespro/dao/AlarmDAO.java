@@ -52,10 +52,12 @@ public class AlarmDAO {
     public void insert(AlarmVO vo) {
         ParseObject post = getParseObjectAlarm(vo);
         post.setACL(new ParseACL(ParseUser.getCurrentUser()));
-        post.pinInBackground();
+        post.pinInBackground(tableName);
         post.saveEventually();
 
-        post.saveInBackground();
+        if (Utility.isNetworkAvailable(context)) {
+            post.saveInBackground();
+        }
 
     }
 
@@ -70,9 +72,6 @@ public class AlarmDAO {
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
             query.fromLocalDatastore();
-        } else {
-            //Tira da lista offline
-            ParseObject.unpinAllInBackground();
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
@@ -88,10 +87,12 @@ public class AlarmDAO {
                     post.put("days_before", days_before);
 
                     post.setACL(new ParseACL(ParseUser.getCurrentUser()));
-                    post.pinInBackground();
                     post.saveEventually();
+                    post.pinInBackground(tableName);
 
-                    post.saveInBackground();
+                    if (Utility.isNetworkAvailable(context)) {
+                        post.saveInBackground();
+                    }
 
 //                    post.saveInBackground(new SaveCallback() {
 //                        public void done(ParseException e) {
@@ -129,9 +130,6 @@ public class AlarmDAO {
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
             query.fromLocalDatastore();
-        } else {
-            //Tira da lista offline
-            ParseObject.unpinAllInBackground();
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
@@ -148,7 +146,8 @@ public class AlarmDAO {
                         alarmVO.setRemindEveryDay(post.getInt("remind_every_day"));
                         post.saveEventually();
                     }
-                    ParseObject.pinAllInBackground(postList);
+                    ParseObject.unpinAllInBackground(tableName);
+                    ParseObject.pinAllInBackground(tableName, postList);
                 } else {
                     Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
                 }
@@ -166,9 +165,6 @@ public class AlarmDAO {
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
             query.fromLocalDatastore();
-        } else {
-            //Tira da lista offline
-            ParseObject.unpinAllInBackground();
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
@@ -183,7 +179,8 @@ public class AlarmDAO {
                 alarmVO.setRemindEveryDay(post.getInt("remind_every_day"));
                 post.saveEventually();
             }
-            ParseObject.pinAllInBackground(postList);
+            ParseObject.unpinAllInBackground(tableName);
+            ParseObject.pinAllInBackground(tableName, postList);
 
         } catch (ParseException e) {
             Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());

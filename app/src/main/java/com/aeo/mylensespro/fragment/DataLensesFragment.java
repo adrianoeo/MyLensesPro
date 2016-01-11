@@ -1,5 +1,6 @@
 package com.aeo.mylensespro.fragment;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -22,6 +23,7 @@ import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.adapter.DataLensesCollectionPagerAdapter;
 import com.aeo.mylensespro.dao.LensesDataDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
+import com.aeo.mylensespro.task.DataLensesTask;
 import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.vo.DataLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
@@ -73,6 +75,11 @@ public class DataLensesFragment extends Fragment {
 
     private static boolean isSaveVisible;
     private Tracker mTracker;
+    private ProgressDialog progressDlg;
+
+    public static DataLensesVO dataLensesVO;
+
+    private View view;
 
     public DataLensesFragment() {
     }
@@ -97,10 +104,13 @@ public class DataLensesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_data_lenses, container, false);
+        view = inflater.inflate(R.layout.fragment_data_lenses, container, false);
+
+        DataLensesTask task = new DataLensesTask(getContext(), progressDlg, this);
+        task.execute();
 
         dataLensesCollectionPagerAdapter
-                = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext());
+                = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(), dataLensesVO);
 
         mViewPager = (ViewPager) view.findViewById(R.id.pagerDataLenses);
         mViewPager.setAdapter(dataLensesCollectionPagerAdapter);
@@ -271,11 +281,11 @@ public class DataLensesFragment extends Fragment {
     }
 
     // Call to update the share intent
-    private void setShareIntent(Intent shareIntent) {
-        if (mShareActionProvider != null) {
-            mShareActionProvider.setShareIntent(shareIntent);
-        }
-    }
+//    private void setShareIntent(Intent shareIntent) {
+//        if (mShareActionProvider != null) {
+//            mShareActionProvider.setShareIntent(shareIntent);
+//        }
+//    }
 
     private Intent getDefaultIntent() {
         Intent intent = new Intent(Intent.ACTION_SEND);
@@ -294,67 +304,57 @@ public class DataLensesFragment extends Fragment {
 
     private String getDataLenses() {
         LensesDataDAO dao = LensesDataDAO.getInstance(getContext());
-        DataLensesVO vo = dao.getById(dao.getLastIdLens());
+//        DataLensesVO dataLensesVO = dao.getLastDataLenses();
 
         StringBuilder text = new StringBuilder();
 
-        if (vo != null) {
+        if (dataLensesVO != null) {
             text.append("\n");
             text.append("- ").append(getString(R.string.tabLeftLens))
                     .append("\n\n");
-            text.append(getLeftText(vo)).append("\n\n");
+            text.append(getLeftText(dataLensesVO)).append("\n\n");
             text.append("- ").append(getString(R.string.tabRightLens))
                     .append("\n\n");
-            text.append(getRightText(vo)).append("\n");
+            text.append(getRightText(dataLensesVO)).append("\n");
         }
 
         return text.toString();
     }
 
     private String getLeftText(DataLensesVO vo) {
-        String typeLensLeft = vo.getType_left() == null
-                || "".equals(vo.getType_left()) ? "" : getResources()
-                .getStringArray(R.array.array_type_lens)[Integer.valueOf(vo
-                .getType_left())];
+        String typeLensLeft = vo.getTypeLeft() == null ? "" : getResources()
+                .getStringArray(R.array.array_type_lens)[vo.getTypeLeft()];
 
-        String powerLeft = vo.getPower_left() == null
-                || "".equals(vo.getPower_left()) ? "" : getResources()
-                .getStringArray(R.array.array_power)[Integer.valueOf(vo
-                .getPower_left())];
+        String powerLeft = vo.getPowerLeft() == null ? "" : getResources()
+                .getStringArray(R.array.array_power)[vo.getPowerLeft()];
 
-        String addLeft = vo.getAdd_left() == null
-                || "".equals(vo.getAdd_left()) ? "" : getResources()
-                .getStringArray(R.array.array_add)[Integer.valueOf(vo
-                .getAdd_left())];
+        String addLeft = vo.getAddLeft() == null ? "" : getResources()
+                .getStringArray(R.array.array_add)[vo.getAddLeft()];
 
-        String axisLeft = vo.getAxis_left() == null
-                || "".equals(vo.getAxis_left()) ? "" : getResources()
-                .getStringArray(R.array.array_axis)[Integer.valueOf(vo
-                .getAxis_left())];
+        String axisLeft = vo.getAxisLeft() == null ? "" : getResources()
+                .getStringArray(R.array.array_axis)[vo.getAxisLeft()];
 
-        String cylinderLeft = vo.getCylinder_left() == null
-                || "".equals(vo.getCylinder_left()) ? "" : getResources()
-                .getStringArray(R.array.array_cylinder)[Integer.valueOf(vo
-                .getCylinder_left())];
+        String cylinderLeft = vo.getCylinderLeft() == null ? "" : getResources()
+                .getStringArray(R.array.array_cylinder)[vo.getCylinderLeft()];
 
         StringBuilder sbLeft = new StringBuilder();
         sbLeft.append(getString(R.string.lbl_brand)).append(": ")
-                .append(vo.getBrand_left() == null ? "" : vo.getBrand_left())
+                .append(vo.getBrandLeft() == null ? "" : vo.getBrandLeft())
                 .append("\n");
         sbLeft.append(getString(R.string.lbl_desc_lens))
                 .append(": ")
-                .append(vo.getDescription_left() == null ? "" : vo
-                        .getDescription_left()).append("\n");
+                .append(vo.getDescriptionLeft() == null ? "" : vo
+                        .getDescriptionLeft()).append("\n");
         sbLeft.append(getString(R.string.lbl_type_lens)).append(": ")
                 .append(typeLensLeft).append("\n");
 
         // Miophya/Hipermetrophya
-        if (vo.getType_left() != null) {
-            if ("0".equals(vo.getType_left().toString())) {
+        if (vo.getTypeLeft() != null) {
+            if (0 == vo.getTypeLeft()) {
                 sbLeft.append(getString(R.string.lbl_power)).append(": ")
                         .append(powerLeft).append("\n");
                 // Astigmatism
-            } else if ("1".equals(vo.getType_left().toString())) {
+            } else if (1 == vo.getTypeLeft()) {
                 sbLeft.append(getString(R.string.lbl_power)).append(": ")
                         .append(powerLeft).append("\n");
                 sbLeft.append(getString(R.string.lbl_cylinder)).append(": ")
@@ -362,7 +362,7 @@ public class DataLensesFragment extends Fragment {
                 sbLeft.append(getString(R.string.lbl_axis)).append(": ")
                         .append(axisLeft).append("\n");
                 // Multifocal/Presbyopia
-            } else if ("2".equals(vo.getType_left().toString())) {
+            } else if (2 == vo.getTypeLeft()) {
                 sbLeft.append(getString(R.string.lbl_power)).append(": ")
                         .append(powerLeft).append("\n");
                 sbLeft.append(getString(R.string.lbl_add)).append(": ")
@@ -370,58 +370,48 @@ public class DataLensesFragment extends Fragment {
             }
         }
         sbLeft.append(getString(R.string.lbl_bc)).append(": ")
-                .append(vo.getBc_left() == null ? "" : vo.getBc_left())
+                .append(vo.getBcLeft() == null ? "" : vo.getBcLeft())
                 .append("\n");
         sbLeft.append(getString(R.string.lbl_dia)).append(": ")
-                .append(vo.getDia_left() == null ? "" : vo.getDia_left())
+                .append(vo.getDiaLeft() == null ? "" : vo.getDiaLeft())
                 .append("\n");
         return sbLeft.toString();
     }
 
     private String getRightText(DataLensesVO vo) {
-        String typeLensRight = vo.getType_right() == null
-                || "".equals(vo.getType_right()) ? "" : getResources()
-                .getStringArray(R.array.array_type_lens)[Integer.valueOf(vo
-                .getType_right())];
+        String typeLensRight = vo.getTypeRight() == null ? "" : getResources()
+                .getStringArray(R.array.array_type_lens)[vo.getTypeRight()];
 
-        String powerRight = vo.getPower_right() == null
-                || "".equals(vo.getPower_right()) ? "" : getResources()
-                .getStringArray(R.array.array_power)[Integer.valueOf(vo
-                .getPower_right())];
+        String powerRight = vo.getPowerRight() == null ? "" : getResources()
+                .getStringArray(R.array.array_power)[vo.getPowerRight()];
 
-        String addRight = vo.getAdd_right() == null
-                || "".equals(vo.getAdd_right()) ? "" : getResources()
-                .getStringArray(R.array.array_add)[Integer.valueOf(vo
-                .getAdd_right())];
+        String addRight = vo.getAddRight() == null ? "" : getResources()
+                .getStringArray(R.array.array_add)[vo.getAddRight()];
 
-        String axisRight = vo.getAxis_right() == null
-                || "".equals(vo.getAxis_right()) ? "" : getResources()
-                .getStringArray(R.array.array_axis)[Integer.valueOf(vo
-                .getAxis_right())];
+        String axisRight = vo.getAxisRight() == null ? "" : getResources()
+                .getStringArray(R.array.array_axis)[vo.getAxisRight()];
 
-        String cylinderRight = vo.getCylinder_right() == null
-                || "".equals(vo.getCylinder_right()) ? "" : getResources()
-                .getStringArray(R.array.array_cylinder)[Integer.valueOf(vo
-                .getCylinder_right())];
+        String cylinderRight = vo.getCylinderRight() == null ? "" : getResources()
+                .getStringArray(R.array.array_cylinder)[vo.getCylinderRight()];
 
         StringBuilder sbRight = new StringBuilder();
         sbRight.append(getString(R.string.lbl_brand)).append(": ")
-                .append(vo.getBrand_right() == null ? "" : vo.getBrand_right())
+                .append(vo.getBrandRight() == null ? "" : vo.getBrandRight())
                 .append("\n");
         sbRight.append(getString(R.string.lbl_desc_lens))
                 .append(": ")
-                .append(vo.getDescription_right() == null ? "" : vo
-                        .getDescription_right()).append("\n");
+                .append(vo.getDescriptionRight() == null ? "" : vo
+                        .getDescriptionRight()).append("\n");
         sbRight.append(getString(R.string.lbl_type_lens)).append(": ")
                 .append(typeLensRight).append("\n");
 
         // Miophya/Hipermetrophya
-        if (vo.getType_right() != null) {
-            if ("0".equals(vo.getType_right().toString())) {
+        if (vo.getTypeRight() != null) {
+            if (0 == vo.getTypeRight()) {
                 sbRight.append(getString(R.string.lbl_power)).append(": ")
                         .append(powerRight).append("\n");
                 // Astigmatism
-            } else if ("1".equals(vo.getType_right().toString())) {
+            } else if (1 == vo.getTypeRight()) {
                 sbRight.append(getString(R.string.lbl_power)).append(": ")
                         .append(powerRight).append("\n");
                 sbRight.append(getString(R.string.lbl_cylinder)).append(": ")
@@ -429,7 +419,7 @@ public class DataLensesFragment extends Fragment {
                 sbRight.append(getString(R.string.lbl_axis)).append(": ")
                         .append(axisRight).append("\n");
                 // Multifocal/Presbyopia
-            } else if ("2".equals(vo.getType_right().toString())) {
+            } else if (2 == vo.getTypeRight()) {
                 sbRight.append(getString(R.string.lbl_power)).append(": ")
                         .append(powerRight).append("\n");
                 sbRight.append(getString(R.string.lbl_add)).append(": ")
@@ -437,10 +427,10 @@ public class DataLensesFragment extends Fragment {
             }
         }
         sbRight.append(getString(R.string.lbl_bc)).append(": ")
-                .append(vo.getBc_right() == null ? "" : vo.getBc_right())
+                .append(vo.getBcRight() == null ? "" : vo.getBcRight())
                 .append("\n");
         sbRight.append(getString(R.string.lbl_dia)).append(": ")
-                .append(vo.getDia_right() == null ? "" : vo.getDia_right())
+                .append(vo.getDiaRight() == null ? "" : vo.getDiaRight())
                 .append("\n");
 
         return sbRight.toString();
@@ -452,111 +442,92 @@ public class DataLensesFragment extends Fragment {
             DataLensesVO vo = new DataLensesVO();
 
 		/* Left Lens */
-            vo.setBrand_left(editTextBrandLeft.getText().toString());
-            vo.setDescription_left(editTextDescLeft.getText().toString());
-            vo.setBuy_site_left(editTextBuySiteLeft.getText().toString());
-            vo.setType_left(String.valueOf(spinnerTypeLensLeft
-                    .getSelectedItemPosition()));
+            vo.setBrandLeft(editTextBrandLeft.getText().toString());
+            vo.setDescriptionLeft(editTextDescLeft.getText().toString());
+            vo.setBuySiteLeft(editTextBuySiteLeft.getText().toString());
+            vo.setTypeLeft(spinnerTypeLensLeft.getSelectedItemPosition());
 
             String bcTTxt = editTextBCLeft.getText().toString();
             Double bc = !"".equals(bcTTxt) ? Double.valueOf(bcTTxt) : null;
             String diaTTxt = editTextDiaLeft.getText().toString();
             Double dia = !"".equals(diaTTxt) ? Double.valueOf(diaTTxt) : null;
 
-            vo.setBc_left(bc);
-            vo.setDia_left(dia);
+            vo.setBcLeft(bc);
+            vo.setDiaLeft(dia);
 
             // Myopia/Hypermetropia
             if (spinnerTypeLensLeft.getSelectedItemPosition() == 0) {
-                vo.setPower_left(String.valueOf(spinnerPowerLeft
-                        .getSelectedItemPosition()));
-                vo.setAdd_left(null);
-                vo.setAxis_left(null);
-                vo.setCylinder_left(null);
+                vo.setPowerLeft(spinnerPowerLeft.getSelectedItemPosition());
+                vo.setAddLeft(null);
+                vo.setAxisLeft(null);
+                vo.setCylinderLeft(null);
                 // Astigmatism
             } else if (spinnerTypeLensLeft.getSelectedItemPosition() == 1) {
-                vo.setPower_left(String.valueOf(spinnerPowerLeft
-                        .getSelectedItemPosition()));
-                vo.setCylinder_left(String.valueOf(spinnerCylinderLeft
-                        .getSelectedItemPosition()));
-                vo.setAxis_left(String.valueOf(spinnerAxisLeft
-                        .getSelectedItemPosition()));
-                vo.setAdd_left(null);
+                vo.setPowerLeft(spinnerPowerLeft.getSelectedItemPosition());
+                vo.setCylinderLeft(spinnerCylinderLeft.getSelectedItemPosition());
+                vo.setAxisLeft(spinnerAxisLeft.getSelectedItemPosition());
+                vo.setAddLeft(null);
                 // Multifocal/Presbyopia
             } else if (spinnerTypeLensLeft.getSelectedItemPosition() == 2) {
-                vo.setPower_left(String.valueOf(spinnerPowerLeft
-                        .getSelectedItemPosition()));
-                vo.setAdd_left(String.valueOf(spinnerAddLeft
-                        .getSelectedItemPosition()));
-                vo.setAxis_left(null);
-                vo.setCylinder_left(null);
+                vo.setPowerLeft(spinnerPowerLeft.getSelectedItemPosition());
+                vo.setAddLeft(spinnerAddLeft.getSelectedItemPosition());
+                vo.setAxisLeft(null);
+                vo.setCylinderLeft(null);
                 // Colored/No degree
             } else if (spinnerTypeLensLeft.getSelectedItemPosition() == 3) {
-                vo.setPower_left(null);
-                vo.setAdd_left(null);
-                vo.setAxis_left(null);
-                vo.setCylinder_left(null);
+                vo.setPowerLeft(null);
+                vo.setAddLeft(null);
+                vo.setAxisLeft(null);
+                vo.setCylinderLeft(null);
             }
 
 		/* Right Lens */
-            vo.setBrand_right(editTextBrandRight.getText().toString());
-            vo.setDescription_right(editTextDescRight.getText().toString());
-            vo.setBuy_site_right(editTextBuySiteRight.getText().toString());
-            vo.setType_right(String.valueOf(spinnerTypeLensRight
-                    .getSelectedItemPosition()));
+            vo.setBrandRight(editTextBrandRight.getText().toString());
+            vo.setDescriptionRight(editTextDescRight.getText().toString());
+            vo.setBuySiteRight(editTextBuySiteRight.getText().toString());
+            vo.setTypeRight(spinnerTypeLensRight.getSelectedItemPosition());
 
             String bcTTxtRight = editTextBCRight.getText().toString();
             Double bcRight = !"".equals(bcTTxtRight) ? Double.valueOf(bcTTxtRight) : null;
             String diaTTxtRight = editTextDiaRight.getText().toString();
             Double diaRight = !"".equals(diaTTxtRight) ? Double.valueOf(diaTTxtRight) : null;
 
-            vo.setBc_right(bcRight);
-            vo.setDia_right(diaRight);
+            vo.setBcRight(bcRight);
+            vo.setDiaRight(diaRight);
 
             // Myopia/Hypermetropia
             if (spinnerTypeLensRight.getSelectedItemPosition() == 0) {
-                vo.setPower_right(String.valueOf(spinnerPowerRight
-                        .getSelectedItemPosition()));
-                vo.setAdd_right(null);
-                vo.setAxis_right(null);
-                vo.setCylinder_right(null);
+                vo.setPowerRight(spinnerPowerRight.getSelectedItemPosition());
+                vo.setAddRight(null);
+                vo.setAxisRight(null);
+                vo.setCylinderRight(null);
                 // Astigmatism
             } else if (spinnerTypeLensRight.getSelectedItemPosition() == 1) {
-                vo.setPower_right(String.valueOf(spinnerPowerRight
-                        .getSelectedItemPosition()));
-                vo.setCylinder_right(String.valueOf(spinnerCylinderRight
-                        .getSelectedItemPosition()));
-                vo.setAxis_right(String.valueOf(spinnerAxisRight
-                        .getSelectedItemPosition()));
-                vo.setAdd_right(null);
+                vo.setPowerRight(spinnerPowerRight.getSelectedItemPosition());
+                vo.setCylinderRight(spinnerCylinderRight.getSelectedItemPosition());
+                vo.setAxisRight(spinnerAxisRight.getSelectedItemPosition());
+                vo.setAddRight(null);
                 // Multifocal/Presbyopia
             } else if (spinnerTypeLensRight.getSelectedItemPosition() == 2) {
-                vo.setPower_right(String.valueOf(spinnerPowerRight
-                        .getSelectedItemPosition()));
-                vo.setAdd_right(String.valueOf(spinnerAddRight
-                        .getSelectedItemPosition()));
-                vo.setAxis_right(null);
-                vo.setCylinder_right(null);
+                vo.setPowerRight(spinnerPowerRight.getSelectedItemPosition());
+                vo.setAddRight(spinnerAddRight.getSelectedItemPosition());
+                vo.setAxisRight(null);
+                vo.setCylinderRight(null);
                 // Colored/No degree
             } else if (spinnerTypeLensRight.getSelectedItemPosition() == 3) {
-                vo.setPower_right(null);
-                vo.setAdd_right(null);
-                vo.setAxis_right(null);
-                vo.setCylinder_right(null);
+                vo.setPowerRight(null);
+                vo.setAddRight(null);
+                vo.setAxisRight(null);
+                vo.setCylinderRight(null);
             }
 
             LensesDataDAO lensesDataDAO = LensesDataDAO.getInstance(getContext());
 
-            int idLastItemDataLenses = lensesDataDAO.getLastIdLens();
-
             // If there are not lenses data then insert. If there are lenses
             // replacement then insert history.
-            if (idLastItemDataLenses == 0) {
+            if (vo.getId() == null) {
                 lensesDataDAO.insert(vo);
-                // If there are lenses data then update. If there are lenses
-                // replacement then update history.
             } else {
-                vo.setId(idLastItemDataLenses);
                 lensesDataDAO.update(vo);
             }
         }
@@ -565,6 +536,16 @@ public class DataLensesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
+//        DataLensesTask task = new DataLensesTask(getContext(), progressDlg, this);
+//        task.execute();
+//
+//        dataLensesCollectionPagerAdapter
+//                = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(), dataLensesVO);
+//
+//        mViewPager = (ViewPager) view.findViewById(R.id.pagerDataLenses);
+//        mViewPager.setAdapter(dataLensesCollectionPagerAdapter);
+//
 
         mTracker.setScreenName("DataLensesFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -575,4 +556,6 @@ public class DataLensesFragment extends Fragment {
         super.onDetach();
         isSaveVisible = false;
     }
+
+
 }

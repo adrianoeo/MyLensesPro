@@ -19,11 +19,9 @@ package com.aeo.mylensespro.util;
 import android.app.Application;
 
 import com.aeo.mylensespro.R;
-import com.aeo.mylensespro.vo.AlarmPO;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.Tracker;
 import com.parse.Parse;
-import com.parse.ParseObject;
 
 /**
  * This is a subclass of {@link Application} used to provide shared objects for this app, such as
@@ -36,7 +34,7 @@ public class MyLensesApplication extends Application {
     public void onCreate() {
         super.onCreate();
         Parse.enableLocalDatastore(getApplicationContext());
-        ParseObject.registerSubclass(AlarmPO.class);
+//        ParseObject.registerSubclass(AlarmPO.class);
         Parse.initialize(this, "phOG3w5biqDoVi0p3W8koRcCoRP4izKWoQ02RDXd", "wqKH5GqKyn7e0e6SVgvl4SYjyB3aua2JGBuC3Thw");
     }
 

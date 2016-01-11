@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.fragment.LeftDataFragment;
 import com.aeo.mylensespro.fragment.RightDataFragment;
+import com.aeo.mylensespro.vo.DataLensesVO;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,20 +21,24 @@ public class DataLensesCollectionPagerAdapter extends FragmentStatePagerAdapter 
     @SuppressLint("UseSparseArrays")
     private Map<Integer, Fragment> mPageReferenceMap = new HashMap<Integer, Fragment>();
     private Context context;
+    private DataLensesVO dataLensesVO;
 
-    public DataLensesCollectionPagerAdapter(FragmentManager fm, Context context) {
+    public DataLensesCollectionPagerAdapter(FragmentManager fm, Context context,
+                                            DataLensesVO dataLensesVO) {
         super(fm);
         this.context = context;
+        this.dataLensesVO = dataLensesVO;
     }
 
     @Override
     public Fragment getItem(int position) {
         Fragment fragment = null;
+
         if (position == 0) {
-            fragment = LeftDataFragment.newInstance();
+            fragment = LeftDataFragment.newInstance(dataLensesVO);
             mPageReferenceMap.put(position, fragment);
         } else {
-            fragment = RightDataFragment.newInstance();
+            fragment = RightDataFragment.newInstance(dataLensesVO);
             mPageReferenceMap.put(position, fragment);
         }
         return fragment;
