@@ -14,12 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.dao.AlarmDAO;
-import com.aeo.mylensespro.dao.LensesDataDAO;
+import com.aeo.mylensespro.dao.DataLensesDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.fragment.StatusFragment;
 import com.aeo.mylensespro.util.MyLensesApplication;
@@ -30,8 +29,6 @@ import com.parse.ParseUser;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    // Object for intrinsic lock
-    public static final Object sDataLock = new Object();
 
     public Toolbar toolbar;
     private boolean doubleBackToExitPressedOnce;
@@ -41,7 +38,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        supportRequestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
 
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -67,13 +63,8 @@ public class MainActivity extends AppCompatActivity
             loadLoginView();
         }
 
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.progress_spinner);
-
         if (savedInstanceState == null) {
-//            progressBar.setVisibility(View.VISIBLE);
-            Utility.replaceFragment(new StatusFragment(),
-                    getSupportFragmentManager());
-//            progressBar.setVisibility(View.INVISIBLE);
+            Utility.replaceFragment(new StatusFragment(), getSupportFragmentManager());
         }
 
     }
@@ -82,6 +73,7 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         AlarmDAO.getInstance(getApplicationContext()).getAlarm();
+//        DataLensesDAO.getInstance(getApplicationContext()).getLastDataLensesAsync();
     }
 
     @Override
@@ -123,25 +115,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    //    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        if (id == R.id.menuHelp) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//            builder.setMessage(R.string.msg_units);
-//            builder.setCancelable(true);
-//            builder.setPositiveButton(R.string.btn_ok, null);
-//            AlertDialog dialog = builder.create();
-//            dialog.show();
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -174,8 +147,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void shop() {
-        LensesDataDAO lensesDataDAO = LensesDataDAO.getInstance(this);
-        DataLensesVO lensesVO = lensesDataDAO.getLastDataLenses();
+        DataLensesDAO dataLensesDAO = DataLensesDAO.getInstance(this);
+        DataLensesVO lensesVO = dataLensesDAO.getLastDataLenses();
 
         if (lensesVO != null) {
             String urlLeft = lensesVO.getBuySiteLeft();

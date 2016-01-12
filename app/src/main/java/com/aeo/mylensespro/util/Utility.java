@@ -21,11 +21,12 @@ import java.text.SimpleDateFormat;
 public abstract class Utility {
 
     @SuppressLint("SimpleDateFormat")
-    public static String formatDateDefault(String dateToFormat) {
+    public static String formatDateDefault(String dateToFormat, Context context) {
         String date = null;
         try {
             if (dateToFormat != null) {
-                date = new SimpleDateFormat("dd/MM/yyyy")
+                String format = context.getResources().getString(R.string.locale);
+                date = new SimpleDateFormat(format)
                         .format(new SimpleDateFormat("yyyy-MM-dd")
                                 .parse(dateToFormat));
             }
@@ -35,12 +36,13 @@ public abstract class Utility {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public static String formatDateToSqlite(String dateToFormat) {
+    public static String formatDateToSqlite(String dateToFormat, Context context) {
         String date = null;
         try {
             if (dateToFormat != null) {
+                String format = context.getResources().getString(R.string.locale);
                 date = new SimpleDateFormat("yyyy-MM-dd")
-                        .format(new SimpleDateFormat("dd/MM/yyyy")
+                        .format(new SimpleDateFormat(format)
                                 .parse(dateToFormat));
             }
         } catch (ParseException e) {

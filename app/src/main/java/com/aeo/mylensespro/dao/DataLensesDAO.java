@@ -5,28 +5,31 @@ import android.content.Context;
 
 import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.DataLensesVO;
+import com.parse.GetCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-public class LensesDataDAO {
+import java.util.List;
+
+public class DataLensesDAO {
 
     private static String tableName = "data_lens";
-    private static LensesDataDAO instance;
+    private static DataLensesDAO instance;
     private Context context;
 
     public static DataLensesVO dataLensesVO;
 
-    public static LensesDataDAO getInstance(Context context) {
+    public static DataLensesDAO getInstance(Context context) {
         if (instance == null) {
-            return new LensesDataDAO(context);
+            return new DataLensesDAO(context);
         }
         return instance;
     }
 
-    public LensesDataDAO(Context context) {
+    public DataLensesDAO(Context context) {
         this.context = context;
     }
 
@@ -153,6 +156,9 @@ public class LensesDataDAO {
 
         try {
             ParseObject parseObject = query.getFirst();
+            parseObject.saveEventually();
+            ParseObject.unpinAllInBackground(tableName);
+            parseObject.pinInBackground(tableName);
             return setDataLensesVO(parseObject);
         } catch (ParseException e) {
             e.printStackTrace();
@@ -160,29 +166,43 @@ public class LensesDataDAO {
         return null;
     }
 
+    public void getLastDataLensesAsync() {
+        ParseQuery<ParseObject> query = getParseQuery();
+
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
+            @Override
+            public void done(ParseObject object, ParseException e) {
+                dataLensesVO = setDataLensesVO(object);
+            }
+        });
+    }
+
     private DataLensesVO setDataLensesVO(ParseObject obj) {
-        DataLensesVO vo = new DataLensesVO();
-        vo.setId(obj.getObjectId());
-        vo.setDescriptionLeft(obj.getString("description_lef"));
-        vo.setBrandLeft(obj.getString("brand_left"));
-        vo.setTypeLeft(obj.getInt("type_left"));
-        vo.setPowerLeft(obj.getInt("power_left"));
-        vo.setCylinderLeft(obj.getInt("cylinder_left"));
-        vo.setAxisLeft(obj.getInt("axis_left"));
-        vo.setAddLeft(obj.getInt("add_left"));
-        vo.setBuySiteLeft(obj.getString("buy_site_left"));
-        vo.setDescriptionRight(obj.getString("description_right"));
-        vo.setBrandRight(obj.getString("brand_right"));
-        vo.setTypeRight(obj.getInt("type_right"));
-        vo.setPowerRight(obj.getInt("power_right"));
-        vo.setCylinderRight(obj.getInt("cylinder_right"));
-        vo.setAxisRight(obj.getInt("axis_right"));
-        vo.setAddRight(obj.getInt("add_right"));
-        vo.setBuySiteRight(obj.getString("buy_site_right"));
-        vo.setBcLeft(obj.getDouble("bc_left"));
-        vo.setBcRight(obj.getDouble("bc_right"));
-        vo.setDiaLeft(obj.getDouble("dia_left"));
-        vo.setDiaRight(obj.getDouble("dia_right"));
+        DataLensesVO vo = null;
+        if (obj != null) {
+            vo = new DataLensesVO();
+            vo.setId(obj.getString("data_id"));
+            vo.setDescriptionLeft(obj.getString("description_left"));
+            vo.setBrandLeft(obj.getString("brand_left"));
+            vo.setTypeLeft(obj.getInt("type_left"));
+            vo.setPowerLeft(obj.getInt("power_left"));
+            vo.setCylinderLeft(obj.getInt("cylinder_left"));
+            vo.setAxisLeft(obj.getInt("axis_left"));
+            vo.setAddLeft(obj.getInt("add_left"));
+            vo.setBuySiteLeft(obj.getString("buy_site_left"));
+            vo.setDescriptionRight(obj.getString("description_right"));
+            vo.setBrandRight(obj.getString("brand_right"));
+            vo.setTypeRight(obj.getInt("type_right"));
+            vo.setPowerRight(obj.getInt("power_right"));
+            vo.setCylinderRight(obj.getInt("cylinder_right"));
+            vo.setAxisRight(obj.getInt("axis_right"));
+            vo.setAddRight(obj.getInt("add_right"));
+            vo.setBuySiteRight(obj.getString("buy_site_right"));
+            vo.setBcLeft(obj.getDouble("bc_left"));
+            vo.setBcRight(obj.getDouble("bc_right"));
+            vo.setDiaLeft(obj.getDouble("dia_left"));
+            vo.setDiaRight(obj.getDouble("dia_right"));
+        }
         return vo;
     }
 
@@ -214,6 +234,8 @@ public class LensesDataDAO {
     }
 
     private ParseObject setParseObject(ParseObject parseObject, DataLensesVO vo) {
+        parseObject.put("data_id", vo.getId().replace("OFFLINE", ""));
+
         parseObject.put("user_id", ParseUser.getCurrentUser());
         parseObject.put("description_left", vo.getDescriptionLeft().trim());
         parseObject.put("brand_left", vo.getBrandLeft().trim());
@@ -261,5 +283,23 @@ public class LensesDataDAO {
             parseObject.put("dia_right", vo.getDiaRight());
         }
         return parseObject;
+    }
+
+    public void syncDataLenses() {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.fromPin(tableName);
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+        query.whereContains("data_id", "OFFLINE");
+
+        try {
+            List<ParseObject> list = query.find();
+            for (ParseObject obj : list) {
+                obj.put("data_id", obj.getString("data_id").replace("OFFLINE", ""));
+                obj.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                obj.save();
+            }
+        } catch (com.parse.ParseException e) {
+            e.printStackTrace();
+        }
     }
 }

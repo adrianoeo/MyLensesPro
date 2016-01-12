@@ -12,6 +12,9 @@ import android.widget.DatePicker;
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.adapter.TimeLensesCollectionPagerAdapter;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class DatePickerFragment extends DialogFragment implements
         DatePickerDialog.OnDateSetListener {
 
@@ -67,32 +70,22 @@ public class DatePickerFragment extends DialogFragment implements
             fragment = (LeftTimeFragment) adapter.getFragment(index);
         } else if (tag.equals(RightTimeFragment.DATE_RIGHT_EYE)) {
             fragment = (RightTimeFragment) adapter.getFragment(index);
-        } // Fragment of left lens data
-        /*else if (tag.equals(LeftDataFragment.DATE_LENS_LEFT)) {
-            ViewPager mViewPager = (ViewPager) getActivity().findViewById(
-					R.id.pagerLenses);
-			int index = mViewPager.getCurrentItem();
-			LensesCollectionPagerAdapter adapter = ((LensesCollectionPagerAdapter) mViewPager
-					.getAdapter());
-			fragment = (LeftDataFragment) adapter.getFragment(index);
+        }
 
-		} // Fragment of right lens data
-		else if (tag.equals(RightDataFragment.DATE_LENS_RIGHT)) {
-			ViewPager mViewPager = (ViewPager) getActivity().findViewById(
-					R.id.pagerLenses);
-			int index = mViewPager.getCurrentItem();
-			LensesCollectionPagerAdapter adapter = ((LensesCollectionPagerAdapter) mViewPager
-					.getAdapter());
-			fragment = (RightDataFragment) adapter.getFragment(index);
-		}
-*/
         this.day = day;
         this.month = month + 1;
         this.year = year;
 
-        String strDate = new StringBuilder(String.format("%02d", day))
-                .append("/").append(String.format("%02d", month + 1))
-                .append("/").append(String.valueOf(year)).toString();
+//        String strDate = new StringBuilder(String.format("%02d", day))
+//                .append("/").append(String.format("%02d", month + 1))
+//                .append("/").append(String.valueOf(year)).toString();
+
+        String dateFormat = getContext().getResources().getString(R.string.locale);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(year, month, day);
+
+        String strDate = new SimpleDateFormat(dateFormat).format(calendar.getTime());
 
         if (tag.equals(LeftTimeFragment.DATE_LEFT_EYE)) {
             btnDateLeft = (Button) fragment.getView().findViewById(
@@ -102,15 +95,7 @@ public class DatePickerFragment extends DialogFragment implements
             btnDateRight = (Button) fragment.getView().findViewById(
                     R.id.btnDateRight);
             btnDateRight.setText(strDate);
-        } /*else if (tag.equals(LeftDataFragment.DATE_LENS_LEFT)) {
-			btnDateIniLeft = (Button) fragment.getView().findViewById(
-					R.id.btnDateIniLeft);
-			btnDateIniLeft.setText(strDate);
-		} else if (tag.equals(RightDataFragment.DATE_LENS_RIGHT)) {
-			btnDateIniRight = (Button) fragment.getView().findViewById(
-					R.id.btnDateIniRight);
-			btnDateIniRight.setText(strDate);
-		}*/
+        }
     }
 
     public int getDay() {

@@ -1,7 +1,9 @@
 package com.aeo.mylensespro.fragment;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -21,13 +23,16 @@ import android.widget.Spinner;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.adapter.DataLensesCollectionPagerAdapter;
-import com.aeo.mylensespro.dao.LensesDataDAO;
+import com.aeo.mylensespro.dao.DataLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
 import com.aeo.mylensespro.task.DataLensesTask;
 import com.aeo.mylensespro.util.MyLensesApplication;
+import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.DataLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
+
+import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -77,9 +82,10 @@ public class DataLensesFragment extends Fragment {
     private Tracker mTracker;
     private ProgressDialog progressDlg;
 
-    public static DataLensesVO dataLensesVO;
+//    public static DataLensesVO dataLensesVO;
 
     private View view;
+    private static Boolean isNetworkAvailable;
 
     public DataLensesFragment() {
     }
@@ -106,11 +112,9 @@ public class DataLensesFragment extends Fragment {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.fragment_data_lenses, container, false);
 
-        DataLensesTask task = new DataLensesTask(getContext(), progressDlg, this);
-        task.execute();
-
         dataLensesCollectionPagerAdapter
-                = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(), dataLensesVO);
+                = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(),
+                DataLensesDAO.dataLensesVO);
 
         mViewPager = (ViewPager) view.findViewById(R.id.pagerDataLenses);
         mViewPager.setAdapter(dataLensesCollectionPagerAdapter);
@@ -185,45 +189,49 @@ public class DataLensesFragment extends Fragment {
         Fragment leftFragment = dataLensesCollectionPagerAdapter.getFragment(0);
         Fragment rightFragment = dataLensesCollectionPagerAdapter.getFragment(1);
 
-        View leftView = leftFragment.getView();
-        View rightView = rightFragment.getView();
+        if (leftFragment != null && rightFragment != null) {
 
-        layoutLeft = (LinearLayout) leftView.findViewById(R.id.id_layout_Lens_left);
-        layoutRight = (LinearLayout) rightView.findViewById(R.id.id_layout_Lens_right);
+            View leftView = leftFragment.getView();
+            View rightView = rightFragment.getView();
 
-        switch (item.getItemId()) {
-            case R.id.menuEditDataLenses:
-                enableControls(true, layoutLeft);
-                enableControls(true, layoutRight);
-                enableMenuEdit(false);
-                enableMenuSaveCancel(true);
+            layoutLeft = (LinearLayout) leftView.findViewById(R.id.id_layout_Lens_left);
+            layoutRight = (LinearLayout) rightView.findViewById(R.id.id_layout_Lens_right);
 
-                editTextBrandLeft = (AutoCompleteTextView) leftView.findViewById(R.id.editTextLeftBrand);
-                editTextBrandLeft.setFocusable(true);
-                editTextBrandLeft.setFocusableInTouchMode(true);
-                isSaveVisible = true;
-                return true;
-            case R.id.menuSaveDataLenses:
-                enableControls(false, layoutLeft);
-                enableControls(false, layoutRight);
-                save();
-                enableMenuEdit(true);
-                enableMenuSaveCancel(false);
-                isSaveVisible = false;
-                return true;
-            case R.id.menuCancelDataLenses:
-                enableControls(false, layoutLeft);
-                enableControls(false, layoutRight);
-                enableMenuEdit(true);
-                enableMenuSaveCancel(false);
-                isSaveVisible = false;
-                return true;
-            case android.R.id.home:
-                isSaveVisible = false;
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+            switch (item.getItemId()) {
+                case R.id.menuEditDataLenses:
+                    enableControls(true, layoutLeft);
+                    enableControls(true, layoutRight);
+                    enableMenuEdit(false);
+                    enableMenuSaveCancel(true);
+
+                    editTextBrandLeft = (AutoCompleteTextView) leftView.findViewById(R.id.editTextLeftBrand);
+                    editTextBrandLeft.setFocusable(true);
+                    editTextBrandLeft.setFocusableInTouchMode(true);
+                    isSaveVisible = true;
+                    return true;
+                case R.id.menuSaveDataLenses:
+                    enableControls(false, layoutLeft);
+                    enableControls(false, layoutRight);
+                    save();
+                    enableMenuEdit(true);
+                    enableMenuSaveCancel(false);
+                    isSaveVisible = false;
+                    return true;
+                case R.id.menuCancelDataLenses:
+                    enableControls(false, layoutLeft);
+                    enableControls(false, layoutRight);
+                    enableMenuEdit(true);
+                    enableMenuSaveCancel(false);
+                    isSaveVisible = false;
+                    return true;
+                case android.R.id.home:
+                    isSaveVisible = false;
+                    return true;
+                default:
+                    return super.onOptionsItemSelected(item);
+            }
         }
+        return true;
     }
 
     private void enableControls(boolean enabled, ViewGroup view) {
@@ -303,8 +311,10 @@ public class DataLensesFragment extends Fragment {
     }
 
     private String getDataLenses() {
-        LensesDataDAO dao = LensesDataDAO.getInstance(getContext());
+        DataLensesDAO dao = DataLensesDAO.getInstance(getContext());
 //        DataLensesVO dataLensesVO = dao.getLastDataLenses();
+        DataLensesVO dataLensesVO = DataLensesDAO.dataLensesVO;
+
 
         StringBuilder text = new StringBuilder();
 
@@ -521,15 +531,22 @@ public class DataLensesFragment extends Fragment {
                 vo.setCylinderRight(null);
             }
 
-            LensesDataDAO lensesDataDAO = LensesDataDAO.getInstance(getContext());
+            DataLensesDAO dataLensesDAO = DataLensesDAO.getInstance(getContext());
 
             // If there are not lenses data then insert. If there are lenses
             // replacement then insert history.
-            if (vo.getId() == null) {
-                lensesDataDAO.insert(vo);
+            if (DataLensesDAO.dataLensesVO == null || DataLensesDAO.dataLensesVO.getId() == null) {
+                if (!Utility.isNetworkAvailable(getContext())) {
+                    vo.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
+                } else {
+                    vo.setId(UUID.randomUUID().toString());
+                }
+                dataLensesDAO.insert(vo);
             } else {
-                lensesDataDAO.update(vo);
+                vo.setId(DataLensesDAO.dataLensesVO.getId());
+                dataLensesDAO.update(vo);
             }
+//            dataLensesDAO.getLastDataLensesAsync();
         }
     }
 
@@ -537,15 +554,20 @@ public class DataLensesFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-//        DataLensesTask task = new DataLensesTask(getContext(), progressDlg, this);
-//        task.execute();
-//
-//        dataLensesCollectionPagerAdapter
-//                = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(), dataLensesVO);
-//
-//        mViewPager = (ViewPager) view.findViewById(R.id.pagerDataLenses);
-//        mViewPager.setAdapter(dataLensesCollectionPagerAdapter);
-//
+        if (isNetworkAvailable == null) {
+            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+        } else {
+            if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(getContext())) {
+                SyncDataLensesTask task = new SyncDataLensesTask(getContext());
+                task.execute();
+            }
+            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+        }
+
+        DataLensesTask task = new DataLensesTask(getContext(), progressDlg,
+                dataLensesCollectionPagerAdapter,
+                mViewPager, this, getFragmentManager(), view);
+        task.execute();
 
         mTracker.setScreenName("DataLensesFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -555,6 +577,38 @@ public class DataLensesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         isSaveVisible = false;
+//        DataLensesDAO.getInstance(getContext()).getLastDataLensesAsync();
+    }
+
+    private class SyncDataLensesTask extends AsyncTask<String, Void, Boolean> {
+        private Context context;
+
+        public SyncDataLensesTask(Context ctx) {
+            context = ctx;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            DataLensesDAO.getInstance(getContext()).syncDataLenses();
+            return true;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDlg = new ProgressDialog(context);
+            progressDlg.setMessage(getResources().getString(R.string.sync));
+            progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDlg.setIndeterminate(true);
+            progressDlg.show();
+
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
+        }
     }
 
 

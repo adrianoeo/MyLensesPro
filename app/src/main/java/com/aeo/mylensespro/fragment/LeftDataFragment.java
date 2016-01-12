@@ -16,7 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.aeo.mylensespro.R;
-import com.aeo.mylensespro.dao.LensesDataDAO;
 import com.aeo.mylensespro.vo.DataLensesVO;
 
 public class LeftDataFragment extends Fragment {
@@ -185,7 +184,7 @@ public class LeftDataFragment extends Fragment {
     }
 
     private void getLens() {
-        LensesDataDAO dao = LensesDataDAO.getInstance(context);
+//        DataLensesDAO dao = DataLensesDAO.getInstance(context);
 //        DataLensesVO dataLensesVO = dao.getLastDataLenses();
 
         if (dataLensesVO != null) {

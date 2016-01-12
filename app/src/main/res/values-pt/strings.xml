@@ -1,11 +1,12 @@
 <resources>
 
-    <string name="app_name">Minhas Lentes</string>
+    <string name="app_name">Minhas Lentes Pro</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Configurações</string>
+    <string name="locale">dd/MM/yyyy</string>
 
     <!-- Novos -->
     <string name="username_hint">Usuário</string>

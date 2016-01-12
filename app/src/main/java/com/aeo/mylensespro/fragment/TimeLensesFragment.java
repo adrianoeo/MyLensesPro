@@ -291,16 +291,6 @@ public class TimeLensesFragment extends Fragment {
         lensesVO.setQtdLeft(qtdLeft.getValue());
         lensesVO.setQtdRight(qtdRight.getValue());
 
-//        if (lensesId != null) {
-//            lensesVO.setId(tlensesId);
-//        } else {
-//            if (!Utility.isNetworkAvailable(getContext())) {
-//                lensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
-//            } else {
-//                lensesVO.setId(UUID.randomUUID().toString());
-//            }
-//        }
-
         if (timeLensesVO == null || timeLensesVO.getId() == null) {
             if (!Utility.isNetworkAvailable(getContext())) {
                 lensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
