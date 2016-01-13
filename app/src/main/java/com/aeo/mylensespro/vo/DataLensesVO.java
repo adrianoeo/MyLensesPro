@@ -3,6 +3,7 @@ package com.aeo.mylensespro.vo;
 public class DataLensesVO {
 
 	private String id;
+	private String objectId;
 	private String userId;
 	private String brandLeft;
 	private String descriptionLeft;
@@ -199,5 +200,13 @@ public class DataLensesVO {
 
 	public void setDiaRight(Double diaRight) {
 		this.diaRight = diaRight;
+	}
+
+	public String getObjectId() {
+		return objectId;
+	}
+
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
 	}
 }

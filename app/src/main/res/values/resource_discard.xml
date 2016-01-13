@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="discard_array">
-        <item>Dia</item>
-        <item>Mês</item>
-        <item>Ano</item>
+        <item>Day</item>
+        <item>Month</item>
+        <item>Year</item>
     </string-array>
 </resources>    

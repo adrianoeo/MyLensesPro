@@ -74,10 +74,14 @@ public class TimeLensesDAO {
         return query;
     }
 
-    private ParseObject getParseObjectLens(TimeLensesVO lensVO) {
+    private ParseObject getParseObjectLens(TimeLensesVO lensVO, boolean isOffline) {
         ParseObject content = new ParseObject(tableName);
 
-        content.put("lens_id", lensVO.getId().replace("OFFLINE", ""));
+        if (isOffline) {
+            content.put("lens_id", lensVO.getId());
+        } else {
+            content.put("lens_id", lensVO.getId().replace("OFFLINE", ""));
+        }
 
         content.put("user_id", ParseUser.getCurrentUser());
         content.put("date_left", Utility.formatDateToSqlite(lensVO.getDateLeft(), context));
@@ -118,7 +122,9 @@ public class TimeLensesDAO {
                         content.saveEventually();
                         content.pinInBackground(tableName);
 
-                        content.saveInBackground();
+                        if (Utility.isNetworkAvailable(context)) {
+                            content.saveInBackground();
+                        }
                     }
                 }
             });
@@ -144,7 +150,9 @@ public class TimeLensesDAO {
                     content.saveEventually();
                     content.pinInBackground(tableName);
 
-                    content.saveInBackground();
+                    if (Utility.isNetworkAvailable(context)) {
+                        content.saveInBackground();
+                    }
                 }
             }
         });
@@ -192,13 +200,14 @@ public class TimeLensesDAO {
         listTimeLensesVO = new LinkedList<>();
         try {
             List<ParseObject> list = query.find();
-            for (ParseObject parseObj : list) {
-                listTimeLensesVO.add(setTimeLensesVODAO(parseObj));
-                parseObj.saveEventually();
+            if (list != null && list.size() > 0) {
+                for (ParseObject parseObj : list) {
+                    listTimeLensesVO.add(setTimeLensesVODAO(parseObj));
+                    parseObj.saveEventually();
+                }
+                ParseObject.unpinAllInBackground(tableName);
+                ParseObject.pinAllInBackground(tableName, list);
             }
-            ParseObject.unpinAllInBackground(tableName);
-            ParseObject.pinAllInBackground(tableName, list);
-
         } catch (com.parse.ParseException e) {
             Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
         }
@@ -232,13 +241,14 @@ public class TimeLensesDAO {
 
         try {
             List<ParseObject> list = query.find();
-            for (ParseObject parseObj : list) {
-                listTimeLensesVO.add(setTimeLensesVODAO(parseObj));
-                parseObj.saveEventually();
+            if (list != null && list.size() > 0) {
+                for (ParseObject parseObj : list) {
+                    listTimeLensesVO.add(setTimeLensesVODAO(parseObj));
+                    parseObj.saveEventually();
+                }
+                ParseObject.unpinAllInBackground(tableName);
+                ParseObject.pinAllInBackground(tableName, list);
             }
-            ParseObject.unpinAllInBackground(tableName);
-            ParseObject.pinAllInBackground(tableName, list);
-
         } catch (com.parse.ParseException e) {
             Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
         }
@@ -450,14 +460,16 @@ public class TimeLensesDAO {
     }
 
     public void insert(TimeLensesVO lensVO) {
+        boolean isOffline = !Utility.isNetworkAvailable(context);
+
         lensVO.setDateCreate(new Date());
 
-        ParseObject parseObject = getParseObjectLens(lensVO);
+        ParseObject parseObject = getParseObjectLens(lensVO, isOffline);
         parseObject.setACL(new ParseACL(ParseUser.getCurrentUser()));
         parseObject.saveEventually();
         parseObject.pinInBackground(tableName);
 
-        if (Utility.isNetworkAvailable(context)) {
+        if (!isOffline) {
             try {
                 parseObject.save();
             } catch (com.parse.ParseException e) {

@@ -163,16 +163,18 @@ public class ListReplaceLensFragment extends ListFragment {
 
         if (isNetworkAvailable == null) {
             isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+            ListLensesTask task = new ListLensesTask(getContext());
+            task.execute();
         } else {
             if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(getContext())) {
                 SyncLensesTask task = new SyncLensesTask(getContext());
                 task.execute();
+            } else {
+                ListLensesTask task = new ListLensesTask(getContext());
+                task.execute();
             }
             isNetworkAvailable = Utility.isNetworkAvailable(getContext());
         }
-
-        ListLensesTask task = new ListLensesTask(getContext(), this);
-        task.execute();
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
         fab.setImageResource(R.drawable.ic_action_new);
@@ -217,16 +219,19 @@ public class ListReplaceLensFragment extends ListFragment {
         protected void onPostExecute(Boolean aBoolean) {
             if (progressDlg != null && progressDlg.isShowing())
                 progressDlg.dismiss();
+            ListLensesTask task = new ListLensesTask(context);
+            task.execute();
+
         }
     }
 
     private class ListLensesTask extends AsyncTask<String, Void, List<TimeLensesVO>> {
         private Context context;
-        private ListFragment listFragment;
+//        private ListFragment listFragment;
 
-        public ListLensesTask(Context ctx, ListFragment listFragment) {
+        public ListLensesTask(Context ctx) {
             context = ctx;
-            this.listFragment = listFragment;
+//            this.listFragment = listFragment;
         }
 
         @Override

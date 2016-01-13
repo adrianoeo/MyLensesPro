@@ -1,7 +1,7 @@
 package com.aeo.mylensespro.dao;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 
 import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.DataLensesVO;
@@ -20,7 +20,7 @@ public class DataLensesDAO {
     private static DataLensesDAO instance;
     private Context context;
 
-    public static DataLensesVO dataLensesVO;
+//    public static DataLensesVO dataLensesVO;
 
     public static DataLensesDAO getInstance(Context context) {
         if (instance == null) {
@@ -34,16 +34,23 @@ public class DataLensesDAO {
     }
 
     public void insert(DataLensesVO vo) {
-        ParseObject post = getParseObjectDataLens(vo);
-        post.setACL(new ParseACL(ParseUser.getCurrentUser()));
-        post.saveEventually();
-        post.pinInBackground(tableName);
+        boolean isOffline = !Utility.isNetworkAvailable(context);
 
-        if (Utility.isNetworkAvailable(context)) {
+        ParseObject parseObject = getParseObjectDataLens(vo, isOffline);
+        parseObject.setACL(new ParseACL(ParseUser.getCurrentUser()));
+        parseObject.saveEventually();
+        try {
+            parseObject.unpin(tableName);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        parseObject.pinInBackground(tableName);
+
+        if (!isOffline) {
             try {
-                post.save();
+                parseObject.save();
             } catch (com.parse.ParseException e) {
-                e.printStackTrace();
+                Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
             }
         }
     }
@@ -53,20 +60,22 @@ public class DataLensesDAO {
 
         // Retrieve the object by id
         try {
-            ParseObject content = query.getFirst();
+            boolean isOffline = !Utility.isNetworkAvailable(context);
+            ParseObject parseObject = query.getFirst();
 
-            content = setParseObject(content, vo);
+            parseObject = setParseObject(parseObject, vo, isOffline);
 
-            content.setACL(new ParseACL(ParseUser.getCurrentUser()));
-            content.saveEventually();
-            content.pinInBackground(tableName);
+            parseObject.setACL(new ParseACL(ParseUser.getCurrentUser()));
+            parseObject.saveEventually();
+            parseObject.unpin(tableName);
+            parseObject.pinInBackground(tableName);
 
-            if (Utility.isNetworkAvailable(context)) {
-                content.save();
+            if (!isOffline) {
+                parseObject.save();
             }
 
         } catch (com.parse.ParseException e) {
-            e.printStackTrace();
+            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
         }
 
     }
@@ -96,72 +105,29 @@ public class DataLensesDAO {
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
-        query.whereEqualTo("objectId", id);
+        query.whereEqualTo("data_id", id);
         return query;
     }
-
-/*
-    private ContentValues getContentValues(DataLensesVO vo) {
-        ContentValues content = new ContentValues();
-        content.put("description_left", vo.getDescriptionLeft().trim());
-        content.put("brand_left", vo.getBrandLeft().trim());
-        content.put("discard_type_left", vo.getDiscardTypeLeft());
-        content.put("type_left", vo.getTypeLeft());
-        content.put("power_left", vo.getPowerLeft());
-        content.put("cylinder_left", vo.getCylinderLeft());
-        content.put("axis_left", vo.getAxisLeft());
-        content.put("add_left", vo.getAddLeft());
-        content.put("buy_site_left", vo.getBuySiteLeft().trim());
-        content.put("date_ini_left",
-                Utility.formatDateToSqlite(vo.getDate_ini_left()));
-        content.put("number_units_left", vo.getNumber_units_left());
-        content.put("description_right", vo.getDescriptionRight().trim());
-        content.put("brand_right", vo.getBrandRight().trim());
-        content.put("discard_type_right", vo.getDiscardTypeRight());
-        content.put("type_right", vo.getTypeRight());
-        content.put("power_right", vo.getPowerRight());
-        content.put("cylinder_right", vo.getCylinderRight());
-        content.put("axis_right", vo.getAxisRight());
-        content.put("add_right", vo.getAddRight());
-        content.put("buy_site_right", vo.getBuySiteRight().trim());
-        content.put("date_ini_right",
-                Utility.formatDateToSqlite(vo.getDate_ini_right()));
-        content.put("number_units_right", vo.getNumber_units_right());
-        content.put("bc_left", vo.getBcLeft());
-        content.put("bc_right", vo.getBcRight());
-        content.put("dia_left", vo.getDiaLeft());
-        content.put("dia_right", vo.getDiaRight());
-        return content;
-    }
-*/
-
-//    public DataLensesVO getById(String id) {
-//        ParseQuery<ParseObject> query = getParseQuery(id);
-//        DataLensesVO dataLensesVO = null;
-//
-//        try {
-//            List<ParseObject> list = query.find();
-//            for (ParseObject parseObj : list) {
-//                dataLensesVO = setDataLensesVO(parseObj);
-//            }
-//        } catch (com.parse.ParseException e) {
-//            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
-//        }
-//
-//        return dataLensesVO;
-//    }
 
     public DataLensesVO getLastDataLenses() {
         ParseQuery<ParseObject> query = getParseQuery();
 
         try {
             ParseObject parseObject = query.getFirst();
-            parseObject.saveEventually();
-            ParseObject.unpinAllInBackground(tableName);
-            parseObject.pinInBackground(tableName);
-            return setDataLensesVO(parseObject);
+
+            if (parseObject != null) {
+                parseObject.saveEventually();
+                ParseObject.unpinAll(tableName);
+                parseObject.pinInBackground(tableName);
+                return setDataLensesVO(parseObject);
+            }
         } catch (ParseException e) {
-            e.printStackTrace();
+            try {
+                ParseObject.unpinAll(tableName);
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+            Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
         }
         return null;
     }
@@ -172,7 +138,7 @@ public class DataLensesDAO {
         query.getFirstInBackground(new GetCallback<ParseObject>() {
             @Override
             public void done(ParseObject object, ParseException e) {
-                dataLensesVO = setDataLensesVO(object);
+//                dataLensesVO = setDataLensesVO(object);
             }
         });
     }
@@ -182,6 +148,7 @@ public class DataLensesDAO {
         if (obj != null) {
             vo = new DataLensesVO();
             vo.setId(obj.getString("data_id"));
+            vo.setObjectId(obj.getObjectId());
             vo.setDescriptionLeft(obj.getString("description_left"));
             vo.setBrandLeft(obj.getString("brand_left"));
             vo.setTypeLeft(obj.getInt("type_left"));
@@ -206,35 +173,19 @@ public class DataLensesDAO {
         return vo;
     }
 
-//    public int getLastIdLens() {
-//		Cursor rs = db.rawQuery("select max(id) from " + tableName, null);
-//
-//		if (rs.moveToFirst()) {
-//			return rs.getInt(0);
-//		}
-//        return 0;
-//    }
-
-    @SuppressLint("SimpleDateFormat")
-    public boolean updateDate(String column, int idLensesData, String date) {
-//		synchronized (MainActivity.sDataLock) {
-//			ContentValues content = new ContentValues();
-//			content.put(column, date);
-//
-//			return db.update(tableName, content, "id=?",
-//					new String[] { String.valueOf(idLensesData) }) > 0;
-//		}
-        return true;
-    }
-
-    private ParseObject getParseObjectDataLens(DataLensesVO vo) {
+    private ParseObject getParseObjectDataLens(DataLensesVO vo, boolean isOffline) {
         ParseObject parseObject = new ParseObject(tableName);
 
-        return setParseObject(parseObject, vo);
+        return setParseObject(parseObject, vo, isOffline);
     }
 
-    private ParseObject setParseObject(ParseObject parseObject, DataLensesVO vo) {
-        parseObject.put("data_id", vo.getId().replace("OFFLINE", ""));
+    private ParseObject setParseObject(ParseObject parseObject, DataLensesVO vo, boolean isOffline) {
+
+        if (isOffline) {
+            parseObject.put("data_id", vo.getId());
+        } else {
+            parseObject.put("data_id", vo.getId().replace("OFFLINE", ""));
+        }
 
         parseObject.put("user_id", ParseUser.getCurrentUser());
         parseObject.put("description_left", vo.getDescriptionLeft().trim());
@@ -285,21 +236,28 @@ public class DataLensesDAO {
         return parseObject;
     }
 
-    public void syncDataLenses() {
+    public boolean syncDataLenses() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
         query.fromPin(tableName);
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
-        query.whereContains("data_id", "OFFLINE");
+//        query.whereContains("data_id", "OFFLINE");
 
         try {
             List<ParseObject> list = query.find();
-            for (ParseObject obj : list) {
-                obj.put("data_id", obj.getString("data_id").replace("OFFLINE", ""));
-                obj.setACL(new ParseACL(ParseUser.getCurrentUser()));
-                obj.save();
+            if (list != null && list.size() > 0) {
+                if (Utility.isNetworkAvailable(context)) {
+                    for (ParseObject obj : list) {
+//                        obj.put("data_id", obj.getString("data_id").replace("OFFLINE", ""));
+                        obj.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                        obj.save();
+                        obj.unpinInBackground(tableName);
+                    }
+                    return true;
+                }
             }
         } catch (com.parse.ParseException e) {
-            e.printStackTrace();
+            return false;
         }
+        return false;
     }
 }

@@ -14,6 +14,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.vo.DataLensesVO;
@@ -36,6 +37,8 @@ public class LeftDataFragment extends Fragment {
     private Spinner spinnerCylinder;
     private EditText editTextBC;
     private EditText editTextDia;
+    private TextView textViewIdDataLens;
+    private TextView textViewObjectIdDataLens;
 
     private Context context;
 
@@ -68,6 +71,8 @@ public class LeftDataFragment extends Fragment {
 
         layout = (LinearLayout) view.findViewById(R.id.id_layout_Lens_left);
 
+        textViewIdDataLens = (TextView) view.findViewById(R.id.textViewIdDataLens);
+        textViewObjectIdDataLens = (TextView) view.findViewById(R.id.textViewObjectIdDataLens);
         editTextDesc = (EditText) view.findViewById(R.id.EditTextDescLeft);
         editTextBrand = (AutoCompleteTextView) view
                 .findViewById(R.id.editTextLeftBrand);
@@ -188,6 +193,8 @@ public class LeftDataFragment extends Fragment {
 //        DataLensesVO dataLensesVO = dao.getLastDataLenses();
 
         if (dataLensesVO != null) {
+            textViewIdDataLens.setText(dataLensesVO.getId());
+            textViewObjectIdDataLens.setText(dataLensesVO.getObjectId());
             editTextDesc.setText(dataLensesVO.getDescriptionLeft());
             editTextBrand.setText(dataLensesVO.getBrandLeft());
             editTextBuySite.setText(dataLensesVO.getBuySiteLeft());

@@ -61,12 +61,11 @@ public class MainActivity extends AppCompatActivity
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser == null) {
             loadLoginView();
+        } else {
+            if (savedInstanceState == null) {
+                Utility.replaceFragment(new StatusFragment(), getSupportFragmentManager());
+            }
         }
-
-        if (savedInstanceState == null) {
-            Utility.replaceFragment(new StatusFragment(), getSupportFragmentManager());
-        }
-
     }
 
     @Override
@@ -220,10 +219,13 @@ public class MainActivity extends AppCompatActivity
     protected void onStop() {
         super.onStop();
 
-        //Seta Alarme para notificações
-        TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(getApplicationContext());
-        AlarmDAO alarmDAO = AlarmDAO.getInstance(getApplicationContext());
-        alarmDAO.setAlarm(timeLensesDAO.getLastLens());
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            //Seta Alarme para notificações
+            TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(getApplicationContext());
+            AlarmDAO alarmDAO = AlarmDAO.getInstance(getApplicationContext());
+            alarmDAO.setAlarm(timeLensesDAO.getLastLens());
+        }
     }
 
 }

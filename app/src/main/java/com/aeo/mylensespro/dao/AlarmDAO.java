@@ -71,7 +71,8 @@ public class AlarmDAO {
 
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
-            query.fromLocalDatastore();
+//            query.fromLocalDatastore();
+            query.fromPin(tableName);
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
@@ -129,7 +130,8 @@ public class AlarmDAO {
 
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
-            query.fromLocalDatastore();
+//            query.fromLocalDatastore();
+            query.fromPin(tableName);
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
@@ -138,16 +140,18 @@ public class AlarmDAO {
             @Override
             public void done(List<ParseObject> postList, ParseException e) {
                 if (e == null) {
-                    for (ParseObject post : postList) {
-                        alarmVO = new AlarmVO();
-                        alarmVO.setHour(post.getInt("hour"));
-                        alarmVO.setMinute(post.getInt("minute"));
-                        alarmVO.setDaysBefore(post.getInt("days_before"));
-                        alarmVO.setRemindEveryDay(post.getInt("remind_every_day"));
-                        post.saveEventually();
+                    if (postList != null && postList.size() > 0) {
+                        for (ParseObject post : postList) {
+                            alarmVO = new AlarmVO();
+                            alarmVO.setHour(post.getInt("hour"));
+                            alarmVO.setMinute(post.getInt("minute"));
+                            alarmVO.setDaysBefore(post.getInt("days_before"));
+                            alarmVO.setRemindEveryDay(post.getInt("remind_every_day"));
+                            post.saveEventually();
+                        }
+                        ParseObject.unpinAllInBackground(tableName);
+                        ParseObject.pinAllInBackground(tableName, postList);
                     }
-                    ParseObject.unpinAllInBackground(tableName);
-                    ParseObject.pinAllInBackground(tableName, postList);
                 } else {
                     Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
                 }
@@ -164,23 +168,26 @@ public class AlarmDAO {
 
         //se não estiver online, utiliza base local
         if (!Utility.isNetworkAvailable(context)) {
-            query.fromLocalDatastore();
+//            query.fromLocalDatastore();
+            query.fromPin(tableName);
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
 
         try {
-            List<ParseObject> postList = query.find();
-            for (ParseObject post : postList) {
-                alarmVO = new AlarmVO();
-                alarmVO.setHour(post.getInt("hour"));
-                alarmVO.setMinute(post.getInt("minute"));
-                alarmVO.setDaysBefore(post.getInt("days_before"));
-                alarmVO.setRemindEveryDay(post.getInt("remind_every_day"));
-                post.saveEventually();
+            List<ParseObject> objects = query.find();
+            if (objects != null && objects.size() > 0) {
+                for (ParseObject post : objects) {
+                    alarmVO = new AlarmVO();
+                    alarmVO.setHour(post.getInt("hour"));
+                    alarmVO.setMinute(post.getInt("minute"));
+                    alarmVO.setDaysBefore(post.getInt("days_before"));
+                    alarmVO.setRemindEveryDay(post.getInt("remind_every_day"));
+                    post.saveEventually();
+                }
+                ParseObject.unpinAllInBackground(tableName);
+                ParseObject.pinAllInBackground(tableName, objects);
             }
-            ParseObject.unpinAllInBackground(tableName);
-            ParseObject.pinAllInBackground(tableName, postList);
 
         } catch (ParseException e) {
             Log.d(getClass().getSimpleName(), "Error: " + e.getMessage());
