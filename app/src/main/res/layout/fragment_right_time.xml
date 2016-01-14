@@ -15,94 +15,97 @@
             android:id="@+id/cbxWearRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_weight="0.50"
             android:checked="true"
-            android:text="@string/str_in_use"
-            android:layout_gravity="center_horizontal" />
+            android:text="@string/str_in_use" />
 
 
         <TextView
             android:id="@+id/tvRightEyeSet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
             android:layout_weight="0.26"
             android:gravity="center_horizontal"
             android:text="@string/dateRightEye"
-            android:textSize="15sp"
-            android:layout_gravity="center_horizontal" />
+            android:textSize="15sp" />
 
         <Button
             android:id="@+id/btnDateRight"
             android:layout_width="200sp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginBottom="15dp"
             android:layout_marginTop="10dp"
             android:layout_weight="0.17"
+            android:background="#7dd0ed"
             android:gravity="center"
             android:text="@string/btnDatePicker"
-            android:textSize="20sp"
-            android:layout_gravity="center_horizontal" />
+            android:textColor="@android:color/white"
+            android:textSize="20sp" />
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:background="@android:color/darker_gray" />
 
         <TextView
             android:id="@+id/TextView02"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
             android:layout_weight="0.35"
             android:gravity="center"
             android:text="@string/lblMonths"
-            android:textSize="15sp"
-            android:layout_gravity="center_horizontal" />
+            android:textSize="15sp" />
 
         <NumberPicker
             android:id="@+id/numberPickerRight"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:layout_weight="0.36"
             android:gravity="center"
             android:orientation="horizontal"
-            android:theme="@android:style/Theme.Light"
-            android:layout_gravity="center_horizontal" />
+            android:theme="@android:style/Theme.Light" />
 
         <Spinner
             android:id="@+id/spinnerRight"
             android:layout_width="100sp"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="15dp"
             android:layout_weight="0.09"
-            android:gravity="center_horizontal"
-            android:layout_gravity="center_horizontal" />
+            android:gravity="center_horizontal" />
 
         <View
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_gravity="center_horizontal" />
+            android:layout_gravity="center_horizontal"
+            android:background="@android:color/darker_gray" />
+
         <TextView
             android:id="@+id/TextView03"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
             android:layout_weight="0.35"
             android:gravity="center"
             android:text="@string/lblQtd"
-            android:textSize="15sp"
-            android:layout_gravity="center_horizontal" />
+            android:textSize="15sp" />
 
         <NumberPicker
-            android:layout_width="wrap_content"
-            android:layout_height="97dp"
-            android:layout_marginBottom="15dp"
             android:id="@+id/qtdRight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="15dp"
             android:orientation="horizontal"
             android:theme="@android:style/Theme.Light" />
 

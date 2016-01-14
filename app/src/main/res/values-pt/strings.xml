@@ -7,6 +7,7 @@
 
     <string name="action_settings">Configurações</string>
     <string name="locale">dd/MM/yyyy</string>
+    <string name="btn_copy">Copiar para direita</string>
 
     <!-- Novos -->
     <string name="username_hint">Usuário</string>

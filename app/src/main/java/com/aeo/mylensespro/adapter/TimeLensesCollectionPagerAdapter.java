@@ -22,7 +22,6 @@ public class TimeLensesCollectionPagerAdapter extends FragmentStatePagerAdapter 
 	private Map<Integer, Fragment> mPageReferenceMap = new HashMap<Integer, Fragment>();
 
     private Context context;
-//	private String idLenses;
 	private TimeLensesVO timeLensesVO;
 
 	public TimeLensesCollectionPagerAdapter(FragmentManager fm, Context context, TimeLensesVO timeLensesVO) {
@@ -35,7 +34,7 @@ public class TimeLensesCollectionPagerAdapter extends FragmentStatePagerAdapter 
 	public Fragment getItem(int position) {
 		Fragment fragment = null;
 		if (position == 0) {
-			fragment = LeftTimeFragment.newInstance(timeLensesVO);
+			fragment = LeftTimeFragment.newInstance(timeLensesVO, this);
 			mPageReferenceMap.put(position, fragment);
 		} else {
 			fragment = RightTimeFragment.newInstance(timeLensesVO);

@@ -55,6 +55,7 @@ public class TimeLensesFragment extends Fragment {
     private static CheckBox cbInUseLeft;
     private static NumberPicker qtdLeft;
     private static Spinner spinnerLeft;
+    private static Button btnCopyToRight;
 
     private static Button btnDateRight;
     private static NumberPicker numberPickerRight;
@@ -194,6 +195,7 @@ public class TimeLensesFragment extends Fragment {
     private void enableControls(boolean enabled) {
         if (getViewsFragmentLenses()) {
             btnDateLeft.setEnabled(enabled);
+            btnCopyToRight.setEnabled(enabled);
             btnDateRight.setEnabled(enabled);
             numberPickerLeft.setEnabled(enabled);
             numberPickerRight.setEnabled(enabled);
@@ -256,6 +258,7 @@ public class TimeLensesFragment extends Fragment {
                 btnDateLeft = (Button) leftView.findViewById(R.id.btnDateLeft);
                 cbInUseLeft = (CheckBox) leftView.findViewById(R.id.cbxWearLeft);
                 qtdLeft = (NumberPicker) leftView.findViewById(R.id.qtdLeft);
+                btnCopyToRight = (Button) leftView.findViewById(R.id.btnCopyToRight);
             }
         }
 

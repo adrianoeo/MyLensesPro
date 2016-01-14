@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,7 +33,7 @@ public class AlarmFragment extends Fragment {
     private CheckBox cbRemindEveryDay;
     private static Button btnTimePickerAlarm;
 
-    private Context context;
+    private static Context context;
 
     public static int idAlarm;
     private Tracker mTracker;
@@ -42,7 +43,7 @@ public class AlarmFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        context = getActivity();
+        context = getContext();
 
         Bundle bundle = this.getArguments();
 
@@ -70,13 +71,15 @@ public class AlarmFragment extends Fragment {
         btnTimePickerAlarm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int hourOfDay = 12;
-                int minute = 0;
+                int time[] = getTime();
 
-                String[] time = btnTimePickerAlarm.getText().toString().split(":");
+                int hourOfDay = time[0];
+                int minute = time[1];
 
-                hourOfDay = Integer.valueOf(time[0]);
-                minute = Integer.valueOf(time[1]);
+//                String[] time = btnTimePickerAlarm.getText().toString().split(":");
+//
+//                hourOfDay = Integer.valueOf(time[0]);
+//                minute = Integer.valueOf(time[1]);
 
                 TimePickerFragmentAlarm fragmentTime = TimePickerFragmentAlarm.newInstance(hourOfDay, minute);
                 fragmentTime.show(getFragmentManager(), "timePickerAlarm");
@@ -114,29 +117,33 @@ public class AlarmFragment extends Fragment {
     private void setTime() {
         alarmVO = AlarmDAO.alarmVO;
         if (alarmVO != null) {
-            btnTimePickerAlarm.setText(String.format("%02d:%02d", alarmVO.getHour(), alarmVO.getMinute()));
+            btnTimePickerAlarm.setText(getTimeText(alarmVO.getHour(), alarmVO.getMinute()));
             numberDaysBefore.setValue((int) alarmVO.getDaysBefore());
             cbRemindEveryDay.setChecked(alarmVO.getRemindEveryDay() == 1 ? true : false);
         } else {
-            btnTimePickerAlarm.setText("12:00");
+            if (is24HourFormat()) {
+                btnTimePickerAlarm.setText("12:00");
+            } else {
+                btnTimePickerAlarm.setText("12:00 AM");
+            }
             numberDaysBefore.setValue(0);
             cbRemindEveryDay.setChecked(true);
         }
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onStop() {
+        super.onStop();
         save();
     }
 
     private void save() {
         AlarmVO vo = new AlarmVO();
 
-        String[] time = btnTimePickerAlarm.getText().toString().split(":");
+        int time[] = getTime();
 
-        vo.setHour(Integer.valueOf(time[0]));
-        vo.setMinute(Integer.valueOf(time[1]));
+        vo.setHour(time[0]);
+        vo.setMinute(time[1]);
         vo.setDaysBefore(Integer.valueOf(numberDaysBefore.getValue()));
         vo.setRemindEveryDay(cbRemindEveryDay.isChecked() ? 1 : 0);
 
@@ -193,14 +200,79 @@ public class AlarmFragment extends Fragment {
             int hourOfDay = getArguments().getInt(HOUR_OF_DAY);
             int minute = getArguments().getInt(MINUTE);
 
+            boolean timeFormat24 = DateFormat.is24HourFormat(getContext());
+
             // Create a new instance of DatePickerDialog and return it
-            return new TimePickerDialog(getContext(), this, hourOfDay, minute, true);
+            return new TimePickerDialog(getContext(), this, hourOfDay, minute, timeFormat24);
         }
 
 
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-            btnTimePickerAlarm.setText(String.format("%02d:%02d", hourOfDay, minute));
+            btnTimePickerAlarm.setText(getTimeText(hourOfDay, minute));
+//            boolean timeFormat24 = DateFormat.is24HourFormat(getContext());
+//
+//            if (timeFormat24) {
+//                btnTimePickerAlarm.setText(String.format("%02d:%02d", hourOfDay, minute));
+//            } else {
+//                String ampm = null;
+//                if (hourOfDay >= 12) {
+//                    ampm = "PM";
+//                } else {
+//                    ampm = "AM";
+//                }
+//                btnTimePickerAlarm.setText(String.format("%02d:%02d %s",
+//                        hourOfDay == 0 ? 12 : hourOfDay, minute, ampm));
+//            }
         }
+    }
+
+    private int[] getTime() {
+        String[] time = btnTimePickerAlarm.getText().toString().split(":");
+
+        boolean timeFormat24 = is24HourFormat();
+
+        int hour = Integer.valueOf(time[0]);
+
+        String[] minuteAndAmPm = time[1].split("\\s+");
+
+        int minute = Integer.valueOf(minuteAndAmPm[0]);
+
+        if (!timeFormat24 && minuteAndAmPm.length > 1) {
+            String ampm = minuteAndAmPm[1];
+            if ("PM".equals(ampm) && hour != 12) {
+                hour = 12 + hour;
+            }
+        }
+
+        return new int[]{hour, minute};
+    }
+
+    public static String getTimeText(int hourOfDay, int minute) {
+        String text = null;
+        if (DateFormat.is24HourFormat(context)) {
+            text = String.format("%02d:%02d", hourOfDay, minute);
+        } else {
+            String ampm = null;
+            if (hourOfDay >= 12) {
+                ampm = "PM";
+            } else {
+                ampm = "AM";
+            }
+
+            if (hourOfDay > 12) {
+                hourOfDay = hourOfDay - 12;
+            } else if (hourOfDay == 0) {
+                hourOfDay = 12;
+            }
+
+            text = String.format("%02d:%02d %s", hourOfDay, minute, ampm);
+        }
+
+        return text;
+    }
+
+    public boolean is24HourFormat() {
+        return DateFormat.is24HourFormat(getContext());
     }
 }

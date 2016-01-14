@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.adapter.DataLensesCollectionPagerAdapter;
@@ -51,29 +52,29 @@ public class DataLensesFragment extends Fragment {
     private MenuItem menuItemCancel;
     private MenuItem menuItemShare;
 
-    private TextView textViewIdDataLens;
-    private TextView textViewObjectIdDataLens;
-    private EditText editTextDescLeft;
-    private AutoCompleteTextView editTextBrandLeft;
-    private EditText editTextBuySiteLeft;
-    private Spinner spinnerTypeLensLeft;
-    private Spinner spinnerPowerLeft;
-    private Spinner spinnerAddLeft;
-    private Spinner spinnerAxisLeft;
-    private Spinner spinnerCylinderLeft;
-    private EditText editTextBCLeft;
-    private EditText editTextDiaLeft;
+    private static TextView textViewIdDataLens;
+    private static TextView textViewObjectIdDataLens;
+    private static EditText editTextDescLeft;
+    private static AutoCompleteTextView editTextBrandLeft;
+    private static EditText editTextBuySiteLeft;
+    private static Spinner spinnerTypeLensLeft;
+    private static Spinner spinnerPowerLeft;
+    private static Spinner spinnerAddLeft;
+    private static Spinner spinnerAxisLeft;
+    private static Spinner spinnerCylinderLeft;
+    private static EditText editTextBCLeft;
+    private static EditText editTextDiaLeft;
 
-    private EditText editTextDescRight;
-    private AutoCompleteTextView editTextBrandRight;
-    private EditText editTextBuySiteRight;
-    private Spinner spinnerTypeLensRight;
-    private Spinner spinnerPowerRight;
-    private Spinner spinnerAddRight;
-    private Spinner spinnerAxisRight;
-    private Spinner spinnerCylinderRight;
-    private EditText editTextBCRight;
-    private EditText editTextDiaRight;
+    private static EditText editTextDescRight;
+    private static AutoCompleteTextView editTextBrandRight;
+    private static EditText editTextBuySiteRight;
+    private static Spinner spinnerTypeLensRight;
+    private static Spinner spinnerPowerRight;
+    private static Spinner spinnerAddRight;
+    private static Spinner spinnerAxisRight;
+    private static Spinner spinnerCylinderRight;
+    private static EditText editTextBCRight;
+    private static EditText editTextDiaRight;
 
     private LinearLayout layoutLeft;
     private LinearLayout layoutRight;
@@ -84,7 +85,7 @@ public class DataLensesFragment extends Fragment {
     private ProgressDialog progressDlg;
     private ProgressDialog progressDlgSync;
 
-//    public static DataLensesVO dataLensesVO;
+    private static DataLensesVO dataLensesVO;
 
     private View view;
     private static Boolean isNetworkAvailable;
@@ -301,7 +302,7 @@ public class DataLensesFragment extends Fragment {
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT,
                 getString(R.string.str_email_subject_data_lenses));
-        intent.putExtra(Intent.EXTRA_TEXT, getDataLenses());
+        intent.putExtra(Intent.EXTRA_TEXT, getDataLensesToShare());
 
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Action")
@@ -311,9 +312,9 @@ public class DataLensesFragment extends Fragment {
         return intent;
     }
 
-    private String getDataLenses() {
-        DataLensesDAO dao = DataLensesDAO.getInstance(getContext());
-        DataLensesVO dataLensesVO = dao.getLastDataLenses();
+    private String getDataLensesToShare() {
+//        DataLensesDAO dao = DataLensesDAO.getInstance(getContext());
+//        DataLensesVO dataLensesVO = dao.getLastDataLenses();
 //        DataLensesVO dataLensesVO = DataLensesDAO.dataLensesVO;
 
 
@@ -448,9 +449,52 @@ public class DataLensesFragment extends Fragment {
     }
 
     private void save() {
+        SaveTask task = new SaveTask(getContext());
+        task.execute();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (isNetworkAvailable == null) {
+            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+            DataLensesTask task = new DataLensesTask();
+            task.execute();
+        } else {
+            if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(getContext())) {
+                SyncDataLensesTask task = new SyncDataLensesTask(getContext());
+                task.execute();
+            } else {
+                DataLensesTask task = new DataLensesTask();
+                task.execute();
+            }
+            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+        }
+
+//        DataLensesTask task = new DataLensesTask();
+
+//        DataLensesTask task = new DataLensesTask(getContext(), progressDlg,
+//                dataLensesCollectionPagerAdapter,
+//                mViewPager, this, getFragmentManager(), view);
+//        task.execute();
+
+        mTracker.setScreenName("DataLensesFragment");
+        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        isSaveVisible = false;
+//        DataLensesDAO.getInstance(getContext()).getLastDataLensesAsync();
+    }
+
+    public DataLensesVO setDataLensesVO() {
+        DataLensesVO vo = null;
         if (getViewsFragmentLenses()) {
 
-            DataLensesVO vo = new DataLensesVO();
+            vo = new DataLensesVO();
 
 		/* Left Lens */
             vo.setId(textViewIdDataLens.getText().toString());
@@ -534,57 +578,8 @@ public class DataLensesFragment extends Fragment {
                 vo.setCylinderRight(null);
             }
 
-            DataLensesDAO dataLensesDAO = DataLensesDAO.getInstance(getContext());
-
-            if (vo.getId() == null || "".equals(vo.getId())) {
-//                if (!Utility.isNetworkAvailable(getContext())) {
-//                    vo.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
-//                } else {
-                    vo.setId(UUID.randomUUID().toString());
-//                }
-                dataLensesDAO.insert(vo);
-            } else {
-                dataLensesDAO.update(vo);
-            }
-//            dataLensesDAO.getLastDataLensesAsync();
         }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if (isNetworkAvailable == null) {
-            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
-            DataLensesTask task = new DataLensesTask();
-            task.execute();
-        } else {
-            if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(getContext())) {
-                SyncDataLensesTask task = new SyncDataLensesTask(getContext());
-                task.execute();
-            } else {
-                DataLensesTask task = new DataLensesTask();
-                task.execute();
-            }
-            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
-        }
-
-//        DataLensesTask task = new DataLensesTask();
-
-//        DataLensesTask task = new DataLensesTask(getContext(), progressDlg,
-//                dataLensesCollectionPagerAdapter,
-//                mViewPager, this, getFragmentManager(), view);
-//        task.execute();
-
-        mTracker.setScreenName("DataLensesFragment");
-        mTracker.send(new HitBuilders.ScreenViewBuilder().build());
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        isSaveVisible = false;
-//        DataLensesDAO.getInstance(getContext()).getLastDataLensesAsync();
+        return vo;
     }
 
     private class SyncDataLensesTask extends AsyncTask<String, Void, Boolean> {
@@ -621,27 +616,7 @@ public class DataLensesFragment extends Fragment {
     }
 
     public class DataLensesTask extends AsyncTask<String, Void, DataLensesVO> {
-//        private Context context;
-//        private ProgressDialog progressDlg;
-//        DataLensesCollectionPagerAdapter dataLensesCollectionPagerAdapter;
-//        ViewPager viewPager;
-//        FragmentManager fragmentManager;
-//        View view;
-//        DataLensesFragment fragment;
-
-        public DataLensesTask(/*Context ctx, ProgressDialog progressDlg,
-                              DataLensesCollectionPagerAdapter dataLensesCollectionPagerAdapter,
-                              ViewPager viewPager,
-                              DataLensesFragment fragment,
-                              FragmentManager fragmentManager,
-                              View view*/) {
-//            context = ctx;
-//            this.progressDlg = progressDlg;
-//            this.dataLensesCollectionPagerAdapter = dataLensesCollectionPagerAdapter;
-//            this.viewPager = viewPager;
-//            this.fragmentManager = fragmentManager;
-//            this.view = view;
-//            this.fragment = fragment;
+        public DataLensesTask() {
         }
 
         @Override
@@ -660,11 +635,10 @@ public class DataLensesFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(DataLensesVO dataLensesVO) {
-//        DataLensesDAO.dataLensesVO = dataLensesVO;
+        protected void onPostExecute(DataLensesVO vo) {
+            dataLensesVO = vo;
             dataLensesCollectionPagerAdapter
-                    = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(),
-                    dataLensesVO);
+                    = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(), vo);
 
             mViewPager = (ViewPager) view.findViewById(R.id.pagerDataLenses);
             mViewPager.setAdapter(dataLensesCollectionPagerAdapter);
@@ -672,4 +646,48 @@ public class DataLensesFragment extends Fragment {
                 progressDlg.dismiss();
         }
     }
+
+
+    private class SaveTask extends AsyncTask<String, Void, Boolean> {
+        private Context context;
+
+        public SaveTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            DataLensesDAO dataLensesDAO = DataLensesDAO.getInstance(getContext());
+
+            DataLensesVO vo = setDataLensesVO();
+            if (vo.getId() == null || "".equals(vo.getId())) {
+                vo.setId(UUID.randomUUID().toString());
+                dataLensesDAO.insert(vo);
+            } else {
+                dataLensesDAO.update(vo);
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDlg = new ProgressDialog(context);
+            progressDlg.setMessage(getResources().getString(R.string.saving));
+            progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDlg.setIndeterminate(true);
+            progressDlg.show();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            super.onPostExecute(aBoolean);
+
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
+
+            Toast.makeText(context, R.string.msgSaved, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
