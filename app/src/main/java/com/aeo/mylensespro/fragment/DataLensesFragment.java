@@ -85,7 +85,7 @@ public class DataLensesFragment extends Fragment {
     private ProgressDialog progressDlg;
     private ProgressDialog progressDlgSync;
 
-    private static DataLensesVO dataLensesVO;
+//    private static DataLensesVO dataLensesVO;
 
     private View view;
     private static Boolean isNetworkAvailable;
@@ -155,7 +155,7 @@ public class DataLensesFragment extends Fragment {
         menuItemCancel = menu.findItem(R.id.menuCancelDataLenses);
         menuItemShare = menu.findItem(R.id.menuShareDataLenses);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItemShare);
-        mShareActionProvider.setShareIntent(getDefaultIntent());
+//        mShareActionProvider.setShareIntent(getDefaultIntent());
     }
 
     @Override
@@ -297,12 +297,12 @@ public class DataLensesFragment extends Fragment {
 //        }
 //    }
 
-    private Intent getDefaultIntent() {
+    private Intent getDefaultIntent(DataLensesVO dataLensesVO) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
         intent.putExtra(Intent.EXTRA_SUBJECT,
                 getString(R.string.str_email_subject_data_lenses));
-        intent.putExtra(Intent.EXTRA_TEXT, getDataLensesToShare());
+        intent.putExtra(Intent.EXTRA_TEXT, getDataLensesToShare(dataLensesVO));
 
         mTracker.send(new HitBuilders.EventBuilder()
                 .setCategory("Action")
@@ -312,7 +312,7 @@ public class DataLensesFragment extends Fragment {
         return intent;
     }
 
-    private String getDataLensesToShare() {
+    private String getDataLensesToShare(DataLensesVO dataLensesVO) {
 //        DataLensesDAO dao = DataLensesDAO.getInstance(getContext());
 //        DataLensesVO dataLensesVO = dao.getLastDataLenses();
 //        DataLensesVO dataLensesVO = DataLensesDAO.dataLensesVO;
@@ -636,7 +636,7 @@ public class DataLensesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(DataLensesVO vo) {
-            dataLensesVO = vo;
+//            dataLensesVO = vo;
             dataLensesCollectionPagerAdapter
                     = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(), vo);
 
@@ -644,11 +644,12 @@ public class DataLensesFragment extends Fragment {
             mViewPager.setAdapter(dataLensesCollectionPagerAdapter);
             if (progressDlg != null && progressDlg.isShowing())
                 progressDlg.dismiss();
+            mShareActionProvider.setShareIntent(getDefaultIntent(vo));
         }
     }
 
 
-    private class SaveTask extends AsyncTask<String, Void, Boolean> {
+    private class SaveTask extends AsyncTask<String, Void, DataLensesVO> {
         private Context context;
 
         public SaveTask(Context context) {
@@ -656,17 +657,19 @@ public class DataLensesFragment extends Fragment {
         }
 
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected DataLensesVO doInBackground(String... params) {
             DataLensesDAO dataLensesDAO = DataLensesDAO.getInstance(getContext());
 
             DataLensesVO vo = setDataLensesVO();
+//            dataLensesVO = vo;
+
             if (vo.getId() == null || "".equals(vo.getId())) {
                 vo.setId(UUID.randomUUID().toString());
                 dataLensesDAO.insert(vo);
             } else {
                 dataLensesDAO.update(vo);
             }
-            return true;
+            return vo;
         }
 
         @Override
@@ -680,8 +683,10 @@ public class DataLensesFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(Boolean aBoolean) {
-            super.onPostExecute(aBoolean);
+        protected void onPostExecute(DataLensesVO vo) {
+            super.onPostExecute(vo);
+
+            mShareActionProvider.setShareIntent(getDefaultIntent(vo));
 
             if (progressDlg != null && progressDlg.isShowing())
                 progressDlg.dismiss();

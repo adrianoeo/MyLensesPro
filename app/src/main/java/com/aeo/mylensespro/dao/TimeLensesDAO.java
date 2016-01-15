@@ -321,10 +321,7 @@ public class TimeLensesDAO {
     }
 
     @SuppressLint("SimpleDateFormat")
-    public Long[] getDaysToExpire(TimeLensesVO timeLensesVO) {
-        long daysExpLeft = 0;
-        long daysExpRight = 0;
-
+    public Calendar[] getDatesToExpire(TimeLensesVO timeLensesVO) {
         Calendar[] calendars = getDateAlarm(timeLensesVO);
 
         Calendar dateExpLeft = Calendar.getInstance();
@@ -333,40 +330,20 @@ public class TimeLensesDAO {
         dateExpLeft.setTime(calendars[0].getTime());
         dateExpRight.setTime(calendars[1].getTime());
 
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-//
-//        Date dateReplaceLeft = null;
-//        Date dateReplaceRight = null;
-//        Date dateToday = null;
-//
-//        try {
-//            dateReplaceLeft = dateFormat.parse(new StringBuilder()
-//                    .append(dateExpLeft.get(Calendar.DAY_OF_MONTH))
-//                    .append("/")
-//                    .append(String.format("%02d",
-//                            (dateExpLeft.get(Calendar.MONTH) + 1))).append("/")
-//                    .append(dateExpLeft.get(Calendar.YEAR)).toString());
-//
-//            dateReplaceRight = dateFormat.parse(new StringBuilder()
-//                    .append(dateExpRight.get(Calendar.DAY_OF_MONTH))
-//                    .append("/")
-//                    .append(String.format("%02d",
-//                            (dateExpRight.get(Calendar.MONTH) + 1)))
-//                    .append("/").append(dateExpRight.get(Calendar.YEAR))
-//                    .toString());
-//
-//            dateToday = dateFormat.parse(dateFormat.format(new Date()));
-//        } catch (ParseException e) {
-//            e.printStackTrace();
-//        }
-//
-//        long dayLeft = dateReplaceLeft.getTime();
-//        long dayRight = dateReplaceRight.getTime();
-//        long dayToday = dateToday.getTime();
-//        long index = (24 * 60 * 60 * 1000);
-//
-//        daysExpLeft = (dayLeft - dayToday) / index;
-//        daysExpRight = (dayRight - dayToday) / index;
+        return new Calendar[]{dateExpLeft, dateExpRight};
+    }
+
+    @SuppressLint("SimpleDateFormat")
+    public Long[] getDaysToExpire(TimeLensesVO timeLensesVO) {
+        long daysExpLeft = 0;
+        long daysExpRight = 0;
+
+        Calendar[] calendars = getDateAlarm(timeLensesVO);
+        Calendar dateExpLeft = Calendar.getInstance();
+        Calendar dateExpRight = Calendar.getInstance();
+
+        dateExpLeft.setTime(calendars[0].getTime());
+        dateExpRight.setTime(calendars[1].getTime());
 
         Calendar calendarToday = Calendar.getInstance();
         calendarToday.set(Calendar.DAY_OF_MONTH, calendarToday.get(Calendar.DAY_OF_MONTH));
@@ -382,7 +359,26 @@ public class TimeLensesDAO {
 
         return new Long[]{TimeUnit.DAYS.convert(daysExpLeft, TimeUnit.MILLISECONDS),
                 TimeUnit.DAYS.convert(daysExpRight, TimeUnit.MILLISECONDS)};
-//        return new Long[]{daysExpLeft, daysExpRight};
+    }
+
+     public Long[] getDaysToExpire(Calendar dateExpLeft, Calendar dateExpRight) {
+        long daysExpLeft = 0;
+        long daysExpRight = 0;
+
+        Calendar calendarToday = Calendar.getInstance();
+        calendarToday.set(Calendar.DAY_OF_MONTH, calendarToday.get(Calendar.DAY_OF_MONTH));
+        calendarToday.set(Calendar.MONTH, calendarToday.get(Calendar.MONTH));
+        calendarToday.set(Calendar.YEAR, calendarToday.get(Calendar.YEAR));
+        calendarToday.set(Calendar.HOUR_OF_DAY, 0);
+        calendarToday.set(Calendar.MINUTE, 0);
+        calendarToday.set(Calendar.SECOND, 0);
+        calendarToday.set(Calendar.MILLISECOND, 0);
+
+        daysExpLeft = dateExpLeft.getTimeInMillis() - calendarToday.getTimeInMillis();
+        daysExpRight = dateExpRight.getTimeInMillis() - calendarToday.getTimeInMillis();
+
+        return new Long[]{TimeUnit.DAYS.convert(daysExpLeft, TimeUnit.MILLISECONDS),
+                TimeUnit.DAYS.convert(daysExpRight, TimeUnit.MILLISECONDS)};
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -424,8 +420,7 @@ public class TimeLensesDAO {
                         totalDaysRight = expirationRight * 365;
                     }
 
-                    dateExpRight
-                            .setTime(dateFormat.parse(lensVO.getDateRight()));
+                    dateExpRight.setTime(dateFormat.parse(lensVO.getDateRight()));
                     int totalRight = totalDaysRight + dayNotUsedRight;
                     dateExpRight.add(Calendar.DATE, totalRight);
                 }

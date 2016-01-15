@@ -16,12 +16,16 @@
     <string name="login_button_label">Login</string>
     <string name="sign_up_text">No account yet? Create one</string>
     <string name="forget_password">Forgot your password? Reset here</string>
-    <string name="signup_error_message">Please make sure you enter a username, password, and email address</string>
-    <string name="signup_error_title">Error</string>
+    <string name="signup_error_message">Please make sure you enter a valid email address and password</string>
+    <string name="signup_error_message_username_already">Email address already taken</string>
+    <string name="signup_error_title">Attention</string>
+    <string name="signup_message">Please confirm your sign up in your email</string>
     <string name="reset_error_msg">Please make sure you enter a email address</string>
-    <string name="login_error_message">Please make sure you enter a username and password</string>
-    <string name="login_error_title">Error</string>
-    <string name="reset_error_title">Error</string>
+    <string name="login_error_message">Please make sure you enter a email address and password</string>
+    <string name="login_error_title">Attention</string>
+    <string name="login_email_not_confirmed">Please make sure you confirmed your sign up in your email</string>
+    <string name="login_fail_message">Please make sure you enter a correct email and password</string>
+    <string name="reset_error_title">Attention</string>
     <string name="logout_label">Logout</string>
     <string name="sign_up_button_label">Sign Up</string>
     <string name="alrealdy_member">Already a member? Login</string>
@@ -32,6 +36,8 @@
     <string name="saving">Saving</string>
     <string name="sync">Synchronizing</string>
     <string name="loading">Loading</string>
+    <string name="login">Login</string>
+    <string name="signup">Sign up</string>
 
     <!---->
 

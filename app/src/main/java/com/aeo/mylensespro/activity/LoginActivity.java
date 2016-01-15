@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.InputFilter;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -35,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = (EditText) findViewById(R.id.passwordField);
         loginButton = (Button) findViewById(R.id.loginButton);
 
-        usernameEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+//        usernameEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
 
         signUpTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,15 +77,28 @@ public class LoginActivity extends AppCompatActivity {
                             setProgressBarIndeterminateVisibility(false);
 
                             if (e == null) {
-                                // Success!
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
+                                if (user.getBoolean("emailVerified") == true) {
+                                    // Success!
+                                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                } else {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                                    builder.setMessage(R.string.login_email_not_confirmed)
+                                            .setTitle(R.string.login_error_title)
+                                            .setPositiveButton(android.R.string.ok, null);
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+
+                                    if (ParseUser.getCurrentUser() != null) {
+                                        ParseUser.logOut();
+                                    }
+                                }
                             } else {
                                 // Fail
                                 AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                                builder.setMessage(e.getMessage())
+                                builder.setMessage(R.string.login_fail_message)
                                         .setTitle(R.string.login_error_title)
                                         .setPositiveButton(android.R.string.ok, null);
                                 AlertDialog dialog = builder.create();

@@ -16,12 +16,16 @@
     <string name="login_button_label">Entrar</string>
     <string name="sign_up_text">Não possui conta? Crie aqui</string>
     <string name="forget_password">Esqueceu a senha? Clique aqui</string>
-    <string name="signup_error_message">Por favor, verifique o preenchimento do usuário, senha e email</string>
-    <string name="signup_error_title">Erro</string>
+    <string name="signup_error_message">Por favor, verifique o preenchimento de email válido e senha</string>
+    <string name="signup_error_message_username_already">Email já cadastrado</string>
+    <string name="signup_message">Por Favor, confirme sua inscrição em seu email</string>
+    <string name="signup_error_title">Atenção</string>
     <string name="reset_error_msg">Por favor, verifique se inseriu o email</string>
     <string name="login_error_message">Por favor, verifique o preenchimento do usuário e senha</string>
-    <string name="login_error_title">Erro</string>
-    <string name="reset_error_title">Erro</string>
+    <string name="login_fail_message">Por favor, verifique o preenchimento correto do seu email e senha</string>
+    <string name="login_error_title">Atenção</string>
+    <string name="login_email_not_confirmed">Por favor, certifique-se de confirmar sua inscrição em seu e-mail</string>
+    <string name="reset_error_title">Atenção</string>
     <string name="logout_label">Logout</string>
     <string name="sign_up_button_label">Cadastrar</string>
     <string name="alrealdy_member">Já é usuário? Faça o login</string>
@@ -32,6 +36,8 @@
     <string name="saving">Salvando</string>
     <string name="sync">Sincronizando</string>
     <string name="loading">Carregando</string>
+    <string name="login">Login</string>
+    <string name="signup">Cadastrar</string>
     <!---->
 
     <string name="nav_status">Status das lentes</string>

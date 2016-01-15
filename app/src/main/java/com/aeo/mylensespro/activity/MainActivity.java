@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aeo.mylensespro.R;
@@ -61,8 +63,28 @@ public class MainActivity extends AppCompatActivity
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser == null) {
             loadLoginView();
+        } else if (currentUser != null && !currentUser.getBoolean("emailVerified")) {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//            DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+                    ParseUser.logOut();
+                    loadLoginView();
+//                }
+//            };
+//            builder.setMessage(R.string.login_email_not_confirmed)
+//                    .setTitle(R.string.login_error_title)
+//                    .setPositiveButton(android.R.string.ok, onClickListener);
+//
+//            AlertDialog dialog = builder.create();
+//            dialog.show();
+
         } else {
             if (savedInstanceState == null) {
+                View view =  navigationView.getHeaderView(0);
+                TextView email = (TextView)  view.findViewById(R.id.email);
+                email.setText(currentUser.getEmail());
+
                 Utility.replaceFragment(new StatusFragment(), getSupportFragmentManager());
             }
         }

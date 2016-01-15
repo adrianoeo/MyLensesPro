@@ -32,12 +32,17 @@ import com.aeo.mylensespro.vo.TimeLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public class StatusFragment extends Fragment {
 
     private TextView tvDaysRemainingLeftEye;
     private TextView tvDaysRemainingRightEye;
     private TextView tvStrDayLeft;
     private TextView tvStrDayRight;
+    private TextView tvStrDateRight;
+    private TextView tvStrDateLeft;
     private TextView tvStrUnitsLeft;
     private TextView tvStrUnitsRight;
     private TextView tvStrUnitsRemainingLeft;
@@ -85,6 +90,8 @@ public class StatusFragment extends Fragment {
                 .findViewById(R.id.tvDaysRemainingRightEye);
         tvStrDayLeft = (TextView) view.findViewById(R.id.tvStrDayLeft);
         tvStrDayRight = (TextView) view.findViewById(R.id.tvStrDayRight);
+        tvStrDateLeft = (TextView) view.findViewById(R.id.tvStrDateLeft);
+        tvStrDateRight = (TextView) view.findViewById(R.id.tvStrDateRight);
         tvStrUnitsLeft = (TextView) view.findViewById(R.id.tvStrUnitsLeft);
         tvStrUnitsRight = (TextView) view.findViewById(R.id.tvStrUnitsRight);
         tvStrUnitsRemainingLeft = (TextView) view
@@ -191,9 +198,13 @@ public class StatusFragment extends Fragment {
     public void setDays(TimeLensesVO timeLensesVO) {
         TimeLensesDAO dao = TimeLensesDAO.getInstance(getContext());
 
-        Long[] days = dao.getDaysToExpire(timeLensesVO);
+        Calendar[] datesToExpire = dao.getDatesToExpire(timeLensesVO);
 
-        // Left eye
+        Long[] days = dao.getDaysToExpire(datesToExpire[0], datesToExpire[1]);
+
+        String dateFormat = context.getResources().getString(R.string.locale);
+
+        // Left eye"
         tvDaysRemainingLeftEye.setVisibility(View.VISIBLE);
         tvStrDayLeft.setVisibility(View.VISIBLE);
 
@@ -231,13 +242,18 @@ public class StatusFragment extends Fragment {
 
         boolean isLeftVisible = timeLensesVO != null && timeLensesVO.getInUseLeft() == 1;
 
-        tvDaysRemainingLeftEye.setVisibility(isLeftVisible ? View.VISIBLE
-                : View.INVISIBLE);
-        tvStrDayLeft.setVisibility(isLeftVisible ? View.VISIBLE
-                : View.INVISIBLE);
+        tvDaysRemainingLeftEye.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
+        tvStrDayLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
 
         if (!isLeftVisible) {
             tvDaysRemainingLeftEye.clearAnimation();
+        }
+
+        tvStrDayLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
+
+        if (isLeftVisible) {
+            String strDate = new SimpleDateFormat(dateFormat).format(datesToExpire[0].getTime());
+            tvStrDateLeft.setText(strDate);
         }
 
         // Right eye
@@ -293,6 +309,13 @@ public class StatusFragment extends Fragment {
         view2.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
 
         tvEmpty.setVisibility(timeLensesVO == null ? View.VISIBLE : View.GONE);
+
+        tvStrDateRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
+
+        if (isRightVisible) {
+            String strDate = new SimpleDateFormat(dateFormat).format(datesToExpire[1].getTime());
+            tvStrDateRight.setText(strDate);
+        }
 
     }
 

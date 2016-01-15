@@ -61,6 +61,12 @@ public class StatusTask extends AsyncTask<String, Void, TimeLensesVO> {
         } else {
             TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(statusFragment.getContext());
             timeLensesDAO.updateDaysNotUsed(numDays, sideLens, timeLensesVO.getId());
+
+            if (sideLens.equals(TimeLensesDAO.LEFT)) {
+                timeLensesVO.setNumDaysNotUsedLeft(numDays);
+            } else {
+                timeLensesVO.setNumDaysNotUsedRight(numDays);
+            }
             statusFragment.setDays(timeLensesVO);
         }
         if (progressDlg != null && progressDlg.isShowing())
