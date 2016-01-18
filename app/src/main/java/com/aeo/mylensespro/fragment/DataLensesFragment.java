@@ -449,8 +449,17 @@ public class DataLensesFragment extends Fragment {
     }
 
     private void save() {
-        SaveTask task = new SaveTask(getContext());
-        task.execute();
+        DataLensesVO dataLensesVO = setDataLensesVO();
+        if (dataLensesVO != null) {
+            String operation = "UPDATE";
+            if (dataLensesVO.getId() == null || "".equals(dataLensesVO.getId())) {
+                dataLensesVO.setId(UUID.randomUUID().toString());
+                textViewIdDataLens.setText(dataLensesVO.getId());
+                operation = "INSERT";
+            }
+            SaveTask task = new SaveTask(getContext(), dataLensesVO, operation);
+            task.execute();
+        }
     }
 
     @Override
@@ -651,25 +660,36 @@ public class DataLensesFragment extends Fragment {
 
     private class SaveTask extends AsyncTask<String, Void, DataLensesVO> {
         private Context context;
+        private DataLensesVO dataLensesVO;
+        private String operation;
 
-        public SaveTask(Context context) {
+        public SaveTask(Context context, DataLensesVO dataLensesVO, String operation) {
             this.context = context;
+            this.dataLensesVO = dataLensesVO;
+            this.operation = operation;
         }
 
         @Override
         protected DataLensesVO doInBackground(String... params) {
             DataLensesDAO dataLensesDAO = DataLensesDAO.getInstance(getContext());
-
-            DataLensesVO vo = setDataLensesVO();
+//
+//            DataLensesVO vo = setDataLensesVO();
 //            dataLensesVO = vo;
 
-            if (vo.getId() == null || "".equals(vo.getId())) {
-                vo.setId(UUID.randomUUID().toString());
-                dataLensesDAO.insert(vo);
+//            if (dataLensesVO != null) {
+//                if (dataLensesVO.getId() == null || "".equals(dataLensesVO.getId())) {
+//                    dataLensesVO.setId(UUID.randomUUID().toString());
+//                    dataLensesDAO.insert(dataLensesVO);
+//                } else {
+//                    dataLensesDAO.update(dataLensesVO);
+//                }
+//            }
+            if ("INSERT".equals(operation)) {
+                dataLensesDAO.insert(dataLensesVO);
             } else {
-                dataLensesDAO.update(vo);
+                dataLensesDAO.update(dataLensesVO);
             }
-            return vo;
+            return dataLensesVO;
         }
 
         @Override
@@ -686,12 +706,14 @@ public class DataLensesFragment extends Fragment {
         protected void onPostExecute(DataLensesVO vo) {
             super.onPostExecute(vo);
 
-            mShareActionProvider.setShareIntent(getDefaultIntent(vo));
+            if (isAdded()) {
+                mShareActionProvider.setShareIntent(getDefaultIntent(vo));
 
-            if (progressDlg != null && progressDlg.isShowing())
-                progressDlg.dismiss();
+                if (progressDlg != null && progressDlg.isShowing())
+                    progressDlg.dismiss();
 
-            Toast.makeText(context, R.string.msgSaved, Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, R.string.msgSaved, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -34,6 +34,7 @@
             android:orientation="vertical"
             android:stretchColumns="0, 1, 2, 3, 4">
 
+            <!--Text eyes-->
             <TableRow>
 
                 <TextView android:layout_marginLeft="10dp" />
@@ -65,15 +66,15 @@
                 <TextView android:layout_marginRight="10dp" />
             </TableRow>
 
+            <!--Number days remaining-->
             <TableRow>
-
                 <TextView android:layout_marginLeft="10dp" />
 
                 <TextView
                     android:id="@+id/tvDaysRemainingLeftEye"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="15dp"
                     android:gravity="center"
                     android:text=""
                     android:textSize="30sp" />
@@ -84,7 +85,7 @@
                     android:id="@+id/tvDaysRemainingRightEye"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="15dp"
                     android:gravity="center"
                     android:text=""
                     android:textSize="30sp" />
@@ -92,6 +93,7 @@
                 <TextView android:layout_marginRight="10dp" />
             </TableRow>
 
+            <!--Text Days Remaining-->
             <TableRow>
 
                 <TextView android:layout_marginLeft="10dp" />
@@ -119,8 +121,45 @@
                 <TextView android:layout_marginRight="10dp" />
             </TableRow>
 
-           <TableRow>
+            <View
+                android:id="@+id/view10"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="15dp"
+                android:background="@android:color/darker_gray" />
 
+            <!--Text Date to change-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvLabelDateLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:text="@string/str_date_change"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvLabelDateRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:text="@string/str_date_change"
+                    android:textSize="18sp" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+            <!--Dates to change-->
+            <TableRow>
                 <TextView android:layout_marginLeft="10dp" />
 
                 <TextView
@@ -129,7 +168,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:textSize="15sp" />
+                    android:textSize="17sp" />
 
                 <TextView android:layout_width="40dp" />
 
@@ -139,7 +178,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:textSize="15sp" />
+                    android:textSize="17sp" />
 
                 <TextView android:layout_marginRight="10dp" />
             </TableRow>
@@ -148,11 +187,11 @@
                 android:id="@+id/view1"
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:background="@android:color/darker_gray" />
 
+            <!--Units Remaining-->
             <TableRow>
-
                 <TextView android:layout_marginLeft="10dp" />
 
                 <TextView
@@ -180,6 +219,7 @@
                 <TextView android:layout_marginRight="10dp" />
             </TableRow>
 
+            <!--Text units remaining-->
             <TableRow>
 
                 <TextView android:layout_marginLeft="10dp" />
@@ -211,11 +251,11 @@
                 android:id="@+id/view2"
                 android:layout_width="fill_parent"
                 android:layout_height="1dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="15dp"
                 android:background="@android:color/darker_gray" />
 
+            <!--Buttons not worn-->
             <TableRow>
-
                 <TextView android:layout_marginLeft="10dp" />
 
                 <Button
@@ -245,6 +285,7 @@
                 <TextView android:layout_marginRight="10dp" />
             </TableRow>
 
+            <!--Text button not worn-->
             <TableRow>
 
                 <TextView android:layout_marginLeft="10dp" />

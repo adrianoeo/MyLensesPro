@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.adapter.TimeLensesCollectionPagerAdapter;
@@ -127,7 +128,7 @@ public class LeftTimeFragment extends DialogFragment {
         setSpinnerDiscard();
         setLensValues();
 
-        enableControls(menuItemEdit != null && menuItemEdit.isVisible());
+//        enableControls(menuItemEdit != null && menuItemEdit.isVisible());
 
         return view;
     }
@@ -226,10 +227,13 @@ public class LeftTimeFragment extends DialogFragment {
                 qtdRight = (NumberPicker) rightView.findViewById(R.id.qtdRight);
 
                 btnDateRight.setText(btnDateLeft.getText().toString());
+                numberPickerLeft.clearFocus();
                 numberPickerRight.setValue(numberPickerLeft.getValue());
                 spinnerRight.setSelection(spinnerLeft.getSelectedItemPosition());
                 cbInUseRight.setChecked(cbInUseLeft.isChecked());
                 qtdRight.setValue(qtdLeft.getValue());
+
+                Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show();
             }
         }
 

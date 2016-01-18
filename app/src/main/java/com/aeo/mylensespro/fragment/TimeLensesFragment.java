@@ -236,8 +236,10 @@ public class TimeLensesFragment extends Fragment {
     }
 
     private void saveLens() {
-        SaveTask task = new SaveTask(getContext());
-        task.execute();
+        if (getViewsFragmentLenses()) {
+            SaveTask task = new SaveTask(getContext(), setTimeLensesVO());
+            task.execute();
+        }
     }
 
     private void deleteLens(final String id) {
@@ -283,6 +285,12 @@ public class TimeLensesFragment extends Fragment {
     private TimeLensesVO setTimeLensesVO() {
         TimeLensesVO lensesVO = new TimeLensesVO();
 
+        // Quando número é digitado manualmente através do teclado, é necessário dar clearFocus()
+        // para atualizar a view com o número digitado, caso contrário, o valor qdo obtido
+        // por getValue() retornará o número anterior.
+        numberPickerLeft.clearFocus();
+        numberPickerRight.clearFocus();
+
         lensesVO.setDateLeft(btnDateLeft.getText().toString());
         lensesVO.setDateRight(btnDateRight.getText().toString());
         lensesVO.setExpirationLeft(numberPickerLeft.getValue());
@@ -317,18 +325,20 @@ public class TimeLensesFragment extends Fragment {
 
     private class SaveTask extends AsyncTask<String, Void, Boolean> {
         private Context context;
+        private TimeLensesVO timeLensesVO;
 
-        public SaveTask(Context context) {
+        public SaveTask(Context context, TimeLensesVO timeLensesVO) {
             this.context = context;
+            this.timeLensesVO = timeLensesVO;
         }
 
         @Override
         protected Boolean doInBackground(String... params) {
-            if (getViewsFragmentLenses()) {
-                TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
+//            if (getViewsFragmentLenses()) {
+            TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
 
-                timeLensesDAO.save(setTimeLensesVO());
-            }
+            timeLensesDAO.save(timeLensesVO);
+//            }
             return true;
         }
 

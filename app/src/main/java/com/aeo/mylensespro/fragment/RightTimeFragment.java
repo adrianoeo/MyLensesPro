@@ -104,7 +104,7 @@ public class RightTimeFragment extends DialogFragment {
         setSpinnerDiscard();
         setLensValues();
 
-        enableControls(menuItemEdit != null && menuItemEdit.isVisible());
+//        enableControls(menuItemEdit != null && menuItemEdit.isVisible());
 
         return view;
     }

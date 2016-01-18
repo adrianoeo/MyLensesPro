@@ -144,6 +144,8 @@ public class AlarmFragment extends Fragment {
 
         vo.setHour(time[0]);
         vo.setMinute(time[1]);
+
+        numberDaysBefore.clearFocus();
         vo.setDaysBefore(Integer.valueOf(numberDaysBefore.getValue()));
         vo.setRemindEveryDay(cbRemindEveryDay.isChecked() ? 1 : 0);
 

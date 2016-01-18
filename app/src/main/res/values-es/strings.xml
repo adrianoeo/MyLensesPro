@@ -26,6 +26,7 @@
     <string name="login_error_title">Atención</string>
     <string name="login_email_not_confirmed">Por favor, asegúrese de que usted haya confirmar tu registro en tu correo electrónico</string>
     <string name="reset_error_title">Atención</string>
+    <string name="reset_button_label">Enviar</string>
     <string name="logout_label">Logout</string>
     <string name="sign_up_button_label">Registro</string>
     <string name="alrealdy_member">¿Ya eres usuario? Iniciar sesión</string>
@@ -38,6 +39,8 @@
     <string name="loading">Cargando</string>
     <string name="login">Login</string>
     <string name="signup">Inscribirse</string>
+    <string name="copied">Copiado</string>
+    <string name="not_connected">Se requiere conexión a Internet para iniciar la sesión</string>
     <!-- -->
 
     <string name="nav_status">Status de las lentes</string>
@@ -103,6 +106,7 @@
     <string name="str_set_time_alarm">Momento de la notificación</string>
     <string name="str_days_remaining">Días para cambiar</string>
     <string name="str_day_remaining">Día para cambiar</string>
+    <string name="str_date_change">Fecha de cambio</string>
     <string name="str_time_to_replace">Momento de cambiar</string>
     <string name="str_day_expired">Día caducado</string>
     <string name="str_days_expired">Días caducados</string>

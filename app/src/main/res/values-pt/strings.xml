@@ -26,6 +26,7 @@
     <string name="login_error_title">Atenção</string>
     <string name="login_email_not_confirmed">Por favor, certifique-se de confirmar sua inscrição em seu e-mail</string>
     <string name="reset_error_title">Atenção</string>
+    <string name="reset_button_label">Enviar</string>
     <string name="logout_label">Logout</string>
     <string name="sign_up_button_label">Cadastrar</string>
     <string name="alrealdy_member">Já é usuário? Faça o login</string>
@@ -38,6 +39,8 @@
     <string name="loading">Carregando</string>
     <string name="login">Login</string>
     <string name="signup">Cadastrar</string>
+    <string name="copied">Copiado</string>
+    <string name="not_connected">Para prosseguir é necessário conexão com Internet</string>
     <!---->
 
     <string name="nav_status">Status das lentes</string>
@@ -104,6 +107,7 @@
     <string name="str_set_time_alarm">Horário da notificação</string>
     <string name="str_days_remaining">Dias para troca</string>
     <string name="str_day_remaining">Dia para troca</string>
+    <string name="str_date_change">Data da troca</string>
     <string name="str_time_to_replace">Hora de trocar</string>
     <string name="str_day_expired">Dia expirado</string>
     <string name="str_days_expired">Dias expirados</string>

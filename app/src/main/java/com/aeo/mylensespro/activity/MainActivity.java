@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity
 //            DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
 //                @Override
 //                public void onClick(DialogInterface dialog, int which) {
-                    ParseUser.logOut();
-                    loadLoginView();
+            ParseUser.logOutInBackground();
+            loadLoginView();
 //                }
 //            };
 //            builder.setMessage(R.string.login_email_not_confirmed)
@@ -81,8 +81,8 @@ public class MainActivity extends AppCompatActivity
 
         } else {
             if (savedInstanceState == null) {
-                View view =  navigationView.getHeaderView(0);
-                TextView email = (TextView)  view.findViewById(R.id.email);
+                View view = navigationView.getHeaderView(0);
+                TextView email = (TextView) view.findViewById(R.id.email);
                 email.setText(currentUser.getEmail());
 
                 Utility.replaceFragment(new StatusFragment(), getSupportFragmentManager());
@@ -146,8 +146,17 @@ public class MainActivity extends AppCompatActivity
             shop();
             toolbar.setTitle(R.string.nav_compra);
         } else if (id == R.id.nav_logout) {
-            ParseUser.logOut();
-            loadLoginView();
+//            if (Utility.isNetworkAvailable(MainActivity.this)) {
+                ParseUser.logOutInBackground();
+                loadLoginView();
+//            } else {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+//                builder.setMessage(R.string.)
+//                        .setTitle(R.string.login_error_title)
+//                        .setPositiveButton(android.R.string.ok, null);
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+//            }
         } else {
             Bundle bundle = null;
 //            if (alarmVO != null) {

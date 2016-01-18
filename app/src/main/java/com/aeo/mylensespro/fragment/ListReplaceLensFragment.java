@@ -81,7 +81,6 @@ public class ListReplaceLensFragment extends ListFragment {
         mTracker = application.getDefaultTracker();
 
 
-
 //        listView = (ListView) view.findViewById(R.id.listViewLens);
 //        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 //            @Override
@@ -246,18 +245,20 @@ public class ListReplaceLensFragment extends ListFragment {
 
         @Override
         protected void onPostExecute(List<TimeLensesVO> listLens) {
-            if (listLens != null && listLens.size() > 0) {
-                mListAdapter = new ListReplaceLensBaseAdapter(context, listLens);
-                setListAdapter(mListAdapter);
-            } else {
-                LayoutInflater inflater = (LayoutInflater) context
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            if (isAdded()) {
+                if (listLens != null && listLens.size() > 0) {
+                    mListAdapter = new ListReplaceLensBaseAdapter(context, listLens);
+                    setListAdapter(mListAdapter);
+                } else {
+                    LayoutInflater inflater = (LayoutInflater) context
+                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(
-                        inflater.getContext(),
-                        android.R.layout.simple_list_item_1,
-                        new String[]{getString(R.string.msg_insert_time_replace)});
-                setListAdapter(adapter);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            inflater.getContext(),
+                            android.R.layout.simple_list_item_1,
+                            new String[]{getString(R.string.msg_insert_time_replace)});
+                    setListAdapter(adapter);
+                }
             }
 
         }

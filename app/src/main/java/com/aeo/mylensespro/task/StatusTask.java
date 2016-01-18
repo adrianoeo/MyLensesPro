@@ -55,9 +55,11 @@ public class StatusTask extends AsyncTask<String, Void, TimeLensesVO> {
     @Override
     protected void onPostExecute(TimeLensesVO timeLensesVO) {
         if (sideLens == null && numDays == 0) {
-            statusFragment.setDays(timeLensesVO);
-            statusFragment.setNumUnitsLenses(timeLensesVO);
-            statusFragment.setDaysNotUsed(timeLensesVO);
+            if (statusFragment.isAdded()) {
+                statusFragment.setDays(timeLensesVO);
+                statusFragment.setNumUnitsLenses(timeLensesVO);
+                statusFragment.setDaysNotUsed(timeLensesVO);
+            }
         } else {
             TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(statusFragment.getContext());
             timeLensesDAO.updateDaysNotUsed(numDays, sideLens, timeLensesVO.getId());
@@ -67,7 +69,9 @@ public class StatusTask extends AsyncTask<String, Void, TimeLensesVO> {
             } else {
                 timeLensesVO.setNumDaysNotUsedRight(numDays);
             }
-            statusFragment.setDays(timeLensesVO);
+            if (statusFragment.isAdded()) {
+                statusFragment.setDays(timeLensesVO);
+            }
         }
         if (progressDlg != null && progressDlg.isShowing())
             progressDlg.dismiss();

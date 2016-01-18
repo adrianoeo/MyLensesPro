@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.aeo.mylensespro.R;
+import com.aeo.mylensespro.util.Utility;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
@@ -50,55 +51,65 @@ public class SignUpActivity extends AppCompatActivity {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 } else {
-                    setProgressBarIndeterminateVisibility(true);
+                    if (Utility.isNetworkAvailable(SignUpActivity.this)) {
+                        setProgressBarIndeterminateVisibility(true);
 
-                    ParseUser newUser = new ParseUser();
-                    newUser.setUsername(username);
-                    newUser.setPassword(password);
-                    newUser.setEmail(email);
-                    newUser.signUpInBackground(new SignUpCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            setProgressBarIndeterminateVisibility(false);
+                        ParseUser newUser = new ParseUser();
+                        newUser.setUsername(username);
+                        newUser.setPassword(password);
+                        newUser.setEmail(email);
+                        newUser.signUpInBackground(new SignUpCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                setProgressBarIndeterminateVisibility(false);
 
-                            if (e == null) {
-                                // Success!
+                                if (e == null) {
+                                    // Success!
 
-                                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                                DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        if (ParseUser.getCurrentUser() != null) {
-                                            ParseUser.logOut();
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+                                    DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (ParseUser.getCurrentUser() != null) {
+                                                ParseUser.logOutInBackground();
+                                            }
+                                            Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                            startActivity(intent);
                                         }
-                                        Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-                                        startActivity(intent);
-                                    }
-                                };
-                                builder.setMessage(R.string.signup_message)
-                                        .setTitle(R.string.signup_error_title)
-                                        .setPositiveButton(android.R.string.ok, onClickListener);
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
+                                    };
+                                    builder.setMessage(R.string.signup_message)
+                                            .setTitle(R.string.signup_error_title)
+                                            .setPositiveButton(android.R.string.ok, onClickListener);
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
 
-                            } else {
-                                String msg = null;
-                                if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {
-                                    msg = getResources().getString(R.string.signup_error_message);
-                                } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
-                                    msg = getResources().getString(R.string.signup_error_message_username_already);
                                 } else {
-                                    msg = e.getMessage();
+                                    String msg = null;
+                                    if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {
+                                        msg = getResources().getString(R.string.signup_error_message);
+                                    } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
+                                        msg = getResources().getString(R.string.signup_error_message_username_already);
+                                    } else {
+                                        msg = e.getMessage();
+                                    }
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+                                    builder.setMessage(msg)
+                                            .setTitle(R.string.signup_error_title)
+                                            .setPositiveButton(android.R.string.ok, null);
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
                                 }
-                                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                                builder.setMessage(msg)
-                                        .setTitle(R.string.signup_error_title)
-                                        .setPositiveButton(android.R.string.ok, null);
-                                AlertDialog dialog = builder.create();
-                                dialog.show();
                             }
-                        }
-                    });
+                        });
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+                        builder.setMessage(R.string.not_connected)
+                                .setTitle(R.string.login_error_title)
+                                .setPositiveButton(android.R.string.ok, null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 }
             }
         });
@@ -107,6 +118,8 @@ public class SignUpActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
         });

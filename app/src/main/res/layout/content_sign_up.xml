@@ -26,7 +26,7 @@
             android:layout_marginBottom="24dp"
             android:gravity="center"
             android:text="@string/app_name"
-            android:textSize="20dip"
+            android:textSize="30sp"
             android:typeface="serif"
             android:textColor="@color/white"/>
 
@@ -36,7 +36,7 @@
             android:layout_marginBottom="24dp"
             android:gravity="center"
             android:text="@string/signup"
-            android:textSize="20dip"
+            android:textSize="20sp"
             android:typeface="serif"
             android:textColor="@color/white"/>
 
@@ -95,7 +95,7 @@
             android:layout_marginBottom="24dp"
             android:text="@string/alrealdy_member"
             android:gravity="center"
-            android:textSize="16dip"/>
+            android:textSize="16sp"/>
 
     </LinearLayout>
 </ScrollView>

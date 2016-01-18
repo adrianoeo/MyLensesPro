@@ -499,14 +499,6 @@ public class StatusFragment extends Fragment {
 
                                 StatusTask task = new StatusTask(statusFragment, progressDlg, num, side);
                                 task.execute();
-
-//                                TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-//                                TimeLensesVO timeLensesVO = timeLensesDAO.getLastLens();
-//                                timeLensesDAO.updateDaysNotUsed(num, side,
-//                                        timeLensesVO.getId());
-//
-//                                setDays(timeLensesVO);
-//                                AlarmDAO.getInstance(context).setAlarm(timeLensesVO);
                             }
                         })
                 .setNegativeButton(R.string.btn_cancel,

@@ -12,8 +12,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.List;
-
 public class DataLensesDAO {
 
     private static String tableName = "data_lens";
@@ -243,15 +241,12 @@ public class DataLensesDAO {
 //        query.whereContains("data_id", "OFFLINE");
 
         try {
-            List<ParseObject> list = query.find();
-            if (list != null && list.size() > 0) {
+            ParseObject parseObject = query.getFirst();
+            if (parseObject != null) {
                 if (Utility.isNetworkAvailable(context)) {
-                    for (ParseObject obj : list) {
-//                        obj.put("data_id", obj.getString("data_id").replace("OFFLINE", ""));
-                        obj.setACL(new ParseACL(ParseUser.getCurrentUser()));
-                        obj.save();
-                        obj.unpinInBackground(tableName);
-                    }
+                    parseObject.setACL(new ParseACL(ParseUser.getCurrentUser()));
+                    parseObject.save();
+                    parseObject.unpin(tableName);
                     return true;
                 }
             }

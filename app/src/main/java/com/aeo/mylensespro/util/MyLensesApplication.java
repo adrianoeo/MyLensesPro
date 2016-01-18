@@ -36,6 +36,7 @@ public class MyLensesApplication extends Application {
         Parse.enableLocalDatastore(getApplicationContext());
 //        ParseObject.registerSubclass(AlarmPO.class);
         Parse.initialize(this, "phOG3w5biqDoVi0p3W8koRcCoRP4izKWoQ02RDXd", "wqKH5GqKyn7e0e6SVgvl4SYjyB3aua2JGBuC3Thw");
+//        ParseFacebookUtils.initialize(getApplicationContext());
     }
 
     /**

@@ -1,11 +1,13 @@
 package com.aeo.mylensespro.activity;
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.aeo.mylensespro.R;
 import com.parse.ParseException;
@@ -16,6 +18,8 @@ public class ResetPswdActivity extends AppCompatActivity {
 
     protected EditText emailEditText;
     protected Button resetButton;
+    protected TextView loginTextView;
+    protected TextView signUpTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +28,8 @@ public class ResetPswdActivity extends AppCompatActivity {
 
         emailEditText = (EditText) findViewById(R.id.emailFieldReset);
         resetButton = (Button) findViewById(R.id.resetButton);
+        loginTextView = (TextView) findViewById(R.id.link_login);
+        signUpTextView = (TextView) findViewById(R.id.signUpText);
 
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -45,8 +51,28 @@ public class ResetPswdActivity extends AppCompatActivity {
             }
         });
 
+        loginTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ResetPswdActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+            }
+        });
+
+        signUpTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ResetPswdActivity.this, SignUpActivity.class);
+//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(intent);
+            }
+        });
 
     }
+
 
 //Password Reset
 //When you expect users to have passwords to use your application, you should include a way for them to reset their passwords incase they forget them. Parse already has this functionality in place, so you only need to call the following when a user requests a password reset.
