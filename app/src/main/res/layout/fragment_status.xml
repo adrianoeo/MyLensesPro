@@ -47,7 +47,7 @@
                     android:gravity="center"
                     android:text="@string/leftEye"
                     android:textColor="@color/green"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView android:layout_width="40dp" />
@@ -60,7 +60,7 @@
                     android:gravity="center"
                     android:text="@string/rightEye"
                     android:textColor="@color/blue"
-                    android:textSize="18sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView android:layout_marginRight="10dp" />
@@ -90,8 +90,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:textColor="@color/black"
                     android:text="@string/str_date_change"
+                    android:textColor="@color/black"
                     android:textSize="15sp" />
 
                 <TextView android:layout_marginRight="10dp" />
@@ -99,6 +99,7 @@
 
             <!--Dates to change-->
             <TableRow>
+
                 <TextView android:layout_marginLeft="10dp" />
 
                 <TextView
@@ -106,8 +107,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:gravity="center" android:textColor="@color/black"
-                    android:textSize="17sp" />
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
                 <TextView android:layout_width="40dp" />
 
@@ -116,8 +119,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
-                    android:gravity="center" android:textColor="@color/black"
-                    android:textSize="17sp" />
+                    android:gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
 
                 <TextView android:layout_marginRight="10dp" />
             </TableRow>
@@ -131,6 +136,7 @@
 
             <!--Number days remaining-->
             <TableRow>
+
                 <TextView android:layout_marginLeft="10dp" />
 
                 <TextView
@@ -193,6 +199,7 @@
 
             <!--Units Remaining-->
             <TableRow>
+
                 <TextView android:layout_marginLeft="10dp" />
 
                 <TextView
@@ -257,6 +264,7 @@
 
             <!--Buttons not worn-->
             <TableRow>
+
                 <TextView android:layout_marginLeft="10dp" />
 
                 <Button

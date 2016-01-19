@@ -127,6 +127,11 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
+        }
+
         this.doubleBackToExitPressedOnce = true;
         Toast.makeText(this, R.string.msg_press_once_again_to_exit,
                 Toast.LENGTH_SHORT).show();
