@@ -32,7 +32,8 @@ public class DataLensesDAO {
     }
 
     public void insert(DataLensesVO vo) {
-        boolean isOffline = !Utility.isNetworkAvailable(context);
+        boolean isOffline = /*!Utility.isNetworkAvailable(context)
+                || */!Utility.isConnectionFast(context);
 
         ParseObject parseObject = getParseObjectDataLens(vo, isOffline);
         parseObject.setACL(new ParseACL(ParseUser.getCurrentUser()));
@@ -58,7 +59,8 @@ public class DataLensesDAO {
 
         // Retrieve the object by id
         try {
-            boolean isOffline = !Utility.isNetworkAvailable(context);
+            boolean isOffline = /*!Utility.isNetworkAvailable(context)
+                    ||*/ !Utility.isConnectionFast(context);
             ParseObject parseObject = query.getFirst();
 
             parseObject = setParseObject(parseObject, vo, isOffline);
@@ -84,7 +86,8 @@ public class DataLensesDAO {
         query.orderByDescending("createdAt");
 
         //se não estiver online, utiliza base local
-        if (!Utility.isNetworkAvailable(context)) {
+        if (/*!Utility.isNetworkAvailable(context) ||*/ !Utility.isConnectionFast(context)
+                && !isFromPinNull(null)) {
             query.fromPin(tableName);
         }
 
@@ -98,13 +101,30 @@ public class DataLensesDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
 
         //se não estiver online, utiliza base local
-        if (!Utility.isNetworkAvailable(context)) {
+        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
+                && !isFromPinNull(id)) {
             query.fromPin(tableName);
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
         query.whereEqualTo("data_id", id);
         return query;
+    }
+
+    private boolean isFromPinNull(String id) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.orderByDescending("createdAt");
+        query.fromPin(tableName);
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+        if (id != null) {
+            query.whereEqualTo("data_id", id);
+        }
+
+        try {
+            return query.count() <= 0;
+        } catch (com.parse.ParseException e) {
+            return true;
+        }
     }
 
     public DataLensesVO getLastDataLenses() {
@@ -243,7 +263,7 @@ public class DataLensesDAO {
         try {
             ParseObject parseObject = query.getFirst();
             if (parseObject != null) {
-                if (Utility.isNetworkAvailable(context)) {
+                if (/*Utility.isNetworkAvailable(context) &&*/ Utility.isConnectionFast(context)) {
                     parseObject.setACL(new ParseACL(ParseUser.getCurrentUser()));
                     parseObject.save();
                     parseObject.unpin(tableName);

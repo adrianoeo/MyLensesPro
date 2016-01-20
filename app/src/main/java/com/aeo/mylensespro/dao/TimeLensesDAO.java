@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 public class TimeLensesDAO {
 
-    private static String tableName = "lens";
+    public static String tableName = "lens";
     private static TimeLensesDAO instance;
     public static final String LEFT = "LEFT";
     public static final String RIGHT = "RIGHT";
@@ -49,7 +49,8 @@ public class TimeLensesDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
 
         //se não estiver online, utiliza base local
-        if (!Utility.isNetworkAvailable(context)) {
+        if (/*!Utility.isNetworkAvailable(context) ||*/ !Utility.isConnectionFast(context)
+                && !isFromPinNull(idLens)) {
             query.fromPin(tableName);
         }
 
@@ -63,15 +64,31 @@ public class TimeLensesDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
         query.orderByDescending("date_create");
 
-        //se não estiver online, utiliza base local
-        if (!Utility.isNetworkAvailable(context)) {
-//            query.fromLocalDatastore();
+        //se não estiver online, a conexão for ruim e houver dados locais, utiliza base local
+        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
+                && !isFromPinNull(null)) {
             query.fromPin(tableName);
         }
 
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
 
         return query;
+    }
+
+    private boolean isFromPinNull(String idLens) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.orderByDescending("date_create");
+        query.fromPin(tableName);
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+        if (idLens != null) {
+            query.whereEqualTo("lens_id", idLens);
+        }
+
+        try {
+            return query.count() <= 0;
+        } catch (com.parse.ParseException e) {
+            return true;
+        }
     }
 
     private ParseObject getParseObjectLens(TimeLensesVO lensVO, boolean isOffline) {
@@ -122,7 +139,8 @@ public class TimeLensesDAO {
                         content.saveEventually();
                         content.pinInBackground(tableName);
 
-                        if (Utility.isNetworkAvailable(context)) {
+                        if (/*Utility.isNetworkAvailable(context)
+                                && */Utility.isConnectionFast(context)) {
                             content.saveInBackground();
                         }
                     }
@@ -150,7 +168,7 @@ public class TimeLensesDAO {
                     content.saveEventually();
                     content.pinInBackground(tableName);
 
-                    if (Utility.isNetworkAvailable(context)) {
+                    if (/*Utility.isNetworkAvailable(context) &&*/ Utility.isConnectionFast(context)) {
                         content.saveInBackground();
                     }
                 }
@@ -312,6 +330,7 @@ public class TimeLensesDAO {
 
         try {
             ParseObject parseObj = query.getFirst();
+            parseObj.pinInBackground(tableName);
             return setTimeLensesVODAO(parseObj);
 
         } catch (com.parse.ParseException e) {
@@ -361,7 +380,7 @@ public class TimeLensesDAO {
                 TimeUnit.DAYS.convert(daysExpRight, TimeUnit.MILLISECONDS)};
     }
 
-     public Long[] getDaysToExpire(Calendar dateExpLeft, Calendar dateExpRight) {
+    public Long[] getDaysToExpire(Calendar dateExpLeft, Calendar dateExpRight) {
         long daysExpLeft = 0;
         long daysExpRight = 0;
 
@@ -455,7 +474,8 @@ public class TimeLensesDAO {
     }
 
     public void insert(TimeLensesVO lensVO) {
-        boolean isOffline = !Utility.isNetworkAvailable(context);
+        boolean isOffline = /*!Utility.isNetworkAvailable(context)
+                ||*/ !Utility.isConnectionFast(context);
 
         lensVO.setDateCreate(new Date());
 
@@ -510,7 +530,7 @@ public class TimeLensesDAO {
             content.saveEventually();
             content.pinInBackground(tableName);
 
-            if (Utility.isNetworkAvailable(context)) {
+            if (/*Utility.isNetworkAvailable(context) &&*/ Utility.isConnectionFast(context)) {
                 content.save();
             }
 
@@ -527,7 +547,7 @@ public class TimeLensesDAO {
             parseObject.unpinInBackground(tableName);
             parseObject.deleteEventually();
 
-            if (Utility.isNetworkAvailable(context)) {
+            if (/*Utility.isNetworkAvailable(context) &&*/ Utility.isConnectionFast(context)) {
                 parseObject.delete();
             }
 

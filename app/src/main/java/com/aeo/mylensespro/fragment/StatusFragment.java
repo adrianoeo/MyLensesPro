@@ -170,6 +170,14 @@ public class StatusFragment extends Fragment {
 
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (progressDlg != null && progressDlg.isShowing())
+            progressDlg.dismiss();
+
+        progressDlg = null;
+    }
 
     @Override
     public void onResume() {

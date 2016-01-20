@@ -160,19 +160,23 @@ public class ListReplaceLensFragment extends ListFragment {
     public void onResume() {
         super.onResume();
 
+        Context context = getContext();
         if (isNetworkAvailable == null) {
-            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
-            ListLensesTask task = new ListLensesTask(getContext());
+            isNetworkAvailable = Utility.isNetworkAvailable(context)
+                    /*&& Utility.isConnectionFast(context)*/;
+            ListLensesTask task = new ListLensesTask(context);
             task.execute();
         } else {
-            if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(getContext())) {
-                SyncLensesTask task = new SyncLensesTask(getContext());
+            if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(context)
+                    /*&& Utility.isConnectionFast(context)*/) {
+                SyncLensesTask task = new SyncLensesTask(context);
                 task.execute();
             } else {
-                ListLensesTask task = new ListLensesTask(getContext());
+                ListLensesTask task = new ListLensesTask(context);
                 task.execute();
             }
-            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+            isNetworkAvailable = Utility.isNetworkAvailable(context)
+                    /*&&  Utility.isConnectionFast(context)*/;
         }
 
         FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
@@ -189,6 +193,14 @@ public class ListReplaceLensFragment extends ListFragment {
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (progressDlg != null && progressDlg.isShowing())
+            progressDlg.dismiss();
+
+        progressDlg = null;
+    }
 
     private class SyncLensesTask extends AsyncTask<String, Void, Boolean> {
         private Context context;
@@ -206,6 +218,8 @@ public class ListReplaceLensFragment extends ListFragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
             progressDlg = new ProgressDialog(context);
             progressDlg.setMessage(getResources().getString(R.string.sync));
             progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);

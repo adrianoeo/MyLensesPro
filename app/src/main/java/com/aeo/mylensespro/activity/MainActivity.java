@@ -1,6 +1,7 @@
 package com.aeo.mylensespro.activity;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import com.aeo.mylensespro.dao.AlarmDAO;
 import com.aeo.mylensespro.dao.DataLensesDAO;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.fragment.StatusFragment;
+import com.aeo.mylensespro.task.LogoutTask;
 import com.aeo.mylensespro.util.MyLensesApplication;
 import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.DataLensesVO;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity
 
     public Toolbar toolbar;
     private boolean doubleBackToExitPressedOnce;
+    private ProgressDialog progressDlg;
 
     private Tracker mTracker;
 
@@ -64,21 +67,10 @@ public class MainActivity extends AppCompatActivity
         if (currentUser == null) {
             loadLoginView();
         } else if (currentUser != null && !currentUser.getBoolean("emailVerified")) {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//            DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-            ParseUser.logOutInBackground();
-            loadLoginView();
-//                }
-//            };
-//            builder.setMessage(R.string.login_email_not_confirmed)
-//                    .setTitle(R.string.login_error_title)
-//                    .setPositiveButton(android.R.string.ok, onClickListener);
-//
-//            AlertDialog dialog = builder.create();
-//            dialog.show();
-
+            LogoutTask logoutTask = new LogoutTask(MainActivity.this, progressDlg, true);
+            logoutTask.execute();
+//            ParseUser.logOutInBackground();
+//            loadLoginView();
         } else {
             if (savedInstanceState == null) {
                 View view = navigationView.getHeaderView(0);
@@ -146,17 +138,10 @@ public class MainActivity extends AppCompatActivity
             shop();
             toolbar.setTitle(R.string.nav_compra);
         } else if (id == R.id.nav_logout) {
-//            if (Utility.isNetworkAvailable(MainActivity.this)) {
-                ParseUser.logOutInBackground();
-                loadLoginView();
-//            } else {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-//                builder.setMessage(R.string.)
-//                        .setTitle(R.string.login_error_title)
-//                        .setPositiveButton(android.R.string.ok, null);
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-//            }
+            LogoutTask logoutTask = new LogoutTask(MainActivity.this, progressDlg, true);
+            logoutTask.execute();
+//            ParseUser.logOutInBackground();
+//            loadLoginView();
         } else {
             Bundle bundle = null;
 //            if (alarmVO != null) {

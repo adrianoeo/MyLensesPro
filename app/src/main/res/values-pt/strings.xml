@@ -17,6 +17,7 @@
     <string name="sign_up_text">Não possui conta? Crie aqui</string>
     <string name="forget_password">Esqueceu a senha? Clique aqui</string>
     <string name="signup_error_message">Por favor, verifique o preenchimento de email válido e senha</string>
+    <string name="reset_error_message">Por favor, verifique o preenchimento de email válido</string>
     <string name="signup_error_message_username_already">Email já cadastrado</string>
     <string name="signup_message">Por Favor, confirme sua inscrição em seu email</string>
     <string name="signup_error_title">Atenção</string>
@@ -25,6 +26,7 @@
     <string name="login_fail_message">Por favor, verifique o preenchimento correto do seu email e senha</string>
     <string name="login_error_title">Atenção</string>
     <string name="login_email_not_confirmed">Por favor, certifique-se de confirmar sua inscrição em seu e-mail</string>
+    <string name="login_poor_connection">Conexão lenta, o login pode demorar um pouco. Por favor aguarde</string>
     <string name="reset_error_title">Atenção</string>
     <string name="reset_button_label">Enviar</string>
     <string name="logout_label">Logout</string>
@@ -38,9 +40,12 @@
     <string name="sync">Sincronizando</string>
     <string name="loading">Carregando</string>
     <string name="login">Login</string>
+    <string name="loggingin">Logando</string>
+    <string name="sending">Enviando email</string>
     <string name="signup">Cadastrar</string>
     <string name="copied">Copiado</string>
     <string name="not_connected">Para prosseguir é necessário conexão com Internet</string>
+    <string name="wait">Aguarde...</string>
     <!---->
 
     <string name="nav_status">Status das lentes</string>

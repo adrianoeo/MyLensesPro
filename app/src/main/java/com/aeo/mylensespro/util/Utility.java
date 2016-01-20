@@ -3,6 +3,7 @@ package com.aeo.mylensespro.util;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -99,7 +100,7 @@ public abstract class Utility {
         trans.replace(R.id.fragment_container, fragment);
 
 		/*
-		 * IMPORTANT: The following lines allow us to add the fragment to the
+         * IMPORTANT: The following lines allow us to add the fragment to the
 		 * stack and return to it later, by pressing back
 		 */
         trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
@@ -108,12 +109,33 @@ public abstract class Utility {
         trans.commit();
     }
 
-    public static boolean isNetworkAvailable(final Context context) {
+    public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
                 = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
 
         return connectivityManager.getActiveNetworkInfo() != null
                 && connectivityManager.getActiveNetworkInfo().isConnected()
                 && connectivityManager.getActiveNetworkInfo().isAvailable();
+    }
+
+    public static int[] getNetworkType(Context context) {
+        ConnectivityManager connectivityManager
+                = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
+
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+
+        if (activeNetwork != null && activeNetwork.isConnected() && activeNetwork.isAvailable()) {
+            return new int[]{activeNetwork.getType(), activeNetwork.getSubtype()};
+        }
+
+        return null;
+    }
+
+    public static boolean isConnectionFast(Context context) {
+        int[] types = getNetworkType(context);
+        if (types != null) {
+            return Connectivity.isConnectionFast(types[0], types[1]);
+        }
+        return false;
     }
 }

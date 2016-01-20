@@ -109,7 +109,7 @@
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView android:layout_width="40dp" />
@@ -121,7 +121,7 @@
                     android:layout_marginTop="10dp"
                     android:gravity="center"
                     android:textColor="@color/black"
-                    android:textSize="17sp"
+                    android:textSize="20sp"
                     android:textStyle="bold" />
 
                 <TextView android:layout_marginRight="10dp" />

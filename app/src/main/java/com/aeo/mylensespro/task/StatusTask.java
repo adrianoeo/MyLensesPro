@@ -1,6 +1,7 @@
 package com.aeo.mylensespro.task;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.aeo.mylensespro.R;
@@ -43,8 +44,12 @@ public class StatusTask extends AsyncTask<String, Void, TimeLensesVO> {
     protected void onPreExecute() {
         super.onPreExecute();
 
-        if (Utility.isNetworkAvailable(statusFragment.getContext())) {
-            progressDlg = new ProgressDialog(statusFragment.getContext());
+        Context context = statusFragment.getContext();
+
+        if (Utility.isNetworkAvailable(context)) {
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
+            progressDlg = new ProgressDialog(context);
             progressDlg.setMessage(statusFragment.getResources().getString(R.string.loading));
             progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDlg.setIndeterminate(true);

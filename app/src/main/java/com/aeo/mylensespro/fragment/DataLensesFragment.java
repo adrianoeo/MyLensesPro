@@ -463,22 +463,34 @@ public class DataLensesFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        if (progressDlg != null && progressDlg.isShowing())
+            progressDlg.dismiss();
+
+        progressDlg = null;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
+        Context context = getContext();
         if (isNetworkAvailable == null) {
-            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+            isNetworkAvailable = Utility.isNetworkAvailable(context) /*&& Utility.isConnectionFast(context)*/;
             DataLensesTask task = new DataLensesTask();
             task.execute();
         } else {
-            if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(getContext())) {
-                SyncDataLensesTask task = new SyncDataLensesTask(getContext());
+            if (isNetworkAvailable == Boolean.FALSE && Utility.isNetworkAvailable(context)
+                    /*&& Utility.isConnectionFast(context)*/) {
+                SyncDataLensesTask task = new SyncDataLensesTask(context);
                 task.execute();
             } else {
                 DataLensesTask task = new DataLensesTask();
                 task.execute();
             }
-            isNetworkAvailable = Utility.isNetworkAvailable(getContext());
+            isNetworkAvailable = Utility.isNetworkAvailable(context)
+                    /*&& Utility.isConnectionFast(context)*/;
         }
 
 //        DataLensesTask task = new DataLensesTask();
@@ -606,6 +618,8 @@ public class DataLensesFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if (progressDlgSync != null && progressDlgSync.isShowing())
+                progressDlgSync.dismiss();
             progressDlgSync = new ProgressDialog(context);
             progressDlgSync.setMessage(getResources().getString(R.string.sync));
             progressDlgSync.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -636,6 +650,8 @@ public class DataLensesFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
             progressDlg = new ProgressDialog(getContext());
             progressDlg.setMessage(getResources().getString(R.string.loading));
             progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -695,6 +711,8 @@ public class DataLensesFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
             progressDlg = new ProgressDialog(context);
             progressDlg.setMessage(getResources().getString(R.string.saving));
             progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);

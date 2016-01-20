@@ -61,6 +61,19 @@ public class AlarmDAO {
 
     }
 
+    private boolean isFromPinNull() {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
+        query.orderByDescending("createdAt");
+        query.fromPin(tableName);
+        query.whereEqualTo("user_id", ParseUser.getCurrentUser());
+
+        try {
+            return query.count() <= 0;
+        } catch (com.parse.ParseException e) {
+            return true;
+        }
+    }
+
     public void update(AlarmVO vo) {
         final int hour = vo.getHour();
         final int minute = vo.getMinute();
@@ -70,7 +83,8 @@ public class AlarmDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
 
         //se não estiver online, utiliza base local
-        if (!Utility.isNetworkAvailable(context)) {
+        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
+                && !isFromPinNull()) {
 //            query.fromLocalDatastore();
             query.fromPin(tableName);
         }
@@ -129,8 +143,8 @@ public class AlarmDAO {
         query.orderByDescending("createdAt");
 
         //se não estiver online, utiliza base local
-        if (!Utility.isNetworkAvailable(context)) {
-//            query.fromLocalDatastore();
+        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
+                && !isFromPinNull()) {
             query.fromPin(tableName);
         }
 
@@ -167,8 +181,8 @@ public class AlarmDAO {
         query.orderByDescending("createdAt");
 
         //se não estiver online, utiliza base local
-        if (!Utility.isNetworkAvailable(context)) {
-//            query.fromLocalDatastore();
+        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
+                && !isFromPinNull()) {
             query.fromPin(tableName);
         }
 
@@ -352,9 +366,7 @@ public class AlarmDAO {
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-//		calendar.add(Calendar.DATE, 1);
-
-//        String date = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss").format(calendar.getTime());
+		calendar.add(Calendar.DATE, 1);
 
         Intent intent = new Intent(context, DailyAlarmBroadcastReceiver.class);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context,

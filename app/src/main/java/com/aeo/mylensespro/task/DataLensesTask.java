@@ -48,6 +48,8 @@ public class DataLensesTask extends AsyncTask<String, Void, DataLensesVO> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
+        if (progressDlg != null && progressDlg.isShowing())
+            progressDlg.dismiss();
         progressDlg = new ProgressDialog(context);
         progressDlg.setMessage(fragment.getResources().getString(R.string.loading));
         progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);

@@ -303,7 +303,7 @@ public class TimeLensesFragment extends Fragment {
         lensesVO.setQtdRight(qtdRight.getValue());
 
         if (timeLensesVO == null || timeLensesVO.getId() == null) {
-            if (!Utility.isNetworkAvailable(getContext())) {
+            if (/*!Utility.isNetworkAvailable(getContext()) ||*/ !Utility.isConnectionFast(getContext())) {
                 lensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
             } else {
                 lensesVO.setId(UUID.randomUUID().toString());
@@ -321,6 +321,15 @@ public class TimeLensesFragment extends Fragment {
             isSaveVisible = false;
             getFragmentManager().popBackStack();
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (progressDlg != null && progressDlg.isShowing())
+            progressDlg.dismiss();
+
+        progressDlg = null;
     }
 
     private class SaveTask extends AsyncTask<String, Void, Boolean> {
@@ -345,6 +354,8 @@ public class TimeLensesFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
             progressDlg = new ProgressDialog(context);
             progressDlg.setMessage(getResources().getString(R.string.saving));
             progressDlg.setProgressStyle(ProgressDialog.STYLE_SPINNER);
