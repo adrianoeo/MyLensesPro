@@ -71,6 +71,8 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
             ViewHolder viewHolder = (ViewHolder) view.getTag();
 
             viewHolder.idLens.setText(lenses.getId().toString());
+            viewHolder.objectIdLens.setText(lenses.getObjectId() == null
+                    ? "" : lenses.getObjectId().toString());
             viewHolder.dateLeft.setText(lenses.getDateLeft());
             viewHolder.dateRight.setText(lenses.getDateRight());
             viewHolder.timeLeft.setText(new StringBuilder()
@@ -128,6 +130,7 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
     private View getViewHolder(View view) {
         ViewHolder viewHolder = new ViewHolder();
         viewHolder.idLens = (TextView) view.findViewById(R.id.textViewIdLens);
+        viewHolder.objectIdLens = (TextView) view.findViewById(R.id.textViewObjectIdLens);
         viewHolder.dateLeft = (TextView) view.findViewById(R.id.textViewDateReplaceLensLeft);
         viewHolder.dateRight = (TextView) view.findViewById(R.id.textViewDateReplaceLensRight);
         viewHolder.timeLeft = (TextView) view.findViewById(R.id.textViewTimeReplaceLensLeft);
@@ -148,5 +151,6 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
         public TextView timeLeft;
         public TextView timeRight;
         public TextView idLens;
+        public TextView objectIdLens;
     }
 }

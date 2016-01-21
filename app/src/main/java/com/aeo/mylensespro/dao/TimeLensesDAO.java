@@ -15,10 +15,12 @@ import com.parse.ParseUser;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 public class TimeLensesDAO {
@@ -33,6 +35,8 @@ public class TimeLensesDAO {
     public static TimeLensesVO timeLensesVO;
     public static List<TimeLensesVO> listTimeLensesVO;
 
+    private List<ParseObject> listDeletedParseObj;
+
     public static TimeLensesDAO getInstance(Context context) {
         if (instance == null) {
             instance = new TimeLensesDAO(context);
@@ -42,15 +46,22 @@ public class TimeLensesDAO {
 
     public TimeLensesDAO(Context context) {
         this.context = context;
+
+        if (listDeletedParseObj == null) {
+            listDeletedParseObj = new ArrayList<>();
+        }
     }
 
     private ParseQuery getParseQuery(String idLens) {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
 
+        boolean isConnectionFast = Utility.isConnectionFast(context);
+        boolean isFromPinNull = isFromPinNull(idLens);
+        boolean isNetworkAvailable = Utility.isNetworkAvailable(context);
+
         //se não estiver online, utiliza base local
-        if (/*!Utility.isNetworkAvailable(context) ||*/ !Utility.isConnectionFast(context)
-                && !isFromPinNull(idLens)) {
+        if ((!isConnectionFast && !isFromPinNull) || !isNetworkAvailable) {
             query.fromPin(tableName);
         }
 
@@ -64,9 +75,12 @@ public class TimeLensesDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
         query.orderByDescending("date_create");
 
-        //se não estiver online, a conexão for ruim e houver dados locais, utiliza base local
-        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
-                && !isFromPinNull(null)) {
+        boolean isConnectionFast = Utility.isConnectionFast(context);
+        boolean isFromPinNull = isFromPinNull(null);
+        boolean isNetworkAvailable = Utility.isNetworkAvailable(context);
+
+        //Local
+        if ((!isConnectionFast && !isFromPinNull) || !isNetworkAvailable) {
             query.fromPin(tableName);
         }
 
@@ -94,11 +108,12 @@ public class TimeLensesDAO {
     private ParseObject getParseObjectLens(TimeLensesVO lensVO, boolean isOffline) {
         ParseObject content = new ParseObject(tableName);
 
-        if (isOffline) {
-            content.put("lens_id", lensVO.getId());
-        } else {
-            content.put("lens_id", lensVO.getId().replace("OFFLINE", ""));
-        }
+//        if (isOffline) {
+//            content.put("lens_id", lensVO.getId());
+//        } else {
+//            content.put("lens_id", lensVO.getId().replace("OFFLINE", ""));
+//        }
+        content.put("lens_id", lensVO.getId());
 
         content.put("user_id", ParseUser.getCurrentUser());
         content.put("date_left", Utility.formatDateToSqlite(lensVO.getDateLeft(), context));
@@ -278,15 +293,22 @@ public class TimeLensesDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
         query.fromPin(tableName);
         query.whereEqualTo("user_id", ParseUser.getCurrentUser());
-        query.whereContains("lens_id", "OFFLINE");
+//        query.whereContains("lens_id", "OFFLINE");
 
         try {
             List<ParseObject> list = query.find();
             for (ParseObject obj : list) {
-                obj.put("lens_id", obj.getString("lens_id").replace("OFFLINE", ""));
+//                obj.put("lens_id", obj.getString("lens_id").replace("OFFLINE", ""));
+                obj.put("lens_id", obj.getString("lens_id"));
                 obj.setACL(new ParseACL(ParseUser.getCurrentUser()));
                 obj.save();
             }
+
+            for (ParseObject obj : listDeletedParseObj) {
+                obj.delete();
+            }
+
+            listDeletedParseObj.clear();
         } catch (com.parse.ParseException e) {
             e.printStackTrace();
         }
@@ -463,6 +485,16 @@ public class TimeLensesDAO {
     public void save(TimeLensesVO timeLensesVO) {
         TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
 
+        String idLens = timeLensesVO.getId();
+        String objectId = timeLensesVO.getObjectId();
+
+        if ((idLens == null || "".equals(idLens)) && (objectId == null || "".equals(objectId))) {
+            timeLensesVO.setId(UUID.randomUUID().toString());
+            timeLensesDAO.insert(timeLensesVO);
+        } else {
+            timeLensesDAO.update(timeLensesVO);
+        }
+/*
         String idLens = timeLensesVO.getObjectId();
         if (idLens != null && !idLens.contains("OFFLINE")) {
             if (!timeLensesVO.equals(timeLensesDAO.getById(idLens))) {
@@ -471,6 +503,7 @@ public class TimeLensesDAO {
         } else {
             timeLensesDAO.insert(timeLensesVO);
         }
+*/
     }
 
     public void insert(TimeLensesVO lensVO) {
@@ -544,8 +577,10 @@ public class TimeLensesDAO {
 
         try {
             ParseObject parseObject = query.getFirst();
-            parseObject.unpinInBackground(tableName);
+            parseObject.unpin(tableName);
             parseObject.deleteEventually();
+
+            listDeletedParseObj.add(parseObject);
 
             if (/*Utility.isNetworkAvailable(context) &&*/ Utility.isConnectionFast(context)) {
                 parseObject.delete();

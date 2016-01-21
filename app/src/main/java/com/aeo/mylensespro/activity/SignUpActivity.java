@@ -151,7 +151,7 @@ public class SignUpActivity extends AppCompatActivity {
         signupTask.execute();
     }
 
-    public class SignupTask extends AsyncTask<String, Void, ParseUser> {
+    public class SignupTask extends AsyncTask<String, Void, String> {
         private Context context;
         private String username;
         private String password;
@@ -176,16 +176,16 @@ public class SignUpActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ParseUser doInBackground(String... params) {
+        protected String doInBackground(String... params) {
             ParseUser newUser = new ParseUser();
             newUser.setUsername(username);
             newUser.setPassword(password);
             newUser.setEmail(username);
+            String msg = null;
             try {
                 newUser.signUp();
 
             } catch (ParseException e) {
-                String msg = null;
                 if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {
                     msg = getResources().getString(R.string.signup_error_message);
                 } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
@@ -193,6 +193,35 @@ public class SignUpActivity extends AppCompatActivity {
                 } else {
                     msg = e.getMessage();
                 }
+            }
+            return msg;
+        }
+
+        @Override
+        protected void onPostExecute(String msg) {
+            super.onPostExecute(msg);
+
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
+            progressDlg = null;
+
+            if (msg == null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+                DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (ParseUser.getCurrentUser() != null) {
+                            LogoutTask logoutTask = new LogoutTask(SignUpActivity.this, progressDlg, true);
+                            logoutTask.execute();
+                        }
+                    }
+                };
+                builder.setMessage(R.string.signup_message)
+                        .setTitle(R.string.signup_error_title)
+                        .setPositiveButton(android.R.string.ok, onClickListener);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
                 builder.setMessage(msg)
                         .setTitle(R.string.signup_error_title)
@@ -200,32 +229,6 @@ public class SignUpActivity extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
-            return newUser;
-        }
-
-        @Override
-        protected void onPostExecute(ParseUser parseUser) {
-            super.onPostExecute(parseUser);
-
-            if (progressDlg != null && progressDlg.isShowing())
-                progressDlg.dismiss();
-            progressDlg = null;
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-            DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (ParseUser.getCurrentUser() != null) {
-                        LogoutTask logoutTask = new LogoutTask(SignUpActivity.this, progressDlg, true);
-                        logoutTask.execute();
-                    }
-                }
-            };
-            builder.setMessage(R.string.signup_message)
-                    .setTitle(R.string.signup_error_title)
-                    .setPositiveButton(android.R.string.ok, onClickListener);
-            AlertDialog dialog = builder.create();
-            dialog.show();
         }
     }
 

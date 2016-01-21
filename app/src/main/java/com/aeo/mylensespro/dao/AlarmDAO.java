@@ -82,10 +82,11 @@ public class AlarmDAO {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
 
-        //se não estiver online, utiliza base local
-        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
-                && !isFromPinNull()) {
-//            query.fromLocalDatastore();
+        boolean isConnectionFast = Utility.isConnectionFast(context);
+        boolean isNetworkAvailable = Utility.isNetworkAvailable(context);
+
+        //Local
+        if ((!isConnectionFast && !isFromPinNull()) || !isNetworkAvailable) {
             query.fromPin(tableName);
         }
 
@@ -142,9 +143,11 @@ public class AlarmDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
         query.orderByDescending("createdAt");
 
-        //se não estiver online, utiliza base local
-        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
-                && !isFromPinNull()) {
+        boolean isConnectionFast = Utility.isConnectionFast(context);
+        boolean isNetworkAvailable = Utility.isNetworkAvailable(context);
+
+        //Local
+        if ((!isConnectionFast && !isFromPinNull()) || !isNetworkAvailable) {
             query.fromPin(tableName);
         }
 
@@ -180,9 +183,11 @@ public class AlarmDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
         query.orderByDescending("createdAt");
 
-        //se não estiver online, utiliza base local
-        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
-                && !isFromPinNull()) {
+        boolean isConnectionFast = Utility.isConnectionFast(context);
+        boolean isNetworkAvailable = Utility.isNetworkAvailable(context);
+
+        //Local
+        if ((!isConnectionFast && !isFromPinNull()) || !isNetworkAvailable) {
             query.fromPin(tableName);
         }
 

@@ -85,9 +85,12 @@ public class DataLensesDAO {
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
         query.orderByDescending("createdAt");
 
-        //se não estiver online, utiliza base local
-        if (/*!Utility.isNetworkAvailable(context) ||*/ !Utility.isConnectionFast(context)
-                && !isFromPinNull(null)) {
+        boolean isConnectionFast = Utility.isConnectionFast(context);
+        boolean isFromPinNull = isFromPinNull(null);
+        boolean isNetworkAvailable = Utility.isNetworkAvailable(context);
+
+        //Local
+        if ((!isConnectionFast && !isFromPinNull) || !isNetworkAvailable) {
             query.fromPin(tableName);
         }
 
@@ -100,9 +103,12 @@ public class DataLensesDAO {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(tableName);
 
-        //se não estiver online, utiliza base local
-        if (/*!Utility.isNetworkAvailable(context) || */!Utility.isConnectionFast(context)
-                && !isFromPinNull(id)) {
+        boolean isConnectionFast = Utility.isConnectionFast(context);
+        boolean isFromPinNull = isFromPinNull(id);
+        boolean isNetworkAvailable = Utility.isNetworkAvailable(context);
+
+        //Local
+        if ((!isConnectionFast && !isFromPinNull) || !isNetworkAvailable) {
             query.fromPin(tableName);
         }
 
@@ -199,11 +205,12 @@ public class DataLensesDAO {
 
     private ParseObject setParseObject(ParseObject parseObject, DataLensesVO vo, boolean isOffline) {
 
-        if (isOffline) {
-            parseObject.put("data_id", vo.getId());
-        } else {
-            parseObject.put("data_id", vo.getId().replace("OFFLINE", ""));
-        }
+//        if (isOffline) {
+//            parseObject.put("data_id", vo.getId());
+//        } else {
+//            parseObject.put("data_id", vo.getId().replace("OFFLINE", ""));
+//        }
+        parseObject.put("data_id", vo.getId());
 
         parseObject.put("user_id", ParseUser.getCurrentUser());
         parseObject.put("description_left", vo.getDescriptionLeft().trim());

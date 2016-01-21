@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,6 +29,7 @@ import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
 import com.aeo.mylensespro.task.StatusTask;
 import com.aeo.mylensespro.util.MyLensesApplication;
+import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.TimeLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
@@ -43,6 +45,8 @@ public class StatusFragment extends Fragment {
     private TextView tvStrDayRight;
     private TextView tvStrDateRight;
     private TextView tvStrDateLeft;
+    private TextView tvLabelDateLeft;
+    private TextView tvLabelDateRight;
     private TextView tvStrUnitsLeft;
     private TextView tvStrUnitsRight;
     private TextView tvStrUnitsRemainingLeft;
@@ -56,6 +60,7 @@ public class StatusFragment extends Fragment {
     private TextView tvEmpty;
     private View view1;
     private View view2;
+    private View view3;
 
     private Menu menu;
 
@@ -68,6 +73,7 @@ public class StatusFragment extends Fragment {
     private ProgressDialog progressDlg;
     private TimeLensesVO timeLensesVO;
     private static StatusFragment statusFragment;
+    private Toolbar toolbar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -78,11 +84,14 @@ public class StatusFragment extends Fragment {
         context = getContext();
         statusFragment = this;
 
+        toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
+
         tvLeftEye = (TextView) view.findViewById(R.id.tvLeftEye);
         tvRightEye = (TextView) view.findViewById(R.id.tvRightEye);
         tvEmpty = (TextView) view.findViewById(R.id.tvEmpty);
         view1 = (View) view.findViewById(R.id.view1);
         view2 = (View) view.findViewById(R.id.view2);
+        view3 = (View) view.findViewById(R.id.view3);
 
         tvDaysRemainingLeftEye = (TextView) view
                 .findViewById(R.id.tvDaysRemainingLeftEye);
@@ -92,6 +101,8 @@ public class StatusFragment extends Fragment {
         tvStrDayRight = (TextView) view.findViewById(R.id.tvStrDayRight);
         tvStrDateLeft = (TextView) view.findViewById(R.id.tvStrDateLeft);
         tvStrDateRight = (TextView) view.findViewById(R.id.tvStrDateRight);
+        tvLabelDateLeft = (TextView) view.findViewById(R.id.tvLabelDateLeft);
+        tvLabelDateRight = (TextView) view.findViewById(R.id.tvLabelDateRight);
         tvStrUnitsLeft = (TextView) view.findViewById(R.id.tvStrUnitsLeft);
         tvStrUnitsRight = (TextView) view.findViewById(R.id.tvStrUnitsRight);
         tvStrUnitsRemainingLeft = (TextView) view
@@ -215,6 +226,7 @@ public class StatusFragment extends Fragment {
         // Left eye"
         tvDaysRemainingLeftEye.setVisibility(View.VISIBLE);
         tvStrDayLeft.setVisibility(View.VISIBLE);
+        tvLabelDateLeft.setVisibility(View.VISIBLE);
 
         tvDaysRemainingLeftEye.setText(String.valueOf(days[0]));
 
@@ -252,14 +264,12 @@ public class StatusFragment extends Fragment {
 
         tvDaysRemainingLeftEye.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
         tvStrDayLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
+        tvStrDateLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
+        tvLabelDateLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
 
         if (!isLeftVisible) {
             tvDaysRemainingLeftEye.clearAnimation();
-        }
-
-        tvStrDayLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
-
-        if (isLeftVisible) {
+        } else {
             String strDate = new SimpleDateFormat(dateFormat).format(datesToExpire[0].getTime());
             tvStrDateLeft.setText(strDate);
         }
@@ -267,6 +277,7 @@ public class StatusFragment extends Fragment {
         // Right eye
         tvDaysRemainingRightEye.setVisibility(View.VISIBLE);
         tvStrDayRight.setVisibility(View.VISIBLE);
+        tvLabelDateRight.setVisibility(View.VISIBLE);
 
         tvDaysRemainingRightEye.setText(String.valueOf(days[1]));
         if (days[1].compareTo(1L) == 0) {
@@ -300,14 +311,10 @@ public class StatusFragment extends Fragment {
 
         boolean isRightVisible = timeLensesVO != null && timeLensesVO.getInUseRight() == 1;
 
-        tvDaysRemainingRightEye.setVisibility(isRightVisible ? View.VISIBLE
-                : View.INVISIBLE);
-        tvStrDayRight.setVisibility(isRightVisible ? View.VISIBLE
-                : View.INVISIBLE);
-
-        if (!isRightVisible) {
-            tvDaysRemainingRightEye.clearAnimation();
-        }
+        tvDaysRemainingRightEye.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
+        tvStrDayRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
+        tvStrDateRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
+        tvLabelDateRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
 
         // Labels
         tvLeftEye.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
@@ -315,12 +322,19 @@ public class StatusFragment extends Fragment {
                 .setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
         view1.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
         view2.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
+        view3.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
 
         tvEmpty.setVisibility(timeLensesVO == null ? View.VISIBLE : View.GONE);
+        tvEmpty.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utility.setScreen(R.id.nav_periodo, toolbar, getActivity().getSupportFragmentManager(), null);
+            }
+        });
 
-        tvStrDateRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
-
-        if (isRightVisible) {
+        if (!isRightVisible) {
+            tvDaysRemainingRightEye.clearAnimation();
+        } else {
             String strDate = new SimpleDateFormat(dateFormat).format(datesToExpire[1].getTime());
             tvStrDateRight.setText(strDate);
         }

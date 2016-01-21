@@ -27,6 +27,7 @@
     <string name="login_error_title">Atenção</string>
     <string name="login_email_not_confirmed">Por favor, certifique-se de confirmar sua inscrição em seu e-mail</string>
     <string name="login_poor_connection">Conexão lenta, o login pode demorar um pouco. Por favor aguarde</string>
+    <string name="signup_poor_connection">Conexão lenta, o cadastro pode demorar um pouco. Por favor aguarde</string>
     <string name="reset_error_title">Atenção</string>
     <string name="reset_button_label">Enviar</string>
     <string name="logout_label">Logout</string>
@@ -43,6 +44,7 @@
     <string name="loggingin">Logando</string>
     <string name="sending">Enviando email</string>
     <string name="signup">Cadastrar</string>
+    <string name="signing_up">Cadastrando</string>
     <string name="copied">Copiado</string>
     <string name="not_connected">Para prosseguir é necessário conexão com Internet</string>
     <string name="wait">Aguarde...</string>

@@ -25,12 +25,9 @@ import com.aeo.mylensespro.adapter.TimeLensesCollectionPagerAdapter;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
 import com.aeo.mylensespro.slidetab.SlidingTabLayout;
 import com.aeo.mylensespro.util.MyLensesApplication;
-import com.aeo.mylensespro.util.Utility;
 import com.aeo.mylensespro.vo.TimeLensesVO;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
-
-import java.util.UUID;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -302,16 +299,21 @@ public class TimeLensesFragment extends Fragment {
         lensesVO.setQtdLeft(qtdLeft.getValue());
         lensesVO.setQtdRight(qtdRight.getValue());
 
-        if (timeLensesVO == null || timeLensesVO.getId() == null) {
-            if (/*!Utility.isNetworkAvailable(getContext()) ||*/ !Utility.isConnectionFast(getContext())) {
-                lensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
-            } else {
-                lensesVO.setId(UUID.randomUUID().toString());
-            }
-        } else {
+        if (timeLensesVO != null) {
             lensesVO.setId(timeLensesVO.getId());
             lensesVO.setObjectId(timeLensesVO.getObjectId());
         }
+
+//        if (timeLensesVO == null || timeLensesVO.getId() == null) {
+//            if (/*!Utility.isNetworkAvailable(getContext()) ||*/ !Utility.isConnectionFast(getContext())) {
+//                lensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
+//            } else {
+//                lensesVO.setId(UUID.randomUUID().toString());
+//            }
+//        } else {
+//            lensesVO.setId(timeLensesVO.getId());
+//            lensesVO.setObjectId(timeLensesVO.getObjectId());
+//        }
 
         return lensesVO;
     }

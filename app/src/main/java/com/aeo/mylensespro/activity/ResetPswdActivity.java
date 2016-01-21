@@ -114,7 +114,7 @@ public class ResetPswdActivity extends AppCompatActivity {
 */
     }
 
-    public class ResetPswdTask extends AsyncTask<String, Void, Void> {
+    public class ResetPswdTask extends AsyncTask<String, Void, ParseException> {
         private Context context;
         private String email;
 
@@ -137,10 +137,36 @@ public class ResetPswdActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(String... params) {
+        protected ParseException doInBackground(String... params) {
             try {
                 ParseUser.requestPasswordReset(email);
             } catch (ParseException e) {
+                return e;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ParseException ex) {
+            super.onPostExecute(ex);
+
+            if (progressDlg != null && progressDlg.isShowing())
+                progressDlg.dismiss();
+            progressDlg = null;
+
+            if (ex == null) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ResetPswdActivity.this);
+                builder.setMessage(R.string.reset_pswd)
+                        .setTitle(R.string.title_reset_pswd)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startLoginActivity();
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
                 AlertDialog.Builder builder = new AlertDialog.Builder(ResetPswdActivity.this);
                 builder.setMessage(R.string.error_reset_pswd)
                         .setTitle(R.string.title_error_reset_pswd)
@@ -148,28 +174,6 @@ public class ResetPswdActivity extends AppCompatActivity {
                 AlertDialog dialog = builder.create();
                 dialog.show();
             }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-
-            if (progressDlg != null && progressDlg.isShowing())
-                progressDlg.dismiss();
-            progressDlg = null;
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(ResetPswdActivity.this);
-            builder.setMessage(R.string.reset_pswd)
-                    .setTitle(R.string.title_reset_pswd)
-                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            startLoginActivity();
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
         }
     }
 
