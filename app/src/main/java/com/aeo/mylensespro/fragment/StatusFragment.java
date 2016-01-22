@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -18,7 +19,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -51,16 +52,16 @@ public class StatusFragment extends Fragment {
     private TextView tvStrUnitsRight;
     private TextView tvStrUnitsRemainingLeft;
     private TextView tvStrUnitsRemainingRight;
-    private Button btnDaysNotUsedLeft;
-    private Button btnDaysNotUsedRight;
+    private AppCompatButton btnDaysNotUsedLeft;
+    private AppCompatButton btnDaysNotUsedRight;
     private TextView tvStrDaysNotUsedLeft;
     private TextView tvStrDaysNotUsedRight;
     private TextView tvLeftEye;
     private TextView tvRightEye;
     private TextView tvEmpty;
-    private View view1;
-    private View view2;
-    private View view3;
+//    private View view1;
+//    private View view2;
+//    private View view3;
 
     private Menu menu;
 
@@ -74,6 +75,9 @@ public class StatusFragment extends Fragment {
     private TimeLensesVO timeLensesVO;
     private static StatusFragment statusFragment;
     private Toolbar toolbar;
+    private LinearLayout linearLayoutLeft;
+    private LinearLayout linearLayoutRight;
+    private LinearLayout linearLayoutEmpty;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,12 +90,15 @@ public class StatusFragment extends Fragment {
 
         toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
 
+        linearLayoutLeft = (LinearLayout) view.findViewById(R.id.layoutLeft);
+        linearLayoutRight = (LinearLayout) view.findViewById(R.id.layoutRight);
+        linearLayoutEmpty = (LinearLayout) view.findViewById(R.id.layoutEmpty);
         tvLeftEye = (TextView) view.findViewById(R.id.tvLeftEye);
         tvRightEye = (TextView) view.findViewById(R.id.tvRightEye);
         tvEmpty = (TextView) view.findViewById(R.id.tvEmpty);
-        view1 = (View) view.findViewById(R.id.view1);
-        view2 = (View) view.findViewById(R.id.view2);
-        view3 = (View) view.findViewById(R.id.view3);
+//        view1 = (View) view.findViewById(R.id.view1);
+//        view2 = (View) view.findViewById(R.id.view2);
+//        view3 = (View) view.findViewById(R.id.view3);
 
         tvDaysRemainingLeftEye = (TextView) view
                 .findViewById(R.id.tvDaysRemainingLeftEye);
@@ -109,9 +116,9 @@ public class StatusFragment extends Fragment {
                 .findViewById(R.id.tvStrUnitsRemainingLeft);
         tvStrUnitsRemainingRight = (TextView) view
                 .findViewById(R.id.tvStrUnitsRemainingRight);
-        btnDaysNotUsedLeft = (Button) view
+        btnDaysNotUsedLeft = (AppCompatButton) view
                 .findViewById(R.id.btnDaysNotUsedLeft);
-        btnDaysNotUsedRight = (Button) view
+        btnDaysNotUsedRight = (AppCompatButton) view
                 .findViewById(R.id.btnDaysNotUsedRight);
         tvStrDaysNotUsedLeft = (TextView) view
                 .findViewById(R.id.tvStrDaysNotUsedLeft);
@@ -155,6 +162,9 @@ public class StatusFragment extends Fragment {
 
         progressBar = (ProgressBar) getActivity().findViewById(R.id.progress_spinner);
 
+        linearLayoutLeft.setVisibility(View.INVISIBLE);
+        linearLayoutRight.setVisibility(View.INVISIBLE);
+        linearLayoutEmpty.setVisibility(View.INVISIBLE);
         return view;
     }
 
@@ -224,9 +234,9 @@ public class StatusFragment extends Fragment {
         String dateFormat = context.getResources().getString(R.string.locale);
 
         // Left eye"
-        tvDaysRemainingLeftEye.setVisibility(View.VISIBLE);
-        tvStrDayLeft.setVisibility(View.VISIBLE);
-        tvLabelDateLeft.setVisibility(View.VISIBLE);
+//        tvDaysRemainingLeftEye.setVisibility(View.VISIBLE);
+//        tvStrDayLeft.setVisibility(View.VISIBLE);
+//        tvLabelDateLeft.setVisibility(View.VISIBLE);
 
         tvDaysRemainingLeftEye.setText(String.valueOf(days[0]));
 
@@ -262,10 +272,12 @@ public class StatusFragment extends Fragment {
 
         boolean isLeftVisible = timeLensesVO != null && timeLensesVO.getInUseLeft() == 1;
 
-        tvDaysRemainingLeftEye.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
-        tvStrDayLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
-        tvStrDateLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
-        tvLabelDateLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
+        setVisibilityLeft(isLeftVisible);
+
+//        tvDaysRemainingLeftEye.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
+//        tvStrDayLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
+//        tvStrDateLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
+//        tvLabelDateLeft.setVisibility(isLeftVisible ? View.VISIBLE : View.INVISIBLE);
 
         if (!isLeftVisible) {
             tvDaysRemainingLeftEye.clearAnimation();
@@ -275,9 +287,9 @@ public class StatusFragment extends Fragment {
         }
 
         // Right eye
-        tvDaysRemainingRightEye.setVisibility(View.VISIBLE);
-        tvStrDayRight.setVisibility(View.VISIBLE);
-        tvLabelDateRight.setVisibility(View.VISIBLE);
+//        tvDaysRemainingRightEye.setVisibility(View.VISIBLE);
+//        tvStrDayRight.setVisibility(View.VISIBLE);
+//        tvLabelDateRight.setVisibility(View.VISIBLE);
 
         tvDaysRemainingRightEye.setText(String.valueOf(days[1]));
         if (days[1].compareTo(1L) == 0) {
@@ -311,20 +323,24 @@ public class StatusFragment extends Fragment {
 
         boolean isRightVisible = timeLensesVO != null && timeLensesVO.getInUseRight() == 1;
 
-        tvDaysRemainingRightEye.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
-        tvStrDayRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
-        tvStrDateRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
-        tvLabelDateRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
+        setVisibilityRight(isRightVisible);
+
+//        tvDaysRemainingRightEye.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
+//        tvStrDayRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
+//        tvStrDateRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
+//        tvLabelDateRight.setVisibility(isRightVisible ? View.VISIBLE : View.INVISIBLE);
 
         // Labels
         tvLeftEye.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
-        tvRightEye
-                .setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
-        view1.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
-        view2.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
-        view3.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
+        tvRightEye.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
+//        view1.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
+//        view2.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
+//        view3.setVisibility(timeLensesVO != null ? View.VISIBLE : View.INVISIBLE);
 
-        tvEmpty.setVisibility(timeLensesVO == null ? View.VISIBLE : View.GONE);
+        linearLayoutLeft.setVisibility(timeLensesVO == null ? View.GONE : View.VISIBLE);
+        linearLayoutRight.setVisibility(timeLensesVO == null ? View.GONE : View.VISIBLE);
+        linearLayoutEmpty.setVisibility(timeLensesVO == null ? View.VISIBLE : View.GONE);
+
         tvEmpty.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -404,15 +420,15 @@ public class StatusFragment extends Fragment {
                 tvStrUnitsRight.clearAnimation();
             }
 
-            view2.setVisibility(timeLensesVO != null
-                    && (timeLensesVO.getInUseLeft() == 1 || timeLensesVO.getInUseRight() == 1)
-                    && (tvStrUnitsLeft.getVisibility() == View.VISIBLE || tvStrUnitsRight
-                    .getVisibility() == View.VISIBLE) ? View.VISIBLE
-                    : View.GONE);
+//            view2.setVisibility(timeLensesVO != null
+//                    && (timeLensesVO.getInUseLeft() == 1 || timeLensesVO.getInUseRight() == 1)
+//                    && (tvStrUnitsLeft.getVisibility() == View.VISIBLE || tvStrUnitsRight
+//                    .getVisibility() == View.VISIBLE) ? View.VISIBLE
+//                    : View.GONE);
         } else {
             setVisibleUnitLeft(View.GONE);
             setVisibleUnitRight(View.GONE);
-            view2.setVisibility(View.GONE);
+//            view2.setVisibility(View.GONE);
         }
     }
 
@@ -463,6 +479,22 @@ public class StatusFragment extends Fragment {
     private void setVisibleUnitRight(int visibility) {
         tvStrUnitsRight.setVisibility(visibility);
         tvStrUnitsRemainingRight.setVisibility(visibility);
+    }
+
+    private void setVisibilityLeft(boolean isVisible) {
+        tvDaysRemainingLeftEye.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+        tvStrDayLeft.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+        tvStrDateLeft.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+        tvLabelDateLeft.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+
+    }
+
+   private void setVisibilityRight(boolean isVisible) {
+       tvDaysRemainingRightEye.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+       tvStrDayRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+       tvStrDateRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+       tvLabelDateRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+
     }
 
     public void openDialogNumber(View view) {

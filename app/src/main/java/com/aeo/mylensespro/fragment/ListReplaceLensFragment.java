@@ -48,18 +48,6 @@ public class ListReplaceLensFragment extends ListFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-//        List<TimeLensesVO> listLens = TimeLensesDAO.listTimeLensesVO;
-//
-//        if (listLens != null && listLens.size() == 0) {
-//            ArrayAdapter<String> adapter = new ArrayAdapter<>(
-//                    inflater.getContext(),
-//                    android.R.layout.simple_list_item_1,
-//                    new String[]{getString(R.string.msg_insert_time_replace)});
-//            setListAdapter(adapter);
-//        }
-
-//        view = inflater.inflate(R.layout.listview_lens, container, false);
-
         //Retira Tab referente ao Fragment do Periodo das lentes
         DrawerLayout viewMain = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         SlidingTabLayout mSlidingTabLayout = (SlidingTabLayout) viewMain.findViewById(R.id.sliding_tabs);
@@ -80,36 +68,6 @@ public class ListReplaceLensFragment extends ListFragment {
         MyLensesApplication application = (MyLensesApplication) getActivity().getApplication();
         mTracker = application.getDefaultTracker();
 
-
-//        listView = (ListView) view.findViewById(R.id.listViewLens);
-//        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-//            @Override
-//            public void onScrollStateChanged(AbsListView view, int scrollState) {
-//
-//            }
-//
-//            @Override
-//            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-////                if (listView.getAdapter() != null) {
-////                    if (listView.getLastVisiblePosition() == listView.getAdapter().getCount() - 1 &&
-////                            listView.getChildAt(listView.getChildCount() - 1).getBottom() <= listView.getHeight()) {
-////                        //It is scrolled all the way down here
-////                        Log.d("teste", "getMore");
-////                    }
-////                }
-//
-//                if (listView.getAdapter() == null || listView.getAdapter().getCount() == 0)
-//                    return;
-//
-//                int l = visibleItemCount + firstVisibleItem;
-//                if (l >= totalItemCount /*&& !isLoading*/) {
-//                    // It is time to add new data. We call the listener
-////                    listView.addFooterView(footer);
-////                    isLoading = true;
-////                    listener.loadData();
-//                }
-//            }
-//        });
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -122,11 +80,7 @@ public class ListReplaceLensFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-
-//        TextView idLens = (TextView) v.findViewById(R.id.textViewIdLens);
-//        TextView objectId = (TextView) v.findViewById(R.id.textViewObjectId);
-
-        TimeLensesVO timeLensesVO = (TimeLensesVO) l.getAdapter().getItem(position);
+       TimeLensesVO timeLensesVO = (TimeLensesVO) l.getAdapter().getItem(position);
 
         if (timeLensesVO != null) {
             TimeLensesFragment fragment = TimeLensesFragment.newInstance(timeLensesVO, false);

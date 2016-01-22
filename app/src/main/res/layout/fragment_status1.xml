@@ -1,0 +1,349 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollViewRating"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="fill"
+    android:background="@drawable/case4"
+    android:fillViewport="true">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="@string/msg_insert_time_of_lenses"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TableLayout
+            android:id="@+id/tableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="0dp"
+            android:layout_marginStart="0dp"
+            android:orientation="vertical"
+            android:stretchColumns="0, 1, 2, 3, 4">
+
+            <!--Text eyes-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvLeftEye"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/leftEye"
+                    android:textColor="@color/green"
+                    android:textSize="20sp"
+                    android:visibility="invisible"
+                    android:textStyle="bold" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvRightEye"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:text="@string/rightEye"
+                    android:textColor="@color/blue"
+                    android:textSize="20sp"
+                    android:visibility="invisible"
+                    android:textStyle="bold" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+
+            <!--Text Date to change-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvLabelDateLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:text="@string/str_date_change"
+                    android:textColor="@color/black"
+                    android:visibility="invisible"
+                    android:textSize="15sp" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvLabelDateRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:text="@string/str_date_change"
+                    android:visibility="invisible"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+            <!--Dates to change-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvStrDateLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:visibility="invisible"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvStrDateRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center"
+                    android:visibility="invisible"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+            <View
+                android:id="@+id/view1"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:visibility="invisible"
+                android:layout_marginTop="15dp"
+                android:background="@android:color/darker_gray" />
+
+            <!--Number days remaining-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvDaysRemainingLeftEye"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="30sp" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvDaysRemainingRightEye"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:visibility="invisible"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="30sp" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+            <!--Text Days Remaining-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvStrDayLeft"
+                    android:visibility="invisible"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="@string/str_days_remaining"
+                    android:textSize="15sp" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvStrDayRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="@string/str_days_remaining"
+                    android:textSize="15sp" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:visibility="invisible"
+                android:layout_marginTop="15dp"
+                android:background="@android:color/darker_gray" />
+
+            <!--Units Remaining-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvStrUnitsLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:clickable="true"
+                    android:visibility="invisible"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="30sp" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvStrUnitsRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:clickable="true"
+                    android:visibility="invisible"
+                    android:gravity="center"
+                    android:text=""
+                    android:textSize="30sp" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+            <!--Text units remaining-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvStrUnitsRemainingLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="invisible"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:text="@string/str_days_remaining"
+                    android:textSize="15sp" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvStrUnitsRemainingRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:visibility="invisible"
+                    android:gravity="center"
+                    android:text="@string/str_days_remaining"
+                    android:textSize="15sp" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:visibility="invisible"
+                android:layout_marginTop="15dp"
+                android:background="@android:color/darker_gray" />
+
+            <!--Buttons not worn-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <Button
+                    android:id="@+id/btnDaysNotUsedLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:background="#7cb6fc"
+                    android:visibility="invisible"
+                    android:gravity="center"
+                    android:onClick="openDialogNumber"
+                    android:text=""
+                    android:textSize="30sp" />
+
+                <TextView android:layout_width="40dp" />
+
+                <Button
+                    android:id="@+id/btnDaysNotUsedRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:background="#7cb6fc"
+                    android:gravity="center"
+                    android:onClick="openDialogNumber"
+                    android:visibility="invisible"
+                    android:text=""
+                    android:textSize="30sp" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+
+            <!--Text button not worn-->
+            <TableRow>
+
+                <TextView android:layout_marginLeft="10dp" />
+
+                <TextView
+                    android:id="@+id/tvStrDaysNotUsedLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:visibility="invisible"
+                    android:text="@string/str_days_remaining"
+                    android:textSize="15sp" />
+
+                <TextView android:layout_width="40dp" />
+
+                <TextView
+                    android:id="@+id/tvStrDaysNotUsedRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:visibility="invisible"
+                    android:gravity="center"
+                    android:text="@string/str_days_remaining"
+                    android:textSize="15sp" />
+
+                <TextView android:layout_marginRight="10dp" />
+            </TableRow>
+        </TableLayout>
+
+    </RelativeLayout>
+
+</ScrollView>

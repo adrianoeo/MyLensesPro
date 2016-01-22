@@ -165,15 +165,6 @@ public class LeftTimeFragment extends DialogFragment {
     }
 
     private void setDate() {
-//        final Calendar c = Calendar.getInstance();
-//        int year = c.get(Calendar.YEAR);
-//        int month = c.get(Calendar.MONTH);
-//        int day = c.get(Calendar.DAY_OF_MONTH);
-//
-//        String strDate = new StringBuilder(String.format("%02d", day))
-//                .append("/").append(String.format("%02d", month + 1))
-//                .append("/").append(String.valueOf(year)).toString();
-
         String dateFormat = context.getResources().getString(R.string.locale);
 
         String strDate = new SimpleDateFormat(dateFormat).format(new Date());

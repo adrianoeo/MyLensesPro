@@ -1,349 +1,469 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:ads="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollViewRating"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_gravity="fill"
-    android:background="@drawable/case4"
+    android:background="@color/light_blue"
     android:fillViewport="true">
-
-    <RelativeLayout
+    <!--android:background="@drawable/case4"-->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="horizontal"
+        android:weightSum="2">
 
-        <TextView
-            android:id="@+id/tvEmpty"
+        <LinearLayout
+            android:id="@+id/layoutEmpty"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
-            android:gravity="center"
-            android:text="@string/msg_insert_time_of_lenses"
-            android:textColor="@color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
+            android:visibility="gone">
 
-        <TableLayout
-            android:id="@+id/tableLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginLeft="0dp"
-            android:layout_marginStart="0dp"
-            android:orientation="vertical"
-            android:stretchColumns="0, 1, 2, 3, 4">
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="3dp"
+                android:layout_marginRight="3dp"
+                android:layout_marginTop="3dp"
+                android:layout_weight="1"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="5dp">
+
+                <TextView
+                    android:id="@+id/tvEmpty"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="20dp"
+                    android:gravity="center"
+                    android:text="@string/msg_insert_time_of_lenses"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </android.support.v7.widget.CardView>
+        </LinearLayout>
+        <!--Left-->
+        <LinearLayout
+            android:id="@+id/layoutLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <!--Text eyes-->
-            <TableRow>
-
-                <TextView android:layout_marginLeft="10dp" />
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="3dp"
+                android:layout_weight="0.06"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="5dp">
 
                 <TextView
                     android:id="@+id/tvLeftEye"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center_horizontal|center_vertical"
                     android:gravity="center"
                     android:text="@string/leftEye"
                     android:textColor="@color/green"
                     android:textSize="20sp"
-                    android:visibility="invisible"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+            </android.support.v7.widget.CardView>
 
-                <TextView android:layout_width="40dp" />
+            <!--Text Date to change-->
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_weight="0.24"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvLabelDateLeft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:paddingTop="0dp"
+                        android:text="@string/str_date_change"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:visibility="visible" />
+
+                    <!--Dates to change-->
+                    <TextView
+                        android:id="@+id/tvStrDateLeft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <!--Number days remaining-->
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_weight="0.24"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvDaysRemainingLeftEye"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textSize="30sp"
+                        android:visibility="visible" />
+
+                    <!--Text Days Remaining-->
+                    <TextView
+                        android:id="@+id/tvStrDayLeft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/str_days_remaining"
+                        android:textSize="15sp"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <!--Units Remaining-->
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_weight="0.24"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tvStrUnitsLeft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:text=""
+                        android:textSize="30sp"
+                        android:visibility="visible" />
+
+                    <!--Text units remaining-->
+                    <TextView
+                        android:id="@+id/tvStrUnitsRemainingLeft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/str_units_remaining"
+                        android:textSize="15sp"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+            <!--Buttons not worn-->
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_weight="0.24"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/btnDaysNotUsedLeft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="#7cb6fc"
+                        android:gravity="center"
+                        android:onClick="openDialogNumber"
+                        android:text=""
+                        android:textSize="30sp"
+                        android:visibility="visible" />
+
+                    <!--Text button not worn-->
+                    <TextView
+                        android:id="@+id/tvStrDaysNotUsedLeft"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="@string/str_days_not_used"
+                        android:textSize="15sp"
+                        android:visibility="visible" />
+                </LinearLayout>
+
+            </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+
+        <!--Right-->
+        <LinearLayout
+            android:id="@+id/layoutRight"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!--Text eyes-->
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="3dp"
+
+                android:layout_weight="0.06"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="5dp">
 
                 <TextView
                     android:id="@+id/tvRightEye"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
+                    android:layout_gravity="center_horizontal|center_vertical"
                     android:gravity="center"
                     android:text="@string/rightEye"
                     android:textColor="@color/blue"
                     android:textSize="20sp"
-                    android:visibility="invisible"
-                    android:textStyle="bold" />
-
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
-
+                    android:textStyle="bold"
+                    android:visibility="visible" />
+            </android.support.v7.widget.CardView>
 
             <!--Text Date to change-->
-            <TableRow>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_weight="0.24"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="2dp">
 
-                <TextView android:layout_marginLeft="10dp" />
-
-                <TextView
-                    android:id="@+id/tvLabelDateLeft"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:text="@string/str_date_change"
-                    android:textColor="@color/black"
-                    android:visibility="invisible"
-                    android:textSize="15sp" />
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
 
-                <TextView android:layout_width="40dp" />
+                    <TextView
+                        android:id="@+id/tvLabelDateRight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:paddingTop="0dp"
+                        android:text="@string/str_date_change"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        android:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/tvLabelDateRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:text="@string/str_date_change"
-                    android:visibility="invisible"
-                    android:textColor="@color/black"
-                    android:textSize="15sp" />
-
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
-
-            <!--Dates to change-->
-            <TableRow>
-
-                <TextView android:layout_marginLeft="10dp" />
-
-                <TextView
-                    android:id="@+id/tvStrDateLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:visibility="invisible"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView android:layout_width="40dp" />
-
-                <TextView
-                    android:id="@+id/tvStrDateRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center"
-                    android:visibility="invisible"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
-
-            <View
-                android:id="@+id/view1"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:visibility="invisible"
-                android:layout_marginTop="15dp"
-                android:background="@android:color/darker_gray" />
+                    <!--Dates to change-->
+                    <TextView
+                        android:id="@+id/tvStrDateRight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
             <!--Number days remaining-->
-            <TableRow>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_weight="0.24"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="2dp">
 
-                <TextView android:layout_marginLeft="10dp" />
-
-                <TextView
-                    android:id="@+id/tvDaysRemainingLeftEye"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:text=""
-                    android:textSize="30sp" />
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
 
-                <TextView android:layout_width="40dp" />
+                    <TextView
+                        android:id="@+id/tvDaysRemainingRightEye"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textSize="30sp"
+                        android:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/tvDaysRemainingRightEye"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:visibility="invisible"
-                    android:gravity="center"
-                    android:text=""
-                    android:textSize="30sp" />
-
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
-
-            <!--Text Days Remaining-->
-            <TableRow>
-
-                <TextView android:layout_marginLeft="10dp" />
-
-                <TextView
-                    android:id="@+id/tvStrDayLeft"
-                    android:visibility="invisible"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:text="@string/str_days_remaining"
-                    android:textSize="15sp" />
-
-                <TextView android:layout_width="40dp" />
-
-                <TextView
-                    android:id="@+id/tvStrDayRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:text="@string/str_days_remaining"
-                    android:textSize="15sp" />
-
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
-
-            <View
-                android:id="@+id/view3"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:visibility="invisible"
-                android:layout_marginTop="15dp"
-                android:background="@android:color/darker_gray" />
+                    <!--Text Days Remaining-->
+                    <TextView
+                        android:id="@+id/tvStrDayRight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/str_days_remaining"
+                        android:textSize="15sp"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
             <!--Units Remaining-->
-            <TableRow>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="1dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="1dp"
+                android:layout_weight="0.24"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="2dp">
 
-                <TextView android:layout_marginLeft="10dp" />
-
-                <TextView
-                    android:id="@+id/tvStrUnitsLeft"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:clickable="true"
-                    android:visibility="invisible"
-                    android:gravity="center"
-                    android:text=""
-                    android:textSize="30sp" />
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
 
-                <TextView android:layout_width="40dp" />
+                    <TextView
+                        android:id="@+id/tvStrUnitsRight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:text=""
+                        android:textSize="30sp"
+                        android:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/tvStrUnitsRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:clickable="true"
-                    android:visibility="invisible"
-                    android:gravity="center"
-                    android:text=""
-                    android:textSize="30sp" />
-
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
-
-            <!--Text units remaining-->
-            <TableRow>
-
-                <TextView android:layout_marginLeft="10dp" />
-
-                <TextView
-                    android:id="@+id/tvStrUnitsRemainingLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:text="@string/str_days_remaining"
-                    android:textSize="15sp" />
-
-                <TextView android:layout_width="40dp" />
-
-                <TextView
-                    android:id="@+id/tvStrUnitsRemainingRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:visibility="invisible"
-                    android:gravity="center"
-                    android:text="@string/str_days_remaining"
-                    android:textSize="15sp" />
-
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
-
-            <View
-                android:id="@+id/view2"
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                android:visibility="invisible"
-                android:layout_marginTop="15dp"
-                android:background="@android:color/darker_gray" />
+                    <!--Text units remaining-->
+                    <TextView
+                        android:id="@+id/tvStrUnitsRemainingRight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/str_units_remaining"
+                        android:textSize="15sp"
+                        android:visibility="visible" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
 
             <!--Buttons not worn-->
-            <TableRow>
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="3dp"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:layout_marginTop="1dp"
 
-                <TextView android:layout_marginLeft="10dp" />
+                android:layout_weight="0.24"
+                card_view:cardCornerRadius="2dp"
+                card_view:contentPadding="2dp">
 
-                <Button
-                    android:id="@+id/btnDaysNotUsedLeft"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:background="#7cb6fc"
-                    android:visibility="invisible"
-                    android:gravity="center"
-                    android:onClick="openDialogNumber"
-                    android:text=""
-                    android:textSize="30sp" />
+                    android:layout_gravity="center_vertical|center_horizontal"
+                    android:orientation="vertical">
 
-                <TextView android:layout_width="40dp" />
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/btnDaysNotUsedRight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:background="#7cb6fc"
+                        android:gravity="center"
+                        android:onClick="openDialogNumber"
+                        android:text=""
+                        android:textSize="30sp"
+                        android:visibility="visible" />
 
-                <Button
-                    android:id="@+id/btnDaysNotUsedRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:background="#7cb6fc"
-                    android:gravity="center"
-                    android:onClick="openDialogNumber"
-                    android:visibility="invisible"
-                    android:text=""
-                    android:textSize="30sp" />
+                    <!--Text button not worn-->
+                    <TextView
+                        android:id="@+id/tvStrDaysNotUsedRight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center"
+                        android:text="@string/str_days_not_used"
+                        android:textSize="15sp"
+                        android:visibility="visible" />
+                </LinearLayout>
 
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
+            </android.support.v7.widget.CardView>
 
-            <!--Text button not worn-->
-            <TableRow>
+        </LinearLayout>
 
-                <TextView android:layout_marginLeft="10dp" />
-
-                <TextView
-                    android:id="@+id/tvStrDaysNotUsedLeft"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:visibility="invisible"
-                    android:text="@string/str_days_remaining"
-                    android:textSize="15sp" />
-
-                <TextView android:layout_width="40dp" />
-
-                <TextView
-                    android:id="@+id/tvStrDaysNotUsedRight"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:visibility="invisible"
-                    android:gravity="center"
-                    android:text="@string/str_days_remaining"
-                    android:textSize="15sp" />
-
-                <TextView android:layout_marginRight="10dp" />
-            </TableRow>
-        </TableLayout>
-
-    </RelativeLayout>
-
+    </LinearLayout>
 </ScrollView>

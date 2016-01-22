@@ -7,6 +7,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="blue">#0000FF</color>
+    <color name="light_blue">#bfbfff</color>
     <color name="green">#009933</color>
     <color name="red">#CC0033</color>
     <color name="black">#000000</color>
@@ -18,7 +19,7 @@
     <!--<color name="primary_darker">#CC1D1D</color>-->
     <!-- -->
     <color name="primary">#4562b9</color>
-    <color name="primary_dark">#4562b9</color>
+    <color name="primary_dark">#3350a9</color>
     <color name="primary_darker">#6b86ff</color>
     <color name="accent">#FFFFFF</color>
 
