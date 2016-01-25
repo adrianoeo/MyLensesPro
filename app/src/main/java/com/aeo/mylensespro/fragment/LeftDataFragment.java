@@ -49,9 +49,6 @@ public class LeftDataFragment extends Fragment {
     public static LeftDataFragment newInstance(DataLensesVO vo) {
         LeftDataFragment dataLensesFragment = new LeftDataFragment();
         dataLensesVO = vo;
-//        Bundle args = new Bundle();
-//        args.putInt(KEY_ID_LENS, idLens);
-//        dataLensesFragment.setArguments(args);
         return dataLensesFragment;
     }
 
@@ -183,15 +180,9 @@ public class LeftDataFragment extends Fragment {
                 enableControls(enabled, (ViewGroup) child);
             }
         }
-
-//        editTextBrand.setFocusable(enabled);
-//        editTextBrand.setFocusableInTouchMode(enabled);
     }
 
     private void getLens() {
-//        DataLensesDAO dao = DataLensesDAO.getInstance(context);
-//        DataLensesVO dataLensesVO = dao.getLastDataLenses();
-
         if (dataLensesVO != null) {
             textViewIdDataLens.setText(dataLensesVO.getId());
             textViewObjectIdDataLens.setText(dataLensesVO.getObjectId());

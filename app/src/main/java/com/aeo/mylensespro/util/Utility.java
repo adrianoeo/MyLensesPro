@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -51,7 +50,7 @@ public abstract class Utility {
         return date;
     }
 
-    public static void setScreen(int id, Toolbar toolbar, FragmentManager fm, Bundle bundle) {
+    public static void setScreen(int id, Toolbar toolbar, FragmentManager fm) {
         if (id == R.id.nav_status) {
             replaceFragment(new StatusFragment(), fm);
             toolbar.setTitle(R.string.title_status);
@@ -62,10 +61,7 @@ public abstract class Utility {
             replaceFragment(new DataLensesFragment(), fm);
             toolbar.setTitle(R.string.title_dados);
         } else if (id == R.id.nav_notificacao) {
-            AlarmFragment alarmFragment = new AlarmFragment();
-            alarmFragment.setArguments(bundle);
-
-            replaceFragment(alarmFragment, fm);
+            replaceFragment(new AlarmFragment(), fm);
             toolbar.setTitle(R.string.nav_notificacao);
         }
     }
@@ -74,21 +70,8 @@ public abstract class Utility {
         FragmentTransaction trans = fm.beginTransaction();
 
         trans.setCustomAnimations(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
-
         trans.replace(R.id.fragment_container, fragment);
-
-		/*
-         * IMPORTANT: The following lines allow us to add the fragment to the
-		 * stack and return to it later, by pressing back
-		 */
         trans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-
-        // remove back stack
-        // getFragmentManager().popBackStack(null,
-        // FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-//        trans.addToBackStack(null);
-
         trans.commit();
     }
 

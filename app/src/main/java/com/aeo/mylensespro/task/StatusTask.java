@@ -3,6 +3,10 @@ package com.aeo.mylensespro.task;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.view.Gravity;
+import android.widget.LinearLayout;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
@@ -17,12 +21,14 @@ public class StatusTask extends AsyncTask<String, Void, TimeLensesVO> {
 
     private StatusFragment statusFragment;
     private ProgressDialog progressDlg;
+    private FloatingActionButton fab;
     private int numDays;
     private String sideLens;
 
-    public StatusTask(StatusFragment statusFragment, ProgressDialog progressDlg) {
+    public StatusTask(StatusFragment statusFragment, ProgressDialog progressDlg, FloatingActionButton fab) {
         this.statusFragment = statusFragment;
         this.progressDlg = progressDlg;
+        this.fab = fab;
         this.numDays = 0;
         this.sideLens = null;
     }
@@ -64,6 +70,17 @@ public class StatusTask extends AsyncTask<String, Void, TimeLensesVO> {
                 statusFragment.setDays(timeLensesVO);
                 statusFragment.setNumUnitsLenses(timeLensesVO);
                 statusFragment.setDaysNotUsed(timeLensesVO);
+
+                if (timeLensesVO == null) {
+                    CoordinatorLayout.LayoutParams params
+                            = new CoordinatorLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+                    params.gravity = Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL;
+                    fab.setLayoutParams(params);
+                    fab.show();
+                } else {
+                    fab.hide();
+                }
             }
         } else {
             TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(statusFragment.getContext());

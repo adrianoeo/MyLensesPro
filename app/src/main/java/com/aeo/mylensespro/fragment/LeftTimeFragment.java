@@ -48,7 +48,6 @@ public class LeftTimeFragment extends DialogFragment {
     private MenuItem menuItemEdit;
 
     public static final String DATE_LEFT_EYE = "DATE_LEFT_EYE";
-    public static final String KEY_ID_LENS = "KEY_ID_LENS";
 
     private View view;
 
@@ -127,8 +126,6 @@ public class LeftTimeFragment extends DialogFragment {
         setNumberPicker();
         setSpinnerDiscard();
         setLensValues();
-
-//        enableControls(menuItemEdit != null && menuItemEdit.isVisible());
 
         return view;
     }

@@ -9,9 +9,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -28,7 +25,7 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.Tracker;
 
 public class AlarmFragment extends Fragment {
-    //    private TimePicker timePicker;
+
     private NumberPicker numberDaysBefore;
     private CheckBox cbRemindEveryDay;
     private static Button btnTimePickerAlarm;
@@ -45,14 +42,8 @@ public class AlarmFragment extends Fragment {
                              Bundle savedInstanceState) {
         context = getContext();
 
-        Bundle bundle = this.getArguments();
-
-
         View view = inflater.inflate(R.layout.fragment_alarm, container, false);
         idAlarm = view.getId();
-
-//        timePicker = (TimePicker) view.findViewById(R.id.timePickerAlarm);
-//        timePicker.setIs24HourView(true);
 
         btnTimePickerAlarm = (Button) view.findViewById(R.id.btnTimePickerAlarm);
 
@@ -72,14 +63,8 @@ public class AlarmFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 int time[] = getTime();
-
                 int hourOfDay = time[0];
                 int minute = time[1];
-
-//                String[] time = btnTimePickerAlarm.getText().toString().split(":");
-//
-//                hourOfDay = Integer.valueOf(time[0]);
-//                minute = Integer.valueOf(time[1]);
 
                 TimePickerFragmentAlarm fragmentTime = TimePickerFragmentAlarm.newInstance(hourOfDay, minute);
                 fragmentTime.show(getFragmentManager(), "timePickerAlarm");
@@ -108,7 +93,6 @@ public class AlarmFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-//        save();
 
         mTracker.setScreenName("AlarmFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -150,12 +134,6 @@ public class AlarmFragment extends Fragment {
         vo.setRemindEveryDay(cbRemindEveryDay.isChecked() ? 1 : 0);
 
         AlarmDAO dao = AlarmDAO.getInstance(getContext());
-//        if (dao.getAlarm() == null) {
-//            dao.insert(vo);
-//        } else {
-//            dao.update(vo);
-//        }
-
         AlarmDAO.alarmVO = vo;
 
         if (alarmVO == null) {
@@ -163,21 +141,6 @@ public class AlarmFragment extends Fragment {
         } else {
             dao.update(vo);
         }
-
-//        String idLenses = TimeLensesDAO.getInstance(context).getLastIdLens();
-//        if (idLenses != null) {
-//            dao.setAlarm(idLenses);
-//        }
-
-//        dao.setAlarm(TimeLensesDAO.getInstance(context).getLastLens());
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        MenuItem menuItemInsert = menu.findItem(R.id.menuInsertLens);
-        menuItemInsert.setVisible(false);
-
-        super.onCreateOptionsMenu(menu, inflater);
     }
 
     //Dialog TimerPicker
@@ -212,20 +175,6 @@ public class AlarmFragment extends Fragment {
         @Override
         public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
             btnTimePickerAlarm.setText(getTimeText(hourOfDay, minute));
-//            boolean timeFormat24 = DateFormat.is24HourFormat(getContext());
-//
-//            if (timeFormat24) {
-//                btnTimePickerAlarm.setText(String.format("%02d:%02d", hourOfDay, minute));
-//            } else {
-//                String ampm = null;
-//                if (hourOfDay >= 12) {
-//                    ampm = "PM";
-//                } else {
-//                    ampm = "AM";
-//                }
-//                btnTimePickerAlarm.setText(String.format("%02d:%02d %s",
-//                        hourOfDay == 0 ? 12 : hourOfDay, minute, ampm));
-//            }
         }
     }
 

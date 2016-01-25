@@ -56,6 +56,7 @@
     <string name="nav_dados">Lenses data</string>
     <string name="nav_notificacao">Notification</string>
     <string name="nav_compra">Buy your lenses</string>
+    <string name="nav_exit">Exit</string>
 
     <string name="title_status">Status</string>
     <string name="title_periodo">Time</string>

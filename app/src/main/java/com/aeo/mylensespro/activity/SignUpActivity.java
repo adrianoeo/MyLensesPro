@@ -59,57 +59,6 @@ public class SignUpActivity extends AppCompatActivity {
                         setProgressBarIndeterminateVisibility(true);
 
                         signup(username, password);
-/*
-                        ParseUser newUser = new ParseUser();
-                        newUser.setUsername(username);
-                        newUser.setPassword(password);
-                        newUser.setEmail(email);
-                        newUser.signUpInBackground(new SignUpCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                setProgressBarIndeterminateVisibility(false);
-
-                                if (e == null) {
-                                    // Success!
-
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                                    DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            if (ParseUser.getCurrentUser() != null) {
-                                                LogoutTask logoutTask = new LogoutTask(SignUpActivity.this, progressDlg, false);
-                                                logoutTask.execute();
-                                                //                                                ParseUser.logOutInBackground();
-                                            }
-                                            Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
-                                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                            startActivity(intent);
-                                        }
-                                    };
-                                    builder.setMessage(R.string.signup_message)
-                                            .setTitle(R.string.signup_error_title)
-                                            .setPositiveButton(android.R.string.ok, onClickListener);
-                                    AlertDialog dialog = builder.create();
-                                    dialog.show();
-
-                                } else {
-                                    String msg = null;
-                                    if (e.getCode() == ParseException.INVALID_EMAIL_ADDRESS) {
-                                        msg = getResources().getString(R.string.signup_error_message);
-                                    } else if (e.getCode() == ParseException.USERNAME_TAKEN) {
-                                        msg = getResources().getString(R.string.signup_error_message_username_already);
-                                    } else {
-                                        msg = e.getMessage();
-                                    }
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                                    builder.setMessage(msg)
-                                            .setTitle(R.string.signup_error_title)
-                                            .setPositiveButton(android.R.string.ok, null);
-                                    AlertDialog dialog = builder.create();
-                                    dialog.show();
-                                }
-                            }
-                        });*/
                     } else if (Utility.isNetworkAvailable(SignUpActivity.this) &&
                             !Utility.isConnectionFast(SignUpActivity.this)) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
@@ -140,7 +89,6 @@ public class SignUpActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(SignUpActivity.this, LoginActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
         });

@@ -304,17 +304,6 @@ public class TimeLensesFragment extends Fragment {
             lensesVO.setObjectId(timeLensesVO.getObjectId());
         }
 
-//        if (timeLensesVO == null || timeLensesVO.getId() == null) {
-//            if (/*!Utility.isNetworkAvailable(getContext()) ||*/ !Utility.isConnectionFast(getContext())) {
-//                lensesVO.setId(String.format("OFFLINE%s", UUID.randomUUID().toString()));
-//            } else {
-//                lensesVO.setId(UUID.randomUUID().toString());
-//            }
-//        } else {
-//            lensesVO.setId(timeLensesVO.getId());
-//            lensesVO.setObjectId(timeLensesVO.getObjectId());
-//        }
-
         return lensesVO;
     }
 
@@ -345,11 +334,8 @@ public class TimeLensesFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(String... params) {
-//            if (getViewsFragmentLenses()) {
             TimeLensesDAO timeLensesDAO = TimeLensesDAO.getInstance(context);
-
             timeLensesDAO.save(timeLensesVO);
-//            }
             return true;
         }
 

@@ -85,8 +85,6 @@ public class DataLensesFragment extends Fragment {
     private ProgressDialog progressDlg;
     private ProgressDialog progressDlgSync;
 
-//    private static DataLensesVO dataLensesVO;
-
     private View view;
     private static Boolean isNetworkAvailable;
 
@@ -103,9 +101,6 @@ public class DataLensesFragment extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static DataLensesFragment newInstance(int idLenses) {
         DataLensesFragment fragment = new DataLensesFragment();
-//        Bundle args = new Bundle();
-//        args.putInt(KEY_ID_LENS, idLenses);
-//        fragment.setArguments(args);
         return fragment;
     }
 
@@ -155,7 +150,6 @@ public class DataLensesFragment extends Fragment {
         menuItemCancel = menu.findItem(R.id.menuCancelDataLenses);
         menuItemShare = menu.findItem(R.id.menuShareDataLenses);
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItemShare);
-//        mShareActionProvider.setShareIntent(getDefaultIntent());
     }
 
     @Override
@@ -290,13 +284,6 @@ public class DataLensesFragment extends Fragment {
         return leftFragment != null && rightFragment != null;
     }
 
-    // Call to update the share intent
-//    private void setShareIntent(Intent shareIntent) {
-//        if (mShareActionProvider != null) {
-//            mShareActionProvider.setShareIntent(shareIntent);
-//        }
-//    }
-
     private Intent getDefaultIntent(DataLensesVO dataLensesVO) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");
@@ -313,11 +300,6 @@ public class DataLensesFragment extends Fragment {
     }
 
     private String getDataLensesToShare(DataLensesVO dataLensesVO) {
-//        DataLensesDAO dao = DataLensesDAO.getInstance(getContext());
-//        DataLensesVO dataLensesVO = dao.getLastDataLenses();
-//        DataLensesVO dataLensesVO = DataLensesDAO.dataLensesVO;
-
-
         StringBuilder text = new StringBuilder();
 
         if (dataLensesVO != null) {
@@ -493,13 +475,6 @@ public class DataLensesFragment extends Fragment {
                     /*&& Utility.isConnectionFast(context)*/;
         }
 
-//        DataLensesTask task = new DataLensesTask();
-
-//        DataLensesTask task = new DataLensesTask(getContext(), progressDlg,
-//                dataLensesCollectionPagerAdapter,
-//                mViewPager, this, getFragmentManager(), view);
-//        task.execute();
-
         mTracker.setScreenName("DataLensesFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
     }
@@ -508,7 +483,6 @@ public class DataLensesFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         isSaveVisible = false;
-//        DataLensesDAO.getInstance(getContext()).getLastDataLensesAsync();
     }
 
     public DataLensesVO setDataLensesVO() {
@@ -661,7 +635,6 @@ public class DataLensesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(DataLensesVO vo) {
-//            dataLensesVO = vo;
             dataLensesCollectionPagerAdapter
                     = new DataLensesCollectionPagerAdapter(getFragmentManager(), getContext(), vo);
 
@@ -688,18 +661,7 @@ public class DataLensesFragment extends Fragment {
         @Override
         protected DataLensesVO doInBackground(String... params) {
             DataLensesDAO dataLensesDAO = DataLensesDAO.getInstance(getContext());
-//
-//            DataLensesVO vo = setDataLensesVO();
-//            dataLensesVO = vo;
 
-//            if (dataLensesVO != null) {
-//                if (dataLensesVO.getId() == null || "".equals(dataLensesVO.getId())) {
-//                    dataLensesVO.setId(UUID.randomUUID().toString());
-//                    dataLensesDAO.insert(dataLensesVO);
-//                } else {
-//                    dataLensesDAO.update(dataLensesVO);
-//                }
-//            }
             if ("INSERT".equals(operation)) {
                 dataLensesDAO.insert(dataLensesVO);
             } else {

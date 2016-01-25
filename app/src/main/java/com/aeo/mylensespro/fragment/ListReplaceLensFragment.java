@@ -6,18 +6,18 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 
 import com.aeo.mylensespro.R;
@@ -40,6 +40,7 @@ public class ListReplaceLensFragment extends ListFragment {
     private ProgressDialog progressDlg;
     private View view;
     private ListView listView;
+    private FloatingActionButton fab;
 
     private static Boolean isNetworkAvailable;
 
@@ -53,12 +54,18 @@ public class ListReplaceLensFragment extends ListFragment {
         SlidingTabLayout mSlidingTabLayout = (SlidingTabLayout) viewMain.findViewById(R.id.sliding_tabs);
         mSlidingTabLayout.setViewPager(null);
 
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        fab.hide();
+        fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.ic_action_new);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimeLensesFragment fragment = TimeLensesFragment.newInstance(null, true);
+                Utility.replaceFragmentWithBackStack(fragment, getFragmentManager());
+            }
+        });
 
         Toolbar toolbar = (Toolbar) viewMain.findViewById(R.id.toolbar);
 
-//        DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 getActivity(), viewMain, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         viewMain.setDrawerListener(toggle);
@@ -75,7 +82,7 @@ public class ListReplaceLensFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        setHasOptionsMenu(true);
+//        setHasOptionsMenu(true);
     }
 
     @Override
@@ -85,26 +92,6 @@ public class ListReplaceLensFragment extends ListFragment {
         if (timeLensesVO != null) {
             TimeLensesFragment fragment = TimeLensesFragment.newInstance(timeLensesVO, false);
             Utility.replaceFragmentWithBackStack(fragment, getFragmentManager());
-        }
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        MenuItem menuItemInsert = menu.findItem(R.id.menuInsertLens);
-        menuItemInsert.setVisible(true);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menuInsertLens:
-                TimeLensesFragment fragment = TimeLensesFragment.newInstance(null, true);
-                Utility.replaceFragmentWithBackStack(fragment, getFragmentManager());
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -131,15 +118,15 @@ public class ListReplaceLensFragment extends ListFragment {
                     /*&&  Utility.isConnectionFast(context)*/;
         }
 
-        FloatingActionButton fab = (FloatingActionButton) getActivity().findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.ic_action_new);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-//                Utility.replaceFragmentWithBackStack(new TimeLensesFragment(), getFragmentManager());
-            }
-        });
-        fab.hide();
+
+        CoordinatorLayout.LayoutParams params
+                = new CoordinatorLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.BOTTOM | Gravity.END;
+        int margin = (int) getResources().getDimension(R.dimen.fab_margin);
+        params.setMargins(margin, margin, margin, margin);
+        fab.setLayoutParams(params);
+        fab.show();
 
         mTracker.setScreenName("ListReplaceLensFragment");
         mTracker.send(new HitBuilders.ScreenViewBuilder().build());
@@ -192,11 +179,9 @@ public class ListReplaceLensFragment extends ListFragment {
 
     private class ListLensesTask extends AsyncTask<String, Void, List<TimeLensesVO>> {
         private Context context;
-//        private ListFragment listFragment;
 
         public ListLensesTask(Context ctx) {
             context = ctx;
-//            this.listFragment = listFragment;
         }
 
         @Override

@@ -76,10 +76,6 @@ public class DatePickerFragment extends DialogFragment implements
         this.month = month + 1;
         this.year = year;
 
-//        String strDate = new StringBuilder(String.format("%02d", day))
-//                .append("/").append(String.format("%02d", month + 1))
-//                .append("/").append(String.valueOf(year)).toString();
-
         String dateFormat = getContext().getResources().getString(R.string.locale);
 
         Calendar calendar = Calendar.getInstance();
@@ -88,12 +84,10 @@ public class DatePickerFragment extends DialogFragment implements
         String strDate = new SimpleDateFormat(dateFormat).format(calendar.getTime());
 
         if (tag.equals(LeftTimeFragment.DATE_LEFT_EYE)) {
-            btnDateLeft = (Button) fragment.getView().findViewById(
-                    R.id.btnDateLeft);
+            btnDateLeft = (Button) fragment.getView().findViewById(R.id.btnDateLeft);
             btnDateLeft.setText(strDate);
         } else if (tag.equals(RightTimeFragment.DATE_RIGHT_EYE)) {
-            btnDateRight = (Button) fragment.getView().findViewById(
-                    R.id.btnDateRight);
+            btnDateRight = (Button) fragment.getView().findViewById(R.id.btnDateRight);
             btnDateRight.setText(strDate);
         }
     }

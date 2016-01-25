@@ -13,7 +13,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -69,8 +68,6 @@ public class MainActivity extends AppCompatActivity
         } else if (currentUser != null && !currentUser.getBoolean("emailVerified")) {
             LogoutTask logoutTask = new LogoutTask(MainActivity.this, progressDlg, true);
             logoutTask.execute();
-//            ParseUser.logOutInBackground();
-//            loadLoginView();
         } else {
             if (savedInstanceState == null) {
                 View view = navigationView.getHeaderView(0);
@@ -86,7 +83,6 @@ public class MainActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
         AlarmDAO.getInstance(getApplicationContext()).getAlarm();
-//        DataLensesDAO.getInstance(getApplicationContext()).getLastDataLensesAsync();
     }
 
     @Override
@@ -114,12 +110,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
 
@@ -140,19 +130,10 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_logout) {
             LogoutTask logoutTask = new LogoutTask(MainActivity.this, progressDlg, true);
             logoutTask.execute();
-//            ParseUser.logOutInBackground();
-//            loadLoginView();
+        } else if (id == R.id.nav_exit) {
+            this.finish();
         } else {
-            Bundle bundle = null;
-//            if (alarmVO != null) {
-//                bundle = new Bundle();
-//                bundle.putInt("hour", alarmVO.getHour());
-//                bundle.putInt("minute", alarmVO.getMinute());
-//                bundle.putInt("days_before", alarmVO.getDaysBefore());
-//                bundle.putInt("remind_every_day", alarmVO.getRemindEveryDay());
-//            }
-
-            Utility.setScreen(id, toolbar, getSupportFragmentManager(), bundle);
+            Utility.setScreen(id, toolbar, getSupportFragmentManager());
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -55,6 +55,7 @@
     <string name="nav_dados">Dados das lentes</string>
     <string name="nav_notificacao">Notificação</string>
     <string name="nav_compra">Compre suas lentes</string>
+    <string name="nav_exit">Sair</string>
 
     <string name="title_status">Status</string>
     <string name="title_periodo">Período</string>

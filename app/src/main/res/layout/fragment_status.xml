@@ -37,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="20dp"
-                    android:gravity="center"
+                    android:gravity="center_horizontal|top"
                     android:text="@string/msg_insert_time_of_lenses"
                     android:textColor="@color/black"
                     android:textSize="18sp"

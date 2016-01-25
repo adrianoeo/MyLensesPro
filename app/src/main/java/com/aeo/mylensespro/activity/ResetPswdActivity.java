@@ -60,10 +60,6 @@ public class ResetPswdActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startLoginActivity();
-//                Intent intent = new Intent(ResetPswdActivity.this, LoginActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-////                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-//                startActivity(intent);
             }
         });
 
@@ -71,7 +67,6 @@ public class ResetPswdActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ResetPswdActivity.this, SignUpActivity.class);
-//                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(intent);
             }
@@ -84,34 +79,12 @@ public class ResetPswdActivity extends AppCompatActivity {
     private void startLoginActivity() {
         Intent intent = new Intent(ResetPswdActivity.this, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
     }
 
     private void resetPassword(String userEmail) {
         ResetPswdTask task = new ResetPswdTask(ResetPswdActivity.this, userEmail);
         task.execute();
-/*
-        ParseUser.requestPasswordResetInBackground(userEmail, new RequestPasswordResetCallback() {
-            public void done(ParseException e) {
-                if (e == null) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ResetPswdActivity.this);
-                    builder.setMessage(R.string.reset_pswd)
-                            .setTitle(R.string.title_reset_pswd)
-                            .setPositiveButton(android.R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ResetPswdActivity.this);
-                    builder.setMessage(R.string.error_reset_pswd)
-                            .setTitle(R.string.title_error_reset_pswd)
-                            .setPositiveButton(android.R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                }
-            }
-        });
-*/
     }
 
     public class ResetPswdTask extends AsyncTask<String, Void, ParseException> {
