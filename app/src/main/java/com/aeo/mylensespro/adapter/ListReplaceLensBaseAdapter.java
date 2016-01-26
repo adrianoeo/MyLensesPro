@@ -54,18 +54,18 @@ public class ListReplaceLensBaseAdapter extends BaseAdapter {
             String typeRight = null;
 
             if (lenses.getTypeLeft() == 0) {
-                typeLeft = "Day(s)";
+                typeLeft = context.getResources().getString(R.string.str_days);
             } else if (lenses.getTypeLeft() == 1) {
-                typeLeft = "Month(s)";
+                typeLeft = context.getResources().getString(R.string.str_months);
             } else if (lenses.getTypeLeft() == 2) {
-                typeLeft = "Year(s)";
+                typeLeft = context.getResources().getString(R.string.str_years);
             }
             if (lenses.getTypeRight() == 0) {
-                typeRight = "Day(s)";
+                typeRight = context.getResources().getString(R.string.str_days);
             } else if (lenses.getTypeRight() == 1) {
-                typeRight = "Month(s)";
+                typeRight = context.getResources().getString(R.string.str_months);
             } else if (lenses.getTypeRight() == 2) {
-                typeRight = "Year(s)";
+                typeRight = context.getResources().getString(R.string.str_years);
             }
 
             ViewHolder viewHolder = (ViewHolder) view.getTag();
