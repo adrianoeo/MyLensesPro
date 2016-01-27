@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Minhas Lentes</string>
+    <string name="app_name">Minhas Lentes Pro</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -14,13 +14,13 @@
     <string name="signup_error_message">Por favor, verifique o preenchimento de email válido e senha</string>
     <string name="reset_error_message">Por favor, verifique o preenchimento de email válido</string>
     <string name="signup_error_message_username_already">Email já cadastrado</string>
-    <string name="signup_message">Por Favor, confirme sua inscrição em seu email</string>
+    <string name="signup_message">Por Favor, confirme sua inscrição em seu email.\nVerifique na pasta Spam caso não encontre.</string>
     <string name="signup_error_title">Atenção</string>
     <string name="reset_error_msg">Por favor, verifique se inseriu o email</string>
     <string name="login_error_message">Por favor, verifique o preenchimento do usuário e senha</string>
     <string name="login_fail_message">Por favor, verifique o preenchimento correto do seu email e senha</string>
     <string name="login_error_title">Atenção</string>
-    <string name="login_email_not_confirmed">Por favor, certifique-se de confirmar sua inscrição em seu e-mail</string>
+    <string name="login_email_not_confirmed">Por favor, certifique-se de confirmar sua inscrição em seu e-mail.\nVerifique na pasta Spam caso não encontre.</string>
     <string name="login_poor_connection">Conexão lenta, o login pode demorar um pouco. Por favor aguarde</string>
     <string name="signup_poor_connection">Conexão lenta, o cadastro pode demorar um pouco. Por favor aguarde</string>
     <string name="reset_error_title">Atenção</string>
@@ -28,7 +28,7 @@
     <string name="logout_label">Logout</string>
     <string name="sign_up_button_label">Cadastrar</string>
     <string name="alrealdy_member">Já é usuário? Faça o login</string>
-    <string name="reset_pswd">Um email foi enviado com as instruções para a nova senha</string>
+    <string name="reset_pswd">Um email foi enviado com as instruções para a nova senha.\nVerifique na pasta Spam caso não encontre.</string>
     <string name="title_reset_pswd">Alterar senha</string>
     <string name="error_reset_pswd">Desculpe, um problema ocorreu ao enviar o email</string>
     <string name="title_error_reset_pswd">Problema ao alterar a senha</string>
@@ -41,6 +41,7 @@
     <string name="signup">Cadastrar</string>
     <string name="signing_up">Cadastrando</string>
     <string name="copied">Copiado</string>
+    <string name="copied_days_not_used">Copiado. Clique em OK para aplicar</string>
     <string name="not_connected">Para prosseguir é necessário conexão com Internet</string>
     <string name="wait">Aguarde...</string>
     <string name="str_date_change">Data da troca</string>
@@ -62,6 +63,7 @@
     <string name="lbl_dia">DIA</string>
     <string name="btn_horario">12:00</string>
     <string name="btn_copy">Copiar para direita</string>
+    <string name="btn_copy_left">Copiar para esquerda</string>
     <!---->
 
     <string name="menuSave">Salvar</string>

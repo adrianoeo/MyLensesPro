@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">My Lenses</string>
+    <string name="app_name">My Lenses Pro</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -15,11 +15,11 @@
     <string name="reset_error_message">Please make sure you enter a valid email address</string>
     <string name="signup_error_message_username_already">Email address already taken</string>
     <string name="signup_error_title">Attention</string>
-    <string name="signup_message">Please confirm your sign up in your email</string>
+    <string name="signup_message">Please confirm your sign up in your email.\nCheck your Spam folder if you do not find.</string>
     <string name="reset_error_msg">Please make sure you enter a email address</string>
     <string name="login_error_message">Please make sure you enter a valid email address and password</string>
     <string name="login_error_title">Attention</string>
-    <string name="login_email_not_confirmed">Please make sure you confirmed your sign up in your email</string>
+    <string name="login_email_not_confirmed">Please make sure you confirmed your sign up in your email.\nCheck your Spam folder if you do not find.</string>
     <string name="login_fail_message">Please make sure you enter a correct email and password</string>
     <string name="login_poor_connection">Poor connection, log in can be slow. Please wait</string>
     <string name="signup_poor_connection">Poor connection, sign up can be slow. Please wait</string>
@@ -28,7 +28,7 @@
     <string name="logout_label">Logout</string>
     <string name="sign_up_button_label">Sign Up</string>
     <string name="alrealdy_member">Already a member? Login</string>
-    <string name="reset_pswd">An email was successfully sent with reset instructions</string>
+    <string name="reset_pswd">An email was successfully sent with reset instructions.\nCheck your Spam folder if you do not find.</string>
     <string name="title_reset_pswd">Reset Password</string>
     <string name="error_reset_pswd">Sorry, a problem occurred while sending the email</string>
     <string name="title_error_reset_pswd">Problem to Reset Password</string>
@@ -41,6 +41,7 @@
     <string name="signing_up">Signing up</string>
     <string name="sending">Sending email</string>
     <string name="copied">Copied</string>
+    <string name="copied_days_not_used">Copied. Click OK to apply</string>
     <string name="not_connected">Internet is required</string>
     <string name="wait">Wait...</string>
     <string name="str_date_change">Date to change</string>
@@ -61,7 +62,8 @@
     <string name="lbl_bc">BC</string>
     <string name="lbl_dia">DIA</string>
     <string name="btn_horario">12:00</string>
-    <string name="btn_copy">Copy to right lens</string>
+    <string name="btn_copy">Copy to right</string>
+    <string name="btn_copy_left">Copy to left</string>
     <!---->
 
     <string name="menuSave">Save</string>

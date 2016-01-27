@@ -7,23 +7,26 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aeo.mylensespro.R;
 import com.aeo.mylensespro.dao.TimeLensesDAO;
@@ -72,6 +75,7 @@ public class StatusFragment extends Fragment {
     private LinearLayout linearLayoutRight;
     private LinearLayout linearLayoutEmpty;
     private FloatingActionButton fab;
+    private static boolean copy;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -130,12 +134,12 @@ public class StatusFragment extends Fragment {
             }
         });
 
-        Bundle bundle = new Bundle();
-        bundle.putString("color_bg", "FFFFFF");
-        bundle.putString("color_border", "0000FF");
-        bundle.putString("color_link", "0066FF");
-        bundle.putString("color_text", "000000");
-        bundle.putString("color_url", "0033FF");
+//        Bundle bundle = new Bundle();
+//        bundle.putString("color_bg", "FFFFFF");
+//        bundle.putString("color_border", "0000FF");
+//        bundle.putString("color_link", "0066FF");
+//        bundle.putString("color_text", "000000");
+//        bundle.putString("color_url", "0033FF");
 
         animation = AnimationUtils.loadAnimation(context, R.anim.scale);
 
@@ -429,37 +433,65 @@ public class StatusFragment extends Fragment {
         tvLabelDateLeft.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
-   private void setVisibilityRight(boolean isVisible) {
-       tvDaysRemainingRightEye.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
-       tvStrDayRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
-       tvStrDateRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
-       tvLabelDateRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+    private void setVisibilityRight(boolean isVisible) {
+        tvDaysRemainingRightEye.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+        tvStrDayRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+        tvStrDateRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+        tvLabelDateRight.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
     }
 
     public void openDialogNumber(View view) {
         final View v = view;
-        final RelativeLayout layout = new RelativeLayout(context);
+
+        final LinearLayout layout = new LinearLayout(context);
+        layout.setOrientation(LinearLayout.VERTICAL);
+
         final NumberPicker numberPicker = new NumberPicker(context);
         numberPicker.setTag("NUMBER_PICKER_DAYS");
         numberPicker.setMinValue(0);
         numberPicker.setMaxValue(60);
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-        RelativeLayout.LayoutParams numberParams = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        numberParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout.LayoutParams numberParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
+        numberParams.gravity = Gravity.CENTER_HORIZONTAL;
+        btnParams.gravity = Gravity.CENTER_HORIZONTAL;
+        btnParams.setMargins(10, 0, 15, 0);
+
+        final Button btnCopy = new Button(getContext());
+        btnCopy.setTextSize(15);
+        btnCopy.setBackgroundColor(getColor(R.color.blue_btn));
+        btnCopy.setTextColor(getColor(R.color.white));
+        btnCopy.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+        btnCopy.setLayoutParams(btnParams);
+
+
+        btnCopy.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view1) {
+                copy = true;
+                Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(50);
+                Toast.makeText(context, R.string.copied_days_not_used, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         layout.setLayoutParams(layoutParams);
         layout.addView(numberPicker, numberParams);
+        layout.addView(btnCopy, btnParams);
+
 
         if (v.getId() == R.id.btnDaysNotUsedLeft) {
-            numberPicker.setValue(Integer.valueOf(btnDaysNotUsedLeft.getText()
-                    .toString()));
+            numberPicker.setValue(Integer.valueOf(btnDaysNotUsedLeft.getText().toString()));
+            btnCopy.setText(R.string.btn_copy);
         } else if (v.getId() == R.id.btnDaysNotUsedRight) {
-            numberPicker.setValue(Integer.valueOf(btnDaysNotUsedRight.getText()
-                    .toString()));
+            numberPicker.setValue(Integer.valueOf(btnDaysNotUsedRight.getText().toString()));
+            btnCopy.setText(R.string.btn_copy_left);
         }
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(context);
@@ -479,15 +511,28 @@ public class StatusFragment extends Fragment {
                                 String side = null;
 
                                 if (v.getId() == R.id.btnDaysNotUsedLeft) {
-                                    btnDaysNotUsedLeft.setText(String
-                                            .valueOf(num));
+                                    btnDaysNotUsedLeft.setText(String.valueOf(num));
                                     tvStrDaysNotUsedLeft.setText(str);
                                     side = TimeLensesDAO.LEFT;
+
+                                    if (copy) {
+                                        btnDaysNotUsedRight.setText(String.valueOf(num));
+                                        tvStrDaysNotUsedRight.setText(str);
+                                        copy = false;
+                                        side = TimeLensesDAO.BOTH;
+                                    }
+
                                 } else if (v.getId() == R.id.btnDaysNotUsedRight) {
-                                    btnDaysNotUsedRight.setText(String
-                                            .valueOf(num));
+                                    btnDaysNotUsedRight.setText(String.valueOf(num));
                                     tvStrDaysNotUsedRight.setText(str);
                                     side = TimeLensesDAO.RIGHT;
+
+                                    if (copy) {
+                                        btnDaysNotUsedLeft.setText(String.valueOf(num));
+                                        tvStrDaysNotUsedLeft.setText(str);
+                                        copy = false;
+                                        side = TimeLensesDAO.BOTH;
+                                    }
                                 }
 
                                 StatusTask task = new StatusTask(statusFragment, progressDlg, num, side);
@@ -497,10 +542,12 @@ public class StatusFragment extends Fragment {
                 .setNegativeButton(R.string.btn_cancel,
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
+                                copy = false;
                                 dialog.cancel();
                             }
                         });
         AlertDialog alertDialog = dialog.create();
         alertDialog.show();
     }
+
 }

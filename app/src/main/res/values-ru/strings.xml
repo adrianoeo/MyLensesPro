@@ -1,7 +1,5 @@
 <resources>
-    <string name="banner_ad_unit_id">ca-app-pub-1284512514182141/7444685317</string>
-
-    <string name="app_name">Мои объективы</string>
+    <string name="app_name">Мои объективы Pro</string>
 
     <string name="navigation_drawer_open">Открыть ящик навигации</string>
     <string name="navigation_drawer_close">Закрыть навигации ящик</string>
@@ -17,11 +15,11 @@
     <string name="reset_error_message">PПожалуйста, убедитесь, что вы введите действительный адрес электронной почты</string>
     <string name="signup_error_message_username_already">Электронная почта уже зарегистрированы</string>
     <string name="signup_error_title">внимание</string>
-    <string name="signup_message">Пожалуйста, подтвердите подписку в вашей электронной почте</string>
+    <string name="signup_message">Пожалуйста, подтвердите подписку в вашей электронной почте.\nПроверьте папку со спамом, если вы не найти..</string>
     <string name="reset_error_msg">Пожалуйста, убедитесь, что вы введите адрес электронной почты</string>
     <string name="login_error_message">Пожалуйста, убедитесь, что заполняет имя пользователя и пароль</string>
     <string name="login_error_title">внимание</string>
-    <string name="login_email_not_confirmed">Пожалуйста, убедитесь, что вы подтвердили свою регистрацию в вашей электронной почте</string>
+    <string name="login_email_not_confirmed">Пожалуйста, убедитесь, что вы подтвердили свою регистрацию в вашей электронной почте.\nПроверьте папку со спамом, если вы не найти..</string>
     <string name="login_fail_message">Пожалуйста, убедитесь, что вы введите правильный адрес электронной почты и пароль</string>
     <string name="login_poor_connection">Соединение медленно, Логин может занять некоторое время. Пожалуйста, подождите</string>
     <string name="signup_poor_connection">Подключение происходит медленно, регистрация может занять некоторое время. Пожалуйста, подождите</string>
@@ -30,7 +28,7 @@
     <string name="logout_label">Выйти</string>
     <string name="sign_up_button_label">Зарегистрироваться</string>
     <string name="alrealdy_member">Уже зарегистрирован? Войти</string>
-    <string name="reset_pswd">Электронная почта успешно отправлено с инструкциями сброса</string>
+    <string name="reset_pswd">Электронная почта успешно отправлено с инструкциями сброса.\nПроверьте папку со спамом, если вы не найти..</string>
     <string name="title_reset_pswd">Сброс пароля</string>
     <string name="error_reset_pswd">К сожалению, произошла ошибка при отправке электронной почты</string>
     <string name="title_error_reset_pswd">Проблема Сбросить пароль</string>
@@ -43,6 +41,7 @@
     <string name="signing_up">Подписание</string>
     <string name="sending">Отправка электронной почты</string>
     <string name="copied">скопированный</string>
+    <string name="copied_days_not_used">Скопировано. Нажмите OK, чтобы применить</string>
     <string name="not_connected">Интернет требуется</string>
     <string name="wait">Подожди...</string>
     <string name="str_date_change">Дата изменения</string>
@@ -64,6 +63,7 @@
     <string name="lbl_dia">Диаметр (DIA)</string>
     <string name="btn_horario">12:00</string>
     <string name="btn_copy">копия направо</string>
+    <string name="btn_copy_left">копия налево</string>
     <!---->
 
     <string name="menuSave">сохранять</string>

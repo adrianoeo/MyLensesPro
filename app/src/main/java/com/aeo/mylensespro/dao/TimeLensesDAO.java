@@ -29,6 +29,7 @@ public class TimeLensesDAO {
     private static TimeLensesDAO instance;
     public static final String LEFT = "LEFT";
     public static final String RIGHT = "RIGHT";
+    public static final String BOTH = "BOTH";
 
     private Context context;
 
@@ -175,7 +176,10 @@ public class TimeLensesDAO {
 
                     if (LEFT.equals(side)) {
                         content.put("num_days_not_used_left", days);
+                    } else if (RIGHT.equals(side)) {
+                        content.put("num_days_not_used_right", days);
                     } else {
+                        content.put("num_days_not_used_left", days);
                         content.put("num_days_not_used_right", days);
                     }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Mis Lentes</string>
+    <string name="app_name">Mis Lentes Pro</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -14,13 +14,13 @@
     <string name="signup_error_message">Por favor, verifique la finalización de correo electrónico válida y contraseña</string>
     <string name="reset_error_message">Por favor, verifique la finalización de correo electrónico válida</string>
     <string name="signup_error_message_username_already">Correo electrónico ya registrado</string>
-    <string name="signup_message">Por favor confirme su registro en su correo electrónico</string>
+    <string name="signup_message">Por favor confirme su registro en su correo electrónico.\nRevise su carpeta de correo no deseado si no encuentras.</string>
     <string name="signup_error_title">Atención</string>
     <string name="reset_error_msg">Por favor, asegúrese de insertar el correo electrónico</string>
     <string name="login_error_message">Por favor, consulte el relleno de email y contraseña</string>
     <string name="login_fail_message">Por favor, consulte el relleno correcto de email y contraseña</string>
     <string name="login_error_title">Atención</string>
-    <string name="login_email_not_confirmed">Por favor, asegúrese de que usted haya confirmar tu registro en tu correo electrónico</string>
+    <string name="login_email_not_confirmed">Por favor, asegúrese de que usted haya confirmar tu registro en tu correo electrónico.\nRevise su carpeta de correo no deseado si no encuentras.</string>
     <string name="login_poor_connection">Conexión lenta, el inicio de sesión puede tardar un poco. Gracias por esperar</string>
     <string name="signup_poor_connection">Conexión lenta, el registro puede tardar un poco. Gracias por esperar</string>
     <string name="reset_error_title">Atención</string>
@@ -28,7 +28,7 @@
     <string name="logout_label">Logout</string>
     <string name="sign_up_button_label">Registro</string>
     <string name="alrealdy_member">¿Ya eres usuario? Iniciar sesión</string>
-    <string name="reset_pswd">Un correo electrónico ha sido enviado a las instrucciones para la nueva contraseña</string>
+    <string name="reset_pswd">Un correo electrónico ha sido enviado a las instrucciones para la nueva contraseña.\nRevise su carpeta de correo no deseado si no encuentras.</string>
     <string name="title_reset_pswd">Cambiar contraseña</string>
     <string name="error_reset_pswd">Lo sentimos, se produjo un problema al enviar el correo electrónico</string>
     <string name="title_error_reset_pswd">Problema para cambiar la contraseña</string>
@@ -41,6 +41,7 @@
     <string name="signup">Inscribirse</string>
     <string name="signing_up">Inscribirse</string>
     <string name="copied">Copiado</string>
+    <string name="copied_days_not_used">Copiado. Haga clic en OK para aplicar</string>
     <string name="not_connected">Se requiere conexión a Internet para iniciar la sesión</string>
     <string name="wait">Espera...</string>
     <string name="str_date_change">Fecha de cambio</string>
@@ -62,6 +63,7 @@
     <string name="lbl_dia">DIA</string>
     <string name="btn_horario">12:00</string>
     <string name="btn_copy">Copiar a la derecha</string>
+    <string name="btn_copy_left">Copiar a la izquierda</string>
     <!---->
 
     <string name="menuSave">Guardar</string>
