@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -40,47 +42,22 @@ public class SignUpActivity extends AppCompatActivity {
         signUpButton = (Button) findViewById(R.id.signupButton);
         loginTextView = (TextView) findViewById(R.id.link_login);
 
+        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    enterSignup();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String username = usernameEditText.getText().toString().trim();
-                final String password = passwordEditText.getText().toString().trim();
-
-                if (username.isEmpty() || password.isEmpty()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                    builder.setMessage(R.string.signup_error_message)
-                            .setTitle(R.string.signup_error_title)
-                            .setPositiveButton(android.R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                } else {
-                    if (Utility.isNetworkAvailable(SignUpActivity.this) &&
-                            Utility.isConnectionFast(SignUpActivity.this)) {
-                        setProgressBarIndeterminateVisibility(true);
-
-                        signup(username, password);
-                    } else if (Utility.isNetworkAvailable(SignUpActivity.this) &&
-                            !Utility.isConnectionFast(SignUpActivity.this)) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                        builder.setMessage(R.string.signup_poor_connection)
-                                .setTitle(R.string.signup_error_title)
-                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        signup(username, password);
-                                    }
-                                });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                        builder.setMessage(R.string.not_connected)
-                                .setTitle(R.string.login_error_title)
-                                .setPositiveButton(android.R.string.ok, null);
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    }
-                }
+                enterSignup();
             }
         });
 
@@ -92,6 +69,47 @@ public class SignUpActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    private void enterSignup() {
+        final String username = usernameEditText.getText().toString().trim();
+        final String password = passwordEditText.getText().toString().trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+            builder.setMessage(R.string.signup_error_message)
+                    .setTitle(R.string.signup_error_title)
+                    .setPositiveButton(android.R.string.ok, null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            if (Utility.isNetworkAvailable(SignUpActivity.this) &&
+                    Utility.isConnectionFast(SignUpActivity.this)) {
+                setProgressBarIndeterminateVisibility(true);
+
+                signup(username, password);
+            } else if (Utility.isNetworkAvailable(SignUpActivity.this) &&
+                    !Utility.isConnectionFast(SignUpActivity.this)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+                builder.setMessage(R.string.signup_poor_connection)
+                        .setTitle(R.string.signup_error_title)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                signup(username, password);
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+                builder.setMessage(R.string.not_connected)
+                        .setTitle(R.string.login_error_title)
+                        .setPositiveButton(android.R.string.ok, null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
     }
 
     private void signup(String username, String password) {

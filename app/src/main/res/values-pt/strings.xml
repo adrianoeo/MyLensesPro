@@ -41,7 +41,7 @@
     <string name="signup">Cadastrar</string>
     <string name="signing_up">Cadastrando</string>
     <string name="copied">Copiado</string>
-    <string name="copied_days_not_used">Copiado. Clique em OK para aplicar</string>
+    <string name="copied_days_not_used">Copiado. Clique em OK para confirmar</string>
     <string name="not_connected">Para prosseguir é necessário conexão com Internet</string>
     <string name="wait">Aguarde...</string>
     <string name="str_date_change">Data da troca</string>

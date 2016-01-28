@@ -8,8 +8,10 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -36,23 +38,22 @@ public class ResetPswdActivity extends AppCompatActivity {
         loginTextView = (TextView) findViewById(R.id.link_login);
         signUpTextView = (TextView) findViewById(R.id.signUpText);
 
+        emailEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    enterReset();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String email = emailEditText.getText().toString();
-                email = email.trim();
-
-                if (email.isEmpty()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ResetPswdActivity.this);
-                    builder.setMessage(R.string.reset_error_message)
-                            .setTitle(R.string.reset_error_title)
-                            .setPositiveButton(android.R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                } else {
-                    setProgressBarIndeterminateVisibility(true);
-                    resetPassword(email);
-                }
+                enterReset();
             }
         });
 
@@ -74,6 +75,23 @@ public class ResetPswdActivity extends AppCompatActivity {
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+    }
+
+    private void enterReset() {
+        String email = emailEditText.getText().toString();
+        email = email.trim();
+
+        if (email.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(ResetPswdActivity.this);
+            builder.setMessage(R.string.reset_error_message)
+                    .setTitle(R.string.reset_error_title)
+                    .setPositiveButton(android.R.string.ok, null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+            setProgressBarIndeterminateVisibility(true);
+            resetPassword(email);
+        }
     }
 
     private void startLoginActivity() {

@@ -9,8 +9,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -44,7 +46,17 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = (EditText) findViewById(R.id.passwordField);
         loginButton = (Button) findViewById(R.id.loginButton);
 
-//        usernameEditText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+        passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    enterLogin();
+                    handled = true;
+                }
+                return handled;
+            }
+        });
 
         signUpTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,49 +77,53 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String username = usernameEditText.getText().toString().trim();
-                final String password = passwordEditText.getText().toString().trim();
-
-                if (username.isEmpty() || password.isEmpty()) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                    builder.setMessage(R.string.login_error_message)
-                            .setTitle(R.string.login_error_title)
-                            .setPositiveButton(android.R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
-                } else {
-
-                    if (Utility.isNetworkAvailable(LoginActivity.this) &&
-                            Utility.isConnectionFast(LoginActivity.this)) {
-                        setProgressBarIndeterminateVisibility(true);
-
-                        login(username, password);
-                    } else if (Utility.isNetworkAvailable(LoginActivity.this) &&
-                            !Utility.isConnectionFast(LoginActivity.this)) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                        builder.setMessage(R.string.login_poor_connection)
-                                .setTitle(R.string.login_error_title)
-                                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        login(username, password);
-                                    }
-                                });
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
-                        builder.setMessage(R.string.not_connected)
-                                .setTitle(R.string.login_error_title)
-                                .setPositiveButton(android.R.string.ok, null);
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
-                    }
-                }
+                enterLogin();
             }
         });
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+    }
+
+    private void enterLogin() {
+        final String username = usernameEditText.getText().toString().trim();
+        final String password = passwordEditText.getText().toString().trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+            builder.setMessage(R.string.login_error_message)
+                    .setTitle(R.string.login_error_title)
+                    .setPositiveButton(android.R.string.ok, null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else {
+
+            if (Utility.isNetworkAvailable(LoginActivity.this) &&
+                    Utility.isConnectionFast(LoginActivity.this)) {
+                setProgressBarIndeterminateVisibility(true);
+
+                login(username, password);
+            } else if (Utility.isNetworkAvailable(LoginActivity.this) &&
+                    !Utility.isConnectionFast(LoginActivity.this)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                builder.setMessage(R.string.login_poor_connection)
+                        .setTitle(R.string.login_error_title)
+                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                login(username, password);
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            } else {
+                AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
+                builder.setMessage(R.string.not_connected)
+                        .setTitle(R.string.login_error_title)
+                        .setPositiveButton(android.R.string.ok, null);
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        }
     }
 
     public void login(String username, String password) {

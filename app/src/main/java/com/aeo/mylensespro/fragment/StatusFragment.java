@@ -477,7 +477,9 @@ public class StatusFragment extends Fragment {
                 copy = true;
                 Vibrator vibrator = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
                 vibrator.vibrate(50);
-                Toast.makeText(context, R.string.copied_days_not_used, Toast.LENGTH_SHORT).show();
+                Toast toast = Toast.makeText(context, R.string.copied_days_not_used, Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
+                toast.show();
             }
         });
 
